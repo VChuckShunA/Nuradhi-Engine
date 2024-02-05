@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34408.163
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Nuradhi Engine", "Nuradhi Engine\Nuradhi Engine.vcxproj", "{984AE54D-A212-41B7-844C-F27859381AC4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Debug|x64.ActiveCfg = Debug|x64
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Debug|x64.Build.0 = Debug|x64
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Debug|x86.ActiveCfg = Debug|Win32
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Debug|x86.Build.0 = Debug|Win32
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Release|x64.ActiveCfg = Release|x64
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Release|x64.Build.0 = Release|x64
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Release|x86.ActiveCfg = Release|Win32
+		{984AE54D-A212-41B7-844C-F27859381AC4}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C439199C-B54A-4E60-8FCC-29D7BE062813}
+	EndGlobalSection
+EndGlobal
