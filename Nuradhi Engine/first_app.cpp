@@ -1,5 +1,6 @@
 #include "first_app.hpp"
 #include "simple_render_system.hpp"
+#include "lve_camera.hpp"
 #include <stdexcept>
 #include <array>
 //libs
@@ -20,8 +21,15 @@ namespace lve {
 	void lve::FirstApp::run()
 	{
 		SimpleRenderSystem simpleRenderSystem{ lveDevice,lveRenderer.getSwapChainRenderPass()};
+		LveCamera camera{};
+		//camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f)); //down the z axis, slightly to the right
+		camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f)); //corresponds to the centre of the cube
+		//camera.setViewTarget(glm::vec3(-1.f, -2.f, -20.f), glm::vec3(0.f, 0.f, 2.5f)); //Set the far plane to higher valeue not to be clipped at camera projection
 		while (!lveWindow.shouldClose()) {
 			glfwPollEvents();
+			float aspect = lveRenderer.getAspectRatio();
+			//camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+			camera.setPerspectiveProjection(glm::radians(50.f),aspect,0.1f,10.f);
 
 			//begin frame function will return a null ptr if the swap chain needs to be created
 			if (auto commandBuffer = lveRenderer.beginFrame()) {
@@ -30,7 +38,7 @@ namespace lve {
 				//render shadow casting objects
 				//end offscreen shadow pass
 				lveRenderer.beginSwapChainRenderPass(commandBuffer);
-				simpleRenderSystem.renderGameObect(commandBuffer,gameObjects);
+				simpleRenderSystem.renderGameObect(commandBuffer,gameObjects, camera);
 				lveRenderer.endSwapChainRenderPass(commandBuffer);
 				lveRenderer.endFrame();
 			}
@@ -103,7 +111,7 @@ namespace lve {
 		std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, { .0f,.0f,.0f });
 		auto cube = LveGameObject::createGameObject();
 		cube.model = lveModel;
-		cube.transform.translation = { .0f,.0f,.5f };
+		cube.transform.translation = { .0f,.0f,2.5f };
 		cube.transform.scale = { .5f,.5f,.5f };
 		gameObjects.push_back(std::move(cube));
 	}
