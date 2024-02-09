@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 
 //std 
+#include <memory>
 #include <vector>
 namespace lve {
 	class LveModel
@@ -14,16 +15,25 @@ namespace lve {
 	public:
 
 		struct Vertex {
-			glm::vec3 position;
-			glm::vec3 colour;
+			glm::vec3 position{};
+			glm::vec3 colour{};
+			glm::vec3 normal{};
+			glm::vec2 uv{}; //2d texture  cordinates
 
 			static std::vector<VkVertexInputBindingDescription> getBindingDescription();
 			static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+			
+			bool operator==(const Vertex& other) const {
+				return position == other.position && colour == other.colour && normal == other.normal && uv == other.uv;
+			}
+		
 		};
 
 		struct Builder {
 			std::vector<Vertex> vertices{};
 			std::vector<uint32_t> indices{};
+
+			void loadModel(const std::string& filepath);
 		};
 
 		LveModel(LveDevice &device, const LveModel::Builder &builder);
@@ -32,6 +42,8 @@ namespace lve {
 		//Delete these cuz the model class manages the buffer and memory objects
 		LveModel(const LveModel&) = delete;
 		LveModel& operator=(const LveModel&) = delete;
+
+		static std::unique_ptr<LveModel> createModelFromFile(LveDevice& device, const std::string& filepath);
 
 		void bind(VkCommandBuffer commandBuffer);
 		void draw(VkCommandBuffer commandBuffer);
