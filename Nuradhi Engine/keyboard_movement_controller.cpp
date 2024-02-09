@@ -10,9 +10,10 @@ namespace lve {
 		if (glfwGetKey(window, keys.lookDown) == GLFW_PRESS) rotate.x -= 1.f;
 
 		//only normalize rotation if it's NOT ZERO
-		if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) {
+		 if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) 
+		 {
 			gameObject.transform.rotation += lookSpeed * dt * glm::normalize(rotate);
-		}
+		 }
 		//prevent objects from going upside down
 		gameObject.transform.rotation.x = glm::clamp(gameObject.transform.rotation.x, -1.5f, 1.5f); 
 		gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
@@ -29,7 +30,7 @@ namespace lve {
 		if (glfwGetKey(window, keys.moveRight) == GLFW_PRESS) moveDir += rightDir;
 		if (glfwGetKey(window, keys.moveLeft) == GLFW_PRESS) moveDir -= rightDir;
 		if (glfwGetKey(window, keys.moveUp) == GLFW_PRESS) moveDir += upDir;
-		if (glfwGetKey(window, keys.moveUp) == GLFW_PRESS) moveDir -= upDir;
+		if (glfwGetKey(window, keys.moveDown) == GLFW_PRESS) moveDir -= upDir;
 
 
 		//only normalize moveDir if it's NOT ZERO
