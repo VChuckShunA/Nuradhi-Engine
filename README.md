@@ -7,3 +7,6 @@ Engine Functionalities Include:
   Sprite Renderring.
   SWEPT AABB Collision.
   A* Pathfinding.
+Libraries used:
+ GLM
+ TinyObjLoader
