@@ -2,6 +2,7 @@
 #include "simple_render_system.hpp"
 #include "lve_camera.hpp"
 #include "keyboard_movement_controller.hpp"
+#include "lve_buffer.hpp"
 #include <stdexcept>
 #include <array>
 #include <chrono>
@@ -15,6 +16,11 @@
 
 namespace lve {
 	
+	struct GlobalUbo {
+		glm::mat4 projectionView{ 1.f };
+		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 1.f,-3.f,-1.f });
+	};
+
 	FirstApp::FirstApp()
 	{
 		loadGameObjects();
@@ -24,6 +30,19 @@ namespace lve {
 	}
 	void lve::FirstApp::run()
 	{
+		std::vector<std::unique_ptr<LveBuffer>> uboBuffer(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+		for (int i = 0; i < uboBuffer.size(); i++) {
+			uboBuffer[i] = std::make_unique<LveBuffer>(
+				lveDevice,
+				sizeof(GlobalUbo),
+				1,
+				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			uboBuffer[i]->map();
+		}
+
+		
+
 		SimpleRenderSystem simpleRenderSystem{ lveDevice,lveRenderer.getSwapChainRenderPass()};
 		LveCamera camera{};
 		//camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f)); //down the z axis, slightly to the right
@@ -52,12 +71,22 @@ namespace lve {
 
 			//begin frame function will return a null ptr if the swap chain needs to be created
 			if (auto commandBuffer = lveRenderer.beginFrame()) {
-				//TODO:
-				//begin off screen shadow pass
-				//render shadow casting objects
-				//end offscreen shadow pass
+				int frameIndex = lveRenderer.getFrameIndex();
+				FrameInfo frameInfo{
+					frameIndex,
+					frameTime,
+					commandBuffer,
+					camera
+				};
+				//update
+				GlobalUbo ubo{};
+				ubo.projectionView = camera.getProjection() * camera.getView();
+				uboBuffer[frameIndex]->writeToBuffer(&ubo);
+				uboBuffer[frameIndex]->flush();
+
+				//render
 				lveRenderer.beginSwapChainRenderPass(commandBuffer);
-				simpleRenderSystem.renderGameObect(commandBuffer,gameObjects, camera);
+				simpleRenderSystem.renderGameObects(frameInfo,gameObjects);
 				lveRenderer.endSwapChainRenderPass(commandBuffer);
 				lveRenderer.endFrame();
 			}
