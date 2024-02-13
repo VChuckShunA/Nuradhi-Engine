@@ -13,7 +13,7 @@
 namespace lve {
 	class SimpleRenderSystem {
 	public:
-		SimpleRenderSystem(LveDevice &device, VkRenderPass renderPass);
+		SimpleRenderSystem(LveDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
 		~SimpleRenderSystem();
 
 		//Delete these cuz we're using a pointer to our GLFW window
@@ -24,7 +24,7 @@ namespace lve {
 			FrameInfo &frameInfo, 
 			std::vector<LveGameObject> &gameObjects);
 	private:
-		void createPipelineLayout();
+		void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
 		void createPipeline(VkRenderPass renderPass);
 
 		LveDevice& lveDevice;
