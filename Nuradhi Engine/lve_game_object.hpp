@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 //std
 #include <memory>
+#include<unordered_map>
 
 namespace lve {
 
@@ -27,10 +28,11 @@ namespace lve {
 	};
 	class LveGameObject {
 	public:
-		using id_it = unsigned int;
+		using id_t = unsigned int;
+		using Map = std::unordered_map<id_t,LveGameObject>;//used to look up game objects using their ID
 
 		static LveGameObject createGameObject() {
-			static id_it currentId = 0;
+			static id_t currentId = 0;
 			return LveGameObject{currentId++};
 		}
 
@@ -41,15 +43,15 @@ namespace lve {
 		LveGameObject(LveGameObject&&) = default;
 		LveGameObject& operator=(LveGameObject&&) = default;
 
-		const id_it getId(){return id;}
+		const id_t getId(){return id;}
 
 		std::shared_ptr<LveModel> model{};
 		glm::vec3 colour{};
 		TransformComponent transform{};
 
 	private:
-		LveGameObject(id_it objId) : id{objId} {}
+		LveGameObject(id_t objId) : id{objId} {}
 
-		id_it id;
+		id_t id;
 	};
 }

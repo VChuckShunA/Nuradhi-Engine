@@ -160,6 +160,7 @@
     <ClCompile Include="lve_swap_chain.cpp" />
     <ClCompile Include="lve_window.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="point_light_system.cpp" />
     <ClCompile Include="simple_render_system.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,10 +178,13 @@
     <ClInclude Include="lve_swap_chain.hpp" />
     <ClInclude Include="lve_utils.hpp" />
     <ClInclude Include="lve_window.hpp" />
+    <ClInclude Include="point_light_system.hpp" />
     <ClInclude Include="simple_render_system.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="compile.bat" />
+    <None Include="point_light.frag" />
+    <None Include="point_light.vert" />
     <None Include="simple_shader.frag" />
     <None Include="simple_shader.vert" />
   </ItemGroup>

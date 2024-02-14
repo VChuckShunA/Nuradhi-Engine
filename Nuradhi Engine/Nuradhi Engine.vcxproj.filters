@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{39f5756d-3391-445e-9294-a4e2dd0c5360}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Systems">
+      <UniqueIdentifier>{549acdfc-46c9-4f5b-b343-ed795a6810d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,9 +45,6 @@
     <ClCompile Include="lve_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simple_render_system.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lve_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,6 +59,12 @@
     </ClCompile>
     <ClCompile Include="lve_descriptors.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simple_render_system.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="point_light_system.cpp">
+      <Filter>Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,9 +92,6 @@
     <ClInclude Include="lve_renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simple_render_system.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="lve_camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -107,6 +110,12 @@
     <ClInclude Include="lve_descriptors.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="simple_render_system.hpp">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="point_light_system.hpp">
+      <Filter>Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="simple_shader.vert">
@@ -116,5 +125,11 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="compile.bat" />
+    <None Include="point_light.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="point_light.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
