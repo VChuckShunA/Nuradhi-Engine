@@ -152,8 +152,10 @@ void nrd::TestLevel::loadGameObjects()
 	player.model = lveModel;
 	player.transform.translation = { -.5f,-.3f,0.f };
 	player.transform.scale = { .5f,.5f,.5f };
-	player.transform.rotation = { 190.f,0.f,0.f };
+	player.transform.rotation = { 1.5708f,0.f,0.f };
 	gameObjects.emplace(player.getId(), std::move(player));
+
+	
 
 
 	//pointlights
