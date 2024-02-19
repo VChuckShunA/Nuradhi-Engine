@@ -60,6 +60,8 @@ namespace lve {
 		std::shared_ptr<LveModel> model{};
 		std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
+		//Nrd Implementation
+		LveGameObject();
 	private:
 		LveGameObject(id_t objId) : id{objId} {}
 

@@ -19,6 +19,12 @@
     <Filter Include="Systems">
       <UniqueIdentifier>{549acdfc-46c9-4f5b-b343-ed795a6810d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Lve">
+      <UniqueIdentifier>{a7b502f5-bb1b-4fb5-9043-e6f3ad201561}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Nuradhi">
+      <UniqueIdentifier>{68805dc8-b9ab-4be5-bc4d-5721937e903e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -66,55 +72,97 @@
     <ClCompile Include="point_light_system.cpp">
       <Filter>Systems</Filter>
     </ClCompile>
+    <ClCompile Include="nrd_test_level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_time_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_random_number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_living_entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lve_pipeline.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="first_app.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_window.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_device.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_swap_chain.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_model.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_game_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_renderer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_camera.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="keyboard_movement_controller.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_utils.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_buffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_frame_info.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lve_descriptors.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="simple_render_system.hpp">
       <Filter>Systems</Filter>
     </ClInclude>
     <ClInclude Include="point_light_system.hpp">
       <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="first_app.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard_movement_controller.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_buffer.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_camera.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_descriptors.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_device.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_frame_info.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_game_object.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_model.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_pipeline.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_renderer.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_swap_chain.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_utils.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_window.hpp">
+      <Filter>Header Files\Lve</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_entity.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_globals.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_living_entity.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_random_number.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_test_level.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_time_controller.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_player.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

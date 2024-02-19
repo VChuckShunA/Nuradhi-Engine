@@ -71,4 +71,9 @@ namespace lve {
 		return gameObj;
 	}
 
+	//Nrd Implementation
+	LveGameObject::LveGameObject()
+	{
+	}
+
 }
