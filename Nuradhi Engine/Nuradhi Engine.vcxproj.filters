@@ -25,73 +25,85 @@
     <Filter Include="Header Files\Nuradhi">
       <UniqueIdentifier>{68805dc8-b9ab-4be5-bc4d-5721937e903e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Lve">
+      <UniqueIdentifier>{ca331bcb-5690-4776-9aa4-63c9ab35dd65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Nuradhi">
+      <UniqueIdentifier>{d82b3591-722c-424e-9ef0-3333a09af098}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="first_app.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_pipeline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_swap_chain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="keyboard_movement_controller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_game_object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lve_descriptors.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="simple_render_system.cpp">
       <Filter>Systems</Filter>
     </ClCompile>
     <ClCompile Include="point_light_system.cpp">
       <Filter>Systems</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_test_level.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="first_app.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard_movement_controller.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_buffer.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_camera.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_descriptors.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_device.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_game_object.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_model.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_pipeline.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_renderer.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_swap_chain.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="lve_window.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
     <ClCompile Include="nrd_entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_time_controller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_random_number.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
     <ClCompile Include="nrd_globals.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
     <ClCompile Include="nrd_living_entity.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_movement_controller.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
     <ClCompile Include="nrd_player.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_random_number.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_test_level.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_time_controller.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_camera_controller.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +174,12 @@
       <Filter>Header Files\Nuradhi</Filter>
     </ClInclude>
     <ClInclude Include="nrd_player.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_movement_controller.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_camera_controller.hpp">
       <Filter>Header Files\Nuradhi</Filter>
     </ClInclude>
   </ItemGroup>

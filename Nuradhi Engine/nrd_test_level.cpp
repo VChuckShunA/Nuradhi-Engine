@@ -5,6 +5,7 @@
 #include "keyboard_movement_controller.hpp"
 #include "lve_buffer.hpp"
 #include "nrd_player.hpp"
+#include "nrd_movement_controller.hpp"
 #include <stdexcept>
 #include <array>
 #include <chrono>
@@ -68,8 +69,21 @@ void nrd::TestLevel::run()
 	//camera.setViewTarget(glm::vec3(-1.f, -2.f, -20.f), glm::vec3(0.f, 0.f, 2.5f)); //Set the far plane to higher valeue not to be clipped at camera projection
 
 	auto viewerObject = lve::LveGameObject::createGameObject();
-	viewerObject.transform.translation.z = -2.5f;//camera position
+	viewerObject.transform.translation.z = -10.5f;//camera position
 	lve::KeyboardMovementController cameraController{};
+	//creating the player Instance
+
+	nrd::NrdPlayer playerInstance;
+
+	// Creating the player's game object
+	std::shared_ptr<lve::LveModel> playerModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
+	auto playerGO = playerInstance.createGameObject();
+	playerGO.model = playerModel;
+	playerGO.transform.translation = { -.5f,-.3f,0.f };
+	playerGO.transform.scale = { .5f,.5f,.5f };
+	playerGO.transform.rotation = { 1.5708f,0.f,0.f };
+	gameObjects.emplace(playerGO.getId(), std::move(playerGO));
+
 
 	auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -79,12 +93,21 @@ void nrd::TestLevel::run()
 		auto newTime = std::chrono::high_resolution_clock::now();
 		float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
-
 		cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject);
-		camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+		//camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+
+		
+		//Player Controller
+		nrd::NrdMovementController playerController(&playerInstance);
+		playerController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, gameObjects[playerGO.getId()]);
+
+		camera.setViewYXZ({ gameObjects[playerGO.getId()].transform.translation.x,
+							gameObjects[playerGO.getId()].transform.translation.y,
+							-2.5
+			}, viewerObject.transform.rotation);
 
 		float aspect = lveRenderer.getAspectRatio();
-		//camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+		
 		camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 		//camera.setOrthographicProjection(-aspect, aspect, -1, 1, 0.1f, 10.f);
 
@@ -125,6 +148,7 @@ void nrd::TestLevel::run()
 
 void nrd::TestLevel::loadGameObjects()
 {
+	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::shared_ptr<lve::LveModel> lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
 	auto flatVase = lve::LveGameObject::createGameObject();
 	flatVase.model = lveModel;
@@ -146,15 +170,7 @@ void nrd::TestLevel::loadGameObjects()
 	floor.transform.scale = { 3.f,1.f,3.f };
 	gameObjects.emplace(floor.getId(), std::move(floor));
 
-	//creating the player
-	lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
-	auto player = nrd::NrdPlayer::createGameObject();
-	player.model = lveModel;
-	player.transform.translation = { -.5f,-.3f,0.f };
-	player.transform.scale = { .5f,.5f,.5f };
-	player.transform.rotation = { 1.5708f,0.f,0.f };
-	gameObjects.emplace(player.getId(), std::move(player));
-
+	
 	
 
 

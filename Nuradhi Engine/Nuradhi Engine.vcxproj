@@ -160,9 +160,11 @@
     <ClCompile Include="lve_swap_chain.cpp" />
     <ClCompile Include="lve_window.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="nrd_camera_controller.cpp" />
     <ClCompile Include="nrd_entity.cpp" />
     <ClCompile Include="nrd_globals.cpp" />
     <ClCompile Include="nrd_living_entity.cpp" />
+    <ClCompile Include="nrd_movement_controller.cpp" />
     <ClCompile Include="nrd_player.cpp" />
     <ClCompile Include="nrd_random_number.cpp" />
     <ClCompile Include="nrd_test_level.cpp" />
@@ -185,9 +187,11 @@
     <ClInclude Include="lve_swap_chain.hpp" />
     <ClInclude Include="lve_utils.hpp" />
     <ClInclude Include="lve_window.hpp" />
+    <ClInclude Include="nrd_camera_controller.hpp" />
     <ClInclude Include="nrd_entity.hpp" />
     <ClInclude Include="nrd_globals.hpp" />
     <ClInclude Include="nrd_living_entity.hpp" />
+    <ClInclude Include="nrd_movement_controller.hpp" />
     <ClInclude Include="nrd_player.hpp" />
     <ClInclude Include="nrd_random_number.hpp" />
     <ClInclude Include="nrd_test_level.hpp" />

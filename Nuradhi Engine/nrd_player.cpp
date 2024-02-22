@@ -27,14 +27,31 @@ namespace nrd {
 	NrdPlayer::NrdPlayer()
 	{
 		moveSpeed = 0;
-		moveSpeedMax = 80.0f;
+		moveSpeedMax = 4.0f;
 		hp = hpMax = 20;
 		damage = 0;
+
 
 		direction = DIR_DOWN;
 	}
 	void NrdPlayer::update()
 	{
+		//check if dead
+		if (hp < 1 && state != HERO_STATE_DEAD) {
+			changeAnimation(HERO_STATE_DEAD, true);
+			moving = false;
+			die();
+		}
+
+		//updateCollisionBox();
+		updateMovement();
+		//updateCollisions();
+
+		//updateHitBox();
+		//updateDamage();
+
+		//updateAnimation();
+		//updateInvincibleTimer();
 	}
 
 	void NrdPlayer::slash()

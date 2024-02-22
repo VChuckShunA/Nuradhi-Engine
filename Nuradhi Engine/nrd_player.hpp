@@ -1,6 +1,6 @@
 #pragma once
 #include "nrd_living_entity.hpp"
-
+#include "nrd_movement_controller.hpp"
 namespace nrd {
 	class NrdPlayer :public nrd::NrdLivingEntity {
 

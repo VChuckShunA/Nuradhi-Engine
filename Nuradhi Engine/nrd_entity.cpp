@@ -85,7 +85,7 @@ namespace nrd {
 		}*/
 
 		//now that we've moved, move the collision box upto where we are now
-		updateCollisionBox();
+		//updateCollisionBox();
 		//to help with collision checking, union collisionBox with lastCollisionBox
 		//SDL_UnionRect(&collisionBox, &lastCollisionBox, &collisionBox);
 	}
