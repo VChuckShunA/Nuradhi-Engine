@@ -4,7 +4,7 @@
 #include "nrd_entity.hpp"
 
 namespace nrd {
-	class CameraController {
+	class CameraController: public lve::LveCamera {
 	public:
 		nrd::NrdEntity* target = NULL;
 		float lerp = 2.6f;

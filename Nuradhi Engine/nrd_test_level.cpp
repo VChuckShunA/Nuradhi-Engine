@@ -69,7 +69,7 @@ void nrd::TestLevel::run()
 	//camera.setViewTarget(glm::vec3(-1.f, -2.f, -20.f), glm::vec3(0.f, 0.f, 2.5f)); //Set the far plane to higher valeue not to be clipped at camera projection
 
 	auto viewerObject = lve::LveGameObject::createGameObject();
-	viewerObject.transform.translation.z = -10.5f;//camera position
+	viewerObject.transform.translation.z = -13.5f;//camera position
 	lve::KeyboardMovementController cameraController{};
 	//creating the player Instance
 
@@ -101,15 +101,19 @@ void nrd::TestLevel::run()
 		nrd::NrdMovementController playerController(&playerInstance);
 		playerController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, gameObjects[playerGO.getId()]);
 
-		camera.setViewYXZ({ gameObjects[playerGO.getId()].transform.translation.x,
-							gameObjects[playerGO.getId()].transform.translation.y,
-							-2.5
-			}, viewerObject.transform.rotation);
+		camera.setViewYXZ({ gameObjects[playerGO.getId()].transform.translation.x -0.4f,
+							-0.75f ,
+							-3.5f
+			}, {
+			-0.3f,
+			viewerObject.transform.rotation.y,
+			viewerObject.transform.rotation.z
+			});
 
 		float aspect = lveRenderer.getAspectRatio();
 		
-		camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
-		//camera.setOrthographicProjection(-aspect, aspect, -1, 1, 0.1f, 10.f);
+		//camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+		camera.setOrthographicProjection(-aspect, aspect, -1, 1, 0.1f, 10.f);
 
 		//begin frame function will return a null ptr if the swap chain needs to be created
 		if (auto commandBuffer = lveRenderer.beginFrame()) {

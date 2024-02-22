@@ -6,6 +6,11 @@ namespace nrd {
 		moveSpeed(player->moveSpeedMax)
 	{
 	}
+	float NrdMovementController::floatDial(GLFWwindow* window, float value)
+	{
+		if (glfwGetKey(window, keys.vKey) == GLFW_PRESS) { return value += 0.5; }
+		if (glfwGetKey(window, keys.vKey) == GLFW_PRESS) { return value -= 0.5; }
+	}
 	void NrdMovementController::moveInPlaneXZ(GLFWwindow* window, float dt, lve::LveGameObject& player)
 	{
 		

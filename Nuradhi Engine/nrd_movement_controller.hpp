@@ -16,11 +16,13 @@ namespace nrd {
                 int moveBackward = GLFW_KEY_K;
                 int moveUp = GLFW_KEY_U;
                 int moveDown = GLFW_KEY_O;
+                int vKey = GLFW_KEY_V;
+                int spaceKey = GLFW_KEY_SPACE;
             };
 
         NrdPlayer* nrdPlayer;
 
-
+        float floatDial(GLFWwindow* window, float value);
         KeyMappings keys{};
         float moveSpeed{};
         void moveInPlaneXZ(GLFWwindow* window, float dt, lve::LveGameObject& player);

@@ -6,12 +6,12 @@ namespace nrd {
 
 		if (target != NULL) {
 			//great, we're following someone
-			//float targetX = target->x - lve::LveCamera.WIDTH / 2;
-			//float targetY = target->y - lve::LveCamera.HEIGHT / 2;
+			float targetX = target->x;
+			float targetY = target->y;
 
 			//MOVE TO TARGET POSITION - has a camera drag
-			//lve::LveCamera.transform += ((targetX)-Globals::camera.x) * lerp * TimeController::timeController.dT;
-			//Globals::camera.y += ((targetY)-Globals::camera.y) * lerp * TimeController::timeController.dT;
+			//transform.trnaslation += ((targetX)-Globals::camera.x) * lerp * TimeController::timeController.dT;
+			//camera.y += ((targetY)-Globals::camera.y) * lerp * TimeController::timeController.dT;
 			
 			//if you want the camera to be fixated on the hero
 			//Globals::camera.x = targetX;
