@@ -76,9 +76,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -95,9 +95,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,9 +114,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,9 +133,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\VulkanSDK\1.3.275.0\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,6 +158,7 @@
     <ClCompile Include="lve_pipeline.cpp" />
     <ClCompile Include="lve_renderer.cpp" />
     <ClCompile Include="lve_swap_chain.cpp" />
+    <ClCompile Include="lve_texture.cpp" />
     <ClCompile Include="lve_window.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="nrd_camera_controller.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="lve_pipeline.hpp" />
     <ClInclude Include="lve_renderer.hpp" />
     <ClInclude Include="lve_swap_chain.hpp" />
+    <ClInclude Include="lve_texture.hpp" />
     <ClInclude Include="lve_utils.hpp" />
     <ClInclude Include="lve_window.hpp" />
     <ClInclude Include="nrd_camera_controller.hpp" />

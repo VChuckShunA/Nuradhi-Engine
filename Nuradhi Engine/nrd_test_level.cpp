@@ -4,6 +4,7 @@
 #include "lve_camera.hpp"
 #include "keyboard_movement_controller.hpp"
 #include "lve_buffer.hpp"
+#include "lve_texture.hpp"
 #include "nrd_player.hpp"
 #include "nrd_movement_controller.hpp"
 #include <stdexcept>
@@ -20,6 +21,7 @@ nrd::TestLevel::TestLevel()
 	globalPool = lve::LveDescriptorPool::Builder(lveDevice)
 		.setMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
 		.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
 		.build();
 	loadGameObjects();
 }
@@ -43,13 +45,22 @@ void nrd::TestLevel::run()
 
 	auto globalSetLayout = lve::LveDescriptorSetLayout::Builder(lveDevice)
 		.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+		.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		.build();
+
+	lve::Texture texture = lve::Texture(lveDevice, "Images/Sprites/Blaze.png");
+
+	VkDescriptorImageInfo imageInfo = {};
+	imageInfo.sampler = texture.getSampler();
+	imageInfo.imageView = texture.getImageView();
+	imageInfo.imageLayout = texture.getImageLayout();
 
 	std::vector<VkDescriptorSet> globalDescriptorSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 	for (int i = 0; i < globalDescriptorSets.size(); i++) {
 		auto bufferInfo = uboBuffers[i]->descriptorInfo();
 		lve::LveDescriptorWriter(*globalSetLayout, *globalPool)
 			.writeBuffer(0, &bufferInfo)
+			.writeImage(1,&imageInfo)
 			.build(globalDescriptorSets[i]);
 	}
 

@@ -105,6 +105,9 @@
     <ClCompile Include="nrd_camera_controller.cpp">
       <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
+    <ClCompile Include="lve_texture.cpp">
+      <Filter>Source Files\Lve</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simple_render_system.hpp">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="nrd_camera_controller.hpp">
       <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="lve_texture.hpp">
+      <Filter>Header Files\Lve</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
