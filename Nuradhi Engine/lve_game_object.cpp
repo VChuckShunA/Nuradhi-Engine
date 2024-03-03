@@ -1,6 +1,12 @@
 #include "lve_game_object.hpp"
 
 namespace lve {
+	struct SimplePushConstantData {
+		glm::mat4 modelMatrix{ 1.f };
+		glm::mat4 normalMatrix{ 1.f };
+		//alignas(16) glm::vec3 colour; //*IMPORTANT!*
+		//using align as to account for how this info is Stored
+	};
 	glm::mat4 TransformComponent::mat4()
 	{
 		{
@@ -61,19 +67,44 @@ namespace lve {
 	}
 	
 	
-	LveGameObject LveGameObject::makePointLight(float intensity, float radius, glm::vec3 colour)
+	std::unique_ptr<LveGameObject> LveGameObject::makePointLight(float intensity, float radius, glm::vec3 colour)
 	{
-		LveGameObject gameObj = LveGameObject::createGameObject();
-		gameObj.colour = colour;
-		gameObj.transform.scale.x = radius;
-		gameObj.pointLight = std::make_unique<PointLightComponent>();
-		gameObj.pointLight->lightIntensity = intensity;
-		return gameObj;
+		LveGameObject* gameObj = new LveGameObject{};
+		gameObj->colour = colour;
+		gameObj->transform.scale.x = radius;
+		gameObj->pointLight = std::make_unique<PointLightComponent>();
+		gameObj->pointLight->lightIntensity = intensity;
+		return std::unique_ptr<LveGameObject>(gameObj);
 	}
 
 	//Nrd Implementation
 	LveGameObject::LveGameObject()
 	{
+		static id_t idCounter = 0;
+		id = idCounter++;
+	}
+
+	void LveGameObject::draw(FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout)
+	{
+		SimplePushConstantData push{};
+		push.modelMatrix = transform.mat4();
+		push.normalMatrix = transform.normalMatrix();
+
+		vkCmdPushConstants(
+			frameInfo.commandBuffer,
+			pipelineLayout,
+			VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+			0,
+			sizeof(SimplePushConstantData),
+			&push);
+
+
+		model->draw(frameInfo.commandBuffer);
+	}
+
+	void LveGameObject::bind(FrameInfo& frameInfo)
+	{
+		model->bind(frameInfo.commandBuffer);
 	}
 
 }

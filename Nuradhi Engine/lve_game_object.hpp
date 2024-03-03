@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lve_model.hpp"
-
+#include "lve_frame_info.hpp"
 //libs
 #include <glm/gtc/matrix_transform.hpp>
 //std
@@ -34,14 +34,11 @@ namespace lve {
 	class LveGameObject {
 	public:
 		using id_t = unsigned int;
-		using Map = std::unordered_map<id_t,LveGameObject>;//used to look up game objects using their ID
+		using Map = std::vector<std::unique_ptr<LveGameObject>>;//used to look up game objects using their ID
 
-		static LveGameObject createGameObject() {
-			static id_t currentId = 0;
-			return LveGameObject{currentId++};
-		}
+		
 
-		static LveGameObject makePointLight(
+		static std::unique_ptr<LveGameObject> makePointLight(
 			float intensity = 10.f, float radius = 0.1f, glm::vec3 colour = glm::vec3(1.f));
 
 		//delete copy constructor and assignment operator to avoid having duplicate game objects
@@ -51,7 +48,7 @@ namespace lve {
 		LveGameObject(LveGameObject&&) = default;
 		LveGameObject& operator=(LveGameObject&&) = default;
 
-		const id_t getId(){return id;}
+		id_t getId(){return id;}
 
 		glm::vec3 colour{};
 		TransformComponent transform{};
@@ -62,9 +59,15 @@ namespace lve {
 
 		//Nrd Implementation
 		LveGameObject();
+		size_t index = 0;
+
+		virtual void draw(FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout);
+		virtual void bind(FrameInfo& frameInfo);
 	private:
-		LveGameObject(id_t objId) : id{objId} {}
 
 		id_t id;
+
 	};
+
 }
+

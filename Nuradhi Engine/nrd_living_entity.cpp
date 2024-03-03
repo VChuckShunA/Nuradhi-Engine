@@ -12,9 +12,7 @@ namespace nrd {
 		}
 	}
 
-	void NrdLivingEntity::draw()
-	{
-	}
+	
 
 	NrdLivingEntity::NrdLivingEntity()
 	{

@@ -16,8 +16,7 @@
 
 
 namespace lve {
-	
-	
+	/*
 
 	FirstApp::FirstApp()
 	{
@@ -127,7 +126,7 @@ namespace lve {
 	}
 
 	
-
+	
 	void FirstApp::loadGameObjects()
 	{
 		std::shared_ptr<LveModel> lveModel = LveModel::createModelFromFile(lveDevice,"models/flat_vase.obj");
@@ -176,5 +175,6 @@ namespace lve {
 	}
 
 	
+	*/
 	
 }

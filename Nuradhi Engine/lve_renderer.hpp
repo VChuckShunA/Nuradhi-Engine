@@ -3,7 +3,7 @@
 #include "lve_device.hpp"
 #include "lve_swap_chain.hpp"
 #include "lve_window.hpp"
-
+#include "lve_frame_info.hpp"
 #include <memory>
 #include <vector>
 #include <cassert>
@@ -37,6 +37,7 @@ namespace lve {
 
 		void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
 		void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
+		void bindPipelineEssentials(VkCommandBuffer commandBuffer, lve::FrameInfo frameInfo);
 
 	private:
 		void createCommandBuffers();

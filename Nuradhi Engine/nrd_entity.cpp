@@ -12,9 +12,7 @@ namespace nrd {
 	{
 	}
 
-	void NrdEntity::draw()
-	{
-	}
+	
 
 	void NrdEntity::move(float angle)
 	{

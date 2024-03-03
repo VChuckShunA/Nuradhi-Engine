@@ -39,8 +39,6 @@ namespace nrd {
 
 		//VIRTUAL FUNCTIONS
 		virtual void update();
-		virtual void draw();
-
 		virtual void move(float angle);
 		virtual void updateMovement();
 		virtual void updateCollisionBox();

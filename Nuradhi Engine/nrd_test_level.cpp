@@ -5,8 +5,11 @@
 #include "keyboard_movement_controller.hpp"
 #include "lve_buffer.hpp"
 #include "lve_texture.hpp"
+#include "lve_pipeline.hpp"
 #include "nrd_player.hpp"
 #include "nrd_movement_controller.hpp"
+#include "nrd_debugLinePipeline.hpp"
+#include "nrd_debugLine.hpp"
 #include <stdexcept>
 #include <array>
 #include <chrono>
@@ -79,21 +82,33 @@ void nrd::TestLevel::run()
 	camera.setViewTarget(glm::vec3(-1.f, -2.f, -2.f), glm::vec3(0.f, 0.f, 2.5f)); //corresponds to the centre of the cube
 	//camera.setViewTarget(glm::vec3(-1.f, -2.f, -20.f), glm::vec3(0.f, 0.f, 2.5f)); //Set the far plane to higher valeue not to be clipped at camera projection
 
-	auto viewerObject = lve::LveGameObject::createGameObject();
+	lve::LveGameObject viewerObject {};
 	viewerObject.transform.translation.z = -13.5f;//camera position
 	lve::KeyboardMovementController cameraController{};
 	//creating the player Instance
 
-	nrd::NrdPlayer playerInstance;
+
+	nrd::NrdDebugLine::Builder debugLineBuilder{};
+	// Set up vertices for a line, you may need to adjust these coordinates
+	debugLineBuilder.vertices.push_back({ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
+	debugLineBuilder.vertices.push_back({ { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {}, {} });
+	debugLineBuilder.vertices.push_back({ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
+	nrd::NrdDebugLine debugLine{ lveDevice, debugLineBuilder };
 
 	// Creating the player's game object
 	std::shared_ptr<lve::LveModel> playerModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
-	auto playerGO = playerInstance.createGameObject();
-	playerGO.model = playerModel;
-	playerGO.transform.translation = { -.5f,-.3f,0.f };
-	playerGO.transform.scale = { .5f,.5f,.5f };
-	playerGO.transform.rotation = { 1.5708f,0.f,0.f };
-	gameObjects.emplace(playerGO.getId(), std::move(playerGO));
+	NrdPlayer* playerGO = new NrdPlayer(debugLine);
+	playerGO->index = gameObjects.size();
+	playerGO->model = playerModel;
+	playerGO->transform.translation = { -.5f,-.3f,0.f };
+	playerGO->transform.scale = { .5f,.5f,.5f };
+	playerGO->transform.rotation = { 1.5708f,0.f,0.f };
+	gameObjects.emplace_back(playerGO);
+	
+
+	
+	
+
 
 
 	auto currentTime = std::chrono::high_resolution_clock::now();
@@ -109,14 +124,13 @@ void nrd::TestLevel::run()
 
 		
 		//Player Controller
-		nrd::NrdMovementController playerController(&playerInstance);
-		playerController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, gameObjects[playerGO.getId()]);
+		nrd::NrdMovementController playerController(playerGO);
+		playerController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, gameObjects[playerGO->index].get());
 
-		camera.setViewYXZ({ gameObjects[playerGO.getId()].transform.translation.x -0.4f,
+		camera.setViewYXZ({ gameObjects[playerGO->index].get()->transform.translation.x -0.4f,
 							-0.75f ,
-							-3.5f
-			}, {
-			-0.3f,
+							-3.5f}, 
+							{-0.3f,
 			viewerObject.transform.rotation.y,
 			viewerObject.transform.rotation.z
 			});
@@ -127,7 +141,9 @@ void nrd::TestLevel::run()
 		camera.setOrthographicProjection(-aspect, aspect, -1, 1, 0.1f, 10.f);
 
 		//begin frame function will return a null ptr if the swap chain needs to be created
-		if (auto commandBuffer = lveRenderer.beginFrame()) {
+			auto commandBuffer = lveRenderer.beginFrame();
+			if (!commandBuffer) continue;
+			lveRenderer.beginSwapChainRenderPass(commandBuffer);
 			int frameIndex = lveRenderer.getFrameIndex();
 			lve::FrameInfo frameInfo{
 				frameIndex,
@@ -137,6 +153,11 @@ void nrd::TestLevel::run()
 				globalDescriptorSets[frameIndex],
 				gameObjects
 			};
+
+
+			simpleRenderSystem.getlvePipelinePtr()->bind(commandBuffer);
+			lveRenderer.bindPipelineEssentials(commandBuffer, frameInfo);
+			simpleRenderSystem.bindDescriptorSets(frameInfo);
 			//update
 			lve::GlobalUbo ubo{};
 			ubo.projection = camera.getProjection();
@@ -146,16 +167,22 @@ void nrd::TestLevel::run()
 			uboBuffers[frameIndex]->writeToBuffer(&ubo);
 			uboBuffers[frameIndex]->flush();
 
-			//render
-			lveRenderer.beginSwapChainRenderPass(commandBuffer);
 
 			//order here matters
 			simpleRenderSystem.renderGameObects(frameInfo);
 			pointLightSystem.render(frameInfo);
 
+			nrd::NrdDebugLinePipeline* debugPipelinePtr = simpleRenderSystem.getDebugPipelinePtr();
+			debugPipelinePtr->bind(commandBuffer);
+			lveRenderer.bindPipelineEssentials(commandBuffer, frameInfo);
+			simpleRenderSystem.bindDescriptorSets(frameInfo);
+			//render
+			// Update and render the debug line
+			debugLine.draw(commandBuffer);
+			simpleRenderSystem.renderGameObects(frameInfo);
 			lveRenderer.endSwapChainRenderPass(commandBuffer);
 			lveRenderer.endFrame();
-		}
+		
 	}
 	//The CPU will block until all GPU operations are completed
 	vkDeviceWaitIdle(lveDevice.device());
@@ -165,25 +192,28 @@ void nrd::TestLevel::loadGameObjects()
 {
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::shared_ptr<lve::LveModel> lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
-	auto flatVase = lve::LveGameObject::createGameObject();
-	flatVase.model = lveModel;
-	flatVase.transform.translation = { -.5f,.5f,0.f };
-	flatVase.transform.scale = { 3.f,1.5f,3.f };
-	gameObjects.emplace(flatVase.getId(), std::move(flatVase));
+	lve::LveGameObject* flatVase= new lve::LveGameObject{};
+	flatVase->index = gameObjects.size();
+	flatVase->model = lveModel;
+	flatVase->transform.translation = { -.5f,.5f,0.f };
+	flatVase->transform.scale = { 3.f,1.5f,3.f };
+	gameObjects.emplace_back(flatVase);
 
 	lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/smooth_vase.obj");
-	auto smoothVase = lve::LveGameObject::createGameObject();
-	smoothVase.model = lveModel;
-	smoothVase.transform.translation = { .5f,.5f,0.f };
-	smoothVase.transform.scale = { 3.f,1.5f,3.f };
-	gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
+	lve::LveGameObject* smoothVase = new lve::LveGameObject{};
+	smoothVase->index = gameObjects.size();
+	smoothVase->model = lveModel;
+	smoothVase->transform.translation = { .5f,.5f,0.f };
+	smoothVase->transform.scale = { 3.f,1.5f,3.f };
+	gameObjects.emplace_back(smoothVase);
 
 	lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
-	auto floor = lve::LveGameObject::createGameObject();
-	floor.model = lveModel;
-	floor.transform.translation = { 0.f,0.5f,0.f };
-	floor.transform.scale = { 3.f,1.f,3.f };
-	gameObjects.emplace(floor.getId(), std::move(floor));
+	lve::LveGameObject* floor= new lve::LveGameObject{};
+	floor->index = gameObjects.size();
+	floor->model = lveModel;
+	floor->transform.translation = { 0.f,0.5f,0.f };
+	floor->transform.scale = { 3.f,1.f,3.f };
+	gameObjects.emplace_back(floor);
 
 	
 	
@@ -203,11 +233,12 @@ void nrd::TestLevel::loadGameObjects()
 	};
 	for (int i = 0; i < lightColours.size(); i++) {
 		auto pointLight = lve::LveGameObject::makePointLight(0.2f);
-		pointLight.colour = lightColours[i];
+		pointLight->colour = lightColours[i];
+		pointLight->index = gameObjects.size();
 		auto rotateLight = glm::rotate(glm::mat4(1.f), (i * glm::two_pi<float>()) / lightColours.size(),
 			{ 0.f,-1.f,0.f });
-		pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
-		gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+		pointLight->transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+		gameObjects.emplace_back(std::move(pointLight));
 
 	}
 }

@@ -75,17 +75,16 @@ namespace lve {
 		
 
 		int lightIndex = 0;
-		for (auto& kv : frameInfo.gameObjects) {
-			auto& obj = kv.second;
-			if (obj.pointLight == nullptr) continue;
+		for (auto& obj : frameInfo.gameObjects) {
+			if (obj->pointLight == nullptr) continue;
 
 			assert(lightIndex < MAX_LIGHTS && "Point lights exceed maximum specified");
 
 			//update light position;
-			obj.transform.translation = glm::vec3(rotateLight * glm::vec4(obj.transform.translation, 1.f));
+			obj->transform.translation = glm::vec3(rotateLight * glm::vec4(obj->transform.translation, 1.f));
 			//copy light to ubo
-			ubo.pointLight[lightIndex].position = glm::vec4(obj.transform.translation, 1.f);
-			ubo.pointLight[lightIndex].colour = glm::vec4(obj.colour, obj.pointLight->lightIntensity);
+			ubo.pointLight[lightIndex].position = glm::vec4(obj->transform.translation, 1.f);
+			ubo.pointLight[lightIndex].colour = glm::vec4(obj->colour, obj->pointLight->lightIntensity);
 
 			lightIndex += 1;
 		}
@@ -97,14 +96,13 @@ namespace lve {
 	{
 		//sort lights
 		std::map<float, LveGameObject::id_t> sorted;
-		for (auto& kv : frameInfo.gameObjects) {
-			auto& obj = kv.second;
-			if (obj.pointLight == nullptr) continue;
+		for (auto& obj : frameInfo.gameObjects) {
+			if (obj->pointLight == nullptr) continue;
 
 			//calculate distance
-			auto offset = frameInfo.camera.getPosition()-obj.transform.translation;
+			auto offset = frameInfo.camera.getPosition()-obj->transform.translation;
 			float disSquared = glm::dot(offset, offset);
-			sorted[disSquared] = obj.getId();
+			sorted[disSquared] = obj->getId();
 		}
 
 		lvePipeline->bind(frameInfo.commandBuffer);
@@ -125,9 +123,9 @@ namespace lve {
 			auto& obj = frameInfo.gameObjects.at(it->second);
 
 			PointLightPushConstants push{};
-			push.position= glm::vec4(obj.transform.translation, 1.f);
-			push.colour= glm::vec4(obj.colour, obj.pointLight->lightIntensity);
-			push.radius = obj.transform.scale.x;
+			push.position= glm::vec4(obj->transform.translation, 1.f);
+			push.colour= glm::vec4(obj->colour, obj->pointLight->lightIntensity);
+			push.radius = obj->transform.scale.x;
 
 			vkCmdPushConstants(
 				frameInfo.commandBuffer,

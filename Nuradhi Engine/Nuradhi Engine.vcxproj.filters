@@ -108,6 +108,12 @@
     <ClCompile Include="lve_texture.cpp">
       <Filter>Source Files\Lve</Filter>
     </ClCompile>
+    <ClCompile Include="nrd_debugLinePipeline.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_debugLine.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simple_render_system.hpp">
@@ -188,6 +194,12 @@
     <ClInclude Include="lve_texture.hpp">
       <Filter>Header Files\Lve</Filter>
     </ClInclude>
+    <ClInclude Include="nrd_debugLinePipeline.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_debugLine.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="simple_shader.vert">
@@ -201,6 +213,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="point_light.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="green_shader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="green_shader.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

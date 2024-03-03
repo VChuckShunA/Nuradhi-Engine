@@ -4,7 +4,7 @@
 namespace nrd {
 	class NrdPlayer :public nrd::NrdLivingEntity {
 
-	public:
+		public:
 		//reference variabls
 		static const std::string HERO_ANIM_UP;
 		static const std::string HERO_ANIM_DOWN;
@@ -31,7 +31,8 @@ namespace nrd {
 		static const int HERO_STATE_DEAD;
 
 		//NrdPlayer(AnimationSet* animSet);
-		NrdPlayer();//Temporary Constructor
+		NrdPlayer(nrd::NrdDebugLine& debugline);//Temporary Constructor
+		virtual void draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout) override;
 		void update();
 		void slash();
 		void dash();
@@ -40,5 +41,8 @@ namespace nrd {
 		void changeAnimation(int newState, bool resetFrameToBegining);
 		void updateAnimation();
 		void updateDamage();
+
+		private:
+			nrd::NrdDebugLine debugline;
 	};
 }

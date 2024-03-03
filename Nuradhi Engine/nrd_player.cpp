@@ -1,4 +1,5 @@
 #include "nrd_player.hpp"
+#include "nrd_debugLine.hpp"
 const std::string nrd::NrdPlayer::HERO_ANIM_UP = "up";
 const std::string nrd::NrdPlayer::HERO_ANIM_DOWN = "down";
 const std::string nrd::NrdPlayer::HERO_ANIM_LEFT = "left";
@@ -24,8 +25,9 @@ const int nrd::NrdPlayer::HERO_STATE_DASH = 3;
 const int nrd::NrdPlayer::HERO_STATE_DEAD = 4;
 
 namespace nrd {
-	NrdPlayer::NrdPlayer()
-	{
+	NrdPlayer::NrdPlayer(nrd::NrdDebugLine& debugline) :
+		debugline(debugline)
+		{
 		moveSpeed = 0;
 		moveSpeedMax = 4.0f;
 		hp = hpMax = 20;
@@ -33,6 +35,16 @@ namespace nrd {
 
 
 		direction = DIR_DOWN;
+
+
+		}
+	void NrdPlayer::draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout)
+	{
+		lve::LveGameObject::draw(frameInfo, pipelineLayout);
+		//draw debug lines here
+		debugline.bind();
+		debugline.draw();
+
 	}
 	void NrdPlayer::update()
 	{
@@ -81,6 +93,5 @@ namespace nrd {
 	void NrdPlayer::updateDamage()
 	{
 	}
-
 
 }

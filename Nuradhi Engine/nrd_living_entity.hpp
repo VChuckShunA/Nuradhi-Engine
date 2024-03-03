@@ -5,6 +5,7 @@ namespace nrd {
 	class NrdLivingEntity : public nrd::NrdEntity {
 
 	public:
+
 		int hp, hpMax;
 		int damage = 0;
 		//SDL_Rect hitBox;//similar to collisionBox, but describes damaging area
@@ -17,7 +18,7 @@ namespace nrd {
 		virtual void updateInvincibleTimer();
 		virtual void hitLanded(NrdLivingEntity* entity) { ; }
 
-		void draw(); //overriding entities draw
+		
 		NrdLivingEntity();
 	};
 

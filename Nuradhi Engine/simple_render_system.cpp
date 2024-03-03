@@ -1,4 +1,5 @@
 #include "simple_render_system.hpp"
+#include "nrd_debugLinePipeline.hpp"
 #include <stdexcept>
 #include <array>
 //libs
@@ -8,12 +9,7 @@
 #include <glm/gtc/constants.hpp>
 
 namespace lve {
-	struct SimplePushConstantData {
-		glm::mat4 modelMatrix{ 1.f };
-		glm::mat4 normalMatrix{ 1.f };
-		//alignas(16) glm::vec3 colour; //*IMPORTANT!*
-		//using align as to account for how this info is Stored
-	};
+	
 	SimpleRenderSystem::SimpleRenderSystem(LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout):
 		lveDevice{device}
 	{
@@ -58,16 +54,24 @@ namespace lve {
 			"simple_shader.frag.spv",
 			pipelineConfig
 		);
+
+		// Create NrdDebugLinePipeline and NrdDebugLine objects
+		nrd::NrdDebugLinePipelineConfigInfo debugPipeLineConfigInfo = {};
+		nrd::NrdDebugLinePipeline::defaultPipelineConfigInfo(debugPipeLineConfigInfo);
+
+		debugPipeLineConfigInfo.renderPass = renderPass;
+		debugPipeLineConfigInfo.rasterizationInfo.lineWidth = 5;
+		debugPipeLineConfigInfo.pipelineLayout = pipelineLayout;
+		nrdDebugLinePipeline = std::make_unique <nrd::NrdDebugLinePipeline> ( lveDevice, "green_shader.vert.spv", "green_shader.frag.spv", debugPipeLineConfigInfo );
+		//nrdDebugLinePipeline = make_unique<nrd::NrdDebugLinePipeline>(...(constructor args)...);
+		
 	}
 
 
 
 
-	void SimpleRenderSystem::renderGameObects(
-		FrameInfo & frameInfo)
+	void SimpleRenderSystem::bindDescriptorSets(FrameInfo& frameInfo)
 	{
-		lvePipeline->bind(frameInfo.commandBuffer);
-
 		vkCmdBindDescriptorSets(
 			frameInfo.commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -77,27 +81,23 @@ namespace lve {
 			&frameInfo.globalDescriptorSet,
 			0,
 			nullptr);
+	}
+
+	void SimpleRenderSystem::renderGameObects(
+		FrameInfo & frameInfo)
+	{
+		//lvePipeline->bind(frameInfo.commandBuffer);
+
 
 		//update
-		for (auto& kv : frameInfo.gameObjects) {
-			auto& obj = kv.second;
-			if (obj.model == nullptr) continue;//IF THE GameObject doesn't have a model
-			//obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.0001f, glm::two_pi<float>());
-			//obj.transform.rotation.x = glm::mod(obj.transform.rotation.x + 0.0001f, glm::two_pi<float>());
+		for (auto& obj : frameInfo.gameObjects) {
+			if (obj->model == nullptr) continue;//IF THE Gameobj->ct doesn't have a model
+			//obj->transform.rotation.y = glm::mod(obj->transform.rotation.y + 0.0001f, glm::two_pi<float>());
+			//obj->transform.rotation.x = glm::mod(obj->transform.rotation.x + 0.0001f, glm::two_pi<float>());
 
-			SimplePushConstantData push{};
-			push.modelMatrix = obj.transform.mat4();
-			push.normalMatrix = obj.transform.normalMatrix();
-
-			vkCmdPushConstants(
-				frameInfo.commandBuffer,
-				pipelineLayout,
-				VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-				0,
-				sizeof(SimplePushConstantData),
-				&push);
-			obj.model->bind(frameInfo.commandBuffer);
-			obj.model->draw(frameInfo.commandBuffer);
+			
+			obj->bind(frameInfo);
+			obj->draw(frameInfo, pipelineLayout);
 		}
 	}
 }

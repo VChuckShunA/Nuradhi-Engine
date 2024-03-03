@@ -25,6 +25,6 @@ namespace nrd {
         float floatDial(GLFWwindow* window, float value);
         KeyMappings keys{};
         float moveSpeed{};
-        void moveInPlaneXZ(GLFWwindow* window, float dt, lve::LveGameObject& player);
+        void moveInPlaneXZ(GLFWwindow* window, float dt, lve::LveGameObject* player);
     };
 }
