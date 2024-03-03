@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lve_model.hpp"
-#include "lve_frame_info.hpp"
 //libs
 #include <glm/gtc/matrix_transform.hpp>
 //std
@@ -10,6 +9,7 @@
 
 namespace lve {
 
+	struct FrameInfo;
 	struct TransformComponent
 	{
 		glm::vec3 translation{}; //(position offset)

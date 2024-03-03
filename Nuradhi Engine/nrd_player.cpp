@@ -1,5 +1,6 @@
 #include "nrd_player.hpp"
 #include "nrd_debugLine.hpp"
+#include "lve_frame_info.hpp"
 const std::string nrd::NrdPlayer::HERO_ANIM_UP = "up";
 const std::string nrd::NrdPlayer::HERO_ANIM_DOWN = "down";
 const std::string nrd::NrdPlayer::HERO_ANIM_LEFT = "left";
@@ -25,8 +26,7 @@ const int nrd::NrdPlayer::HERO_STATE_DASH = 3;
 const int nrd::NrdPlayer::HERO_STATE_DEAD = 4;
 
 namespace nrd {
-	NrdPlayer::NrdPlayer(nrd::NrdDebugLine& debugline) :
-		debugline(debugline)
+	NrdPlayer::NrdPlayer(lve::LveDevice& lveDevice)
 		{
 		moveSpeed = 0;
 		moveSpeedMax = 4.0f;
@@ -36,14 +36,20 @@ namespace nrd {
 
 		direction = DIR_DOWN;
 
+		nrd::NrdDebugLine::Builder debugLineBuilder{};
+		// Set up vertices for a line, you may need to adjust these coordinates
+		debugLineBuilder.vertices.push_back({ { -1.5f, -1.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
+		debugLineBuilder.vertices.push_back({ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {}, {} });
+		debugLineBuilder.vertices.push_back({ { -1.5f, -1.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
+		debugline = std::make_unique<NrdDebugLine>(lveDevice, debugLineBuilder);
 
 		}
 	void NrdPlayer::draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout)
 	{
 		lve::LveGameObject::draw(frameInfo, pipelineLayout);
 		//draw debug lines here
-		debugline.bind();
-		debugline.draw();
+		debugline->bind(frameInfo.commandBuffer);
+		debugline->draw(frameInfo.commandBuffer);
 
 	}
 	void NrdPlayer::update()

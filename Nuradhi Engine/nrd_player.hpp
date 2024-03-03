@@ -1,6 +1,7 @@
 #pragma once
 #include "nrd_living_entity.hpp"
 #include "nrd_movement_controller.hpp"
+#include "nrd_debugLine.hpp"
 namespace nrd {
 	class NrdPlayer :public nrd::NrdLivingEntity {
 
@@ -31,7 +32,7 @@ namespace nrd {
 		static const int HERO_STATE_DEAD;
 
 		//NrdPlayer(AnimationSet* animSet);
-		NrdPlayer(nrd::NrdDebugLine& debugline);//Temporary Constructor
+		NrdPlayer(lve::LveDevice& lveDevice);//Temporary Constructor
 		virtual void draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout) override;
 		void update();
 		void slash();
@@ -41,8 +42,8 @@ namespace nrd {
 		void changeAnimation(int newState, bool resetFrameToBegining);
 		void updateAnimation();
 		void updateDamage();
-
+		void destroyDebugLine() { debugline = nullptr; }
 		private:
-			nrd::NrdDebugLine debugline;
+			std::unique_ptr<nrd::NrdDebugLine> debugline=nullptr;
 	};
 }

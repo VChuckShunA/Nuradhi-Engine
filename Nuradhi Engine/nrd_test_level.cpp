@@ -88,16 +88,11 @@ void nrd::TestLevel::run()
 	//creating the player Instance
 
 
-	nrd::NrdDebugLine::Builder debugLineBuilder{};
-	// Set up vertices for a line, you may need to adjust these coordinates
-	debugLineBuilder.vertices.push_back({ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-	debugLineBuilder.vertices.push_back({ { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {}, {} });
-	debugLineBuilder.vertices.push_back({ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-	nrd::NrdDebugLine debugLine{ lveDevice, debugLineBuilder };
+	
 
 	// Creating the player's game object
 	std::shared_ptr<lve::LveModel> playerModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
-	NrdPlayer* playerGO = new NrdPlayer(debugLine);
+	NrdPlayer* playerGO = new NrdPlayer(lveDevice);
 	playerGO->index = gameObjects.size();
 	playerGO->model = playerModel;
 	playerGO->transform.translation = { -.5f,-.3f,0.f };
@@ -178,7 +173,6 @@ void nrd::TestLevel::run()
 			simpleRenderSystem.bindDescriptorSets(frameInfo);
 			//render
 			// Update and render the debug line
-			debugLine.draw(commandBuffer);
 			simpleRenderSystem.renderGameObects(frameInfo);
 			lveRenderer.endSwapChainRenderPass(commandBuffer);
 			lveRenderer.endFrame();
@@ -186,6 +180,7 @@ void nrd::TestLevel::run()
 	}
 	//The CPU will block until all GPU operations are completed
 	vkDeviceWaitIdle(lveDevice.device());
+	playerGO->destroyDebugLine();
 }
 
 void nrd::TestLevel::loadGameObjects()
