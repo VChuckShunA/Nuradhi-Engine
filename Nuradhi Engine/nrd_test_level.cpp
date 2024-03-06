@@ -181,6 +181,7 @@ void nrd::TestLevel::run()
 	//The CPU will block until all GPU operations are completed
 	vkDeviceWaitIdle(lveDevice.device());
 	playerGO->destroyDebugLine();
+	playerGO->collider.destroyDebugLine();
 }
 
 void nrd::TestLevel::loadGameObjects()

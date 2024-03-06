@@ -114,6 +114,9 @@
     <ClCompile Include="nrd_debugLine.cpp">
       <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
+    <ClCompile Include="nrd_sweptAABB.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simple_render_system.hpp">
@@ -198,6 +201,9 @@
       <Filter>Header Files\Nuradhi</Filter>
     </ClInclude>
     <ClInclude Include="nrd_debugLine.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_sweptAABB.hpp">
       <Filter>Header Files\Nuradhi</Filter>
     </ClInclude>
   </ItemGroup>

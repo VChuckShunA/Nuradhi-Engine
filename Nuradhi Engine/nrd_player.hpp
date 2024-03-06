@@ -2,10 +2,12 @@
 #include "nrd_living_entity.hpp"
 #include "nrd_movement_controller.hpp"
 #include "nrd_debugLine.hpp"
+#include "nrd_sweptAABB.hpp"
 namespace nrd {
 	class NrdPlayer :public nrd::NrdLivingEntity {
 
-		public:
+	public:
+		nrd::NrdSweptAABB collider;
 		//reference variabls
 		static const std::string HERO_ANIM_UP;
 		static const std::string HERO_ANIM_DOWN;
@@ -30,7 +32,7 @@ namespace nrd {
 		static const int HERO_STATE_SLASH;
 		static const int HERO_STATE_DASH;
 		static const int HERO_STATE_DEAD;
-
+		//Collision
 		//NrdPlayer(AnimationSet* animSet);
 		NrdPlayer(lve::LveDevice& lveDevice);//Temporary Constructor
 		virtual void draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout) override;
