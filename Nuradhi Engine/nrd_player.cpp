@@ -1,6 +1,7 @@
 #include "nrd_player.hpp"
 #include "nrd_debugLine.hpp"
 #include "lve_frame_info.hpp"
+#include <glm/gtx/string_cast.hpp>
 const std::string nrd::NrdPlayer::HERO_ANIM_UP = "up";
 const std::string nrd::NrdPlayer::HERO_ANIM_DOWN = "down";
 const std::string nrd::NrdPlayer::HERO_ANIM_LEFT = "left";
@@ -36,63 +37,9 @@ namespace nrd {
 		direction = DIR_DOWN;
 
 		//nrd::NrdSweptAABB collider(lveDevice);
-		nrd::NrdDebugLine::Builder debugLineBuilder{};
 		nrd::NrdDebugLine::Builder colliderLineBuilder{};
 		colliderLineBuilder= collider.getCollider() ;
-		// Set up vertices for a line, you may need to adjust these coordinates
-		//bottom
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-
-
-		//Top
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-
-		//connecting lines
-
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		//line
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { -1.0f, 1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f }, {}, {} });
-
+	
 		debugline = std::make_unique<NrdDebugLine>(lveDevice, colliderLineBuilder);
 
 		}
@@ -102,7 +49,12 @@ namespace nrd {
 		//draw debug lines here
 		debugline->bind(frameInfo.commandBuffer);
 		debugline->draw(frameInfo.commandBuffer);
-
+		std::cout << "x min : " << this->transform.translation.x + collider.xMin << "\n";
+		std::cout << "x max : " << this->transform.translation.x + collider.xMax << "\n";
+		std::cout << "y min : " << this->transform.translation.y + collider.yMin << "\n";
+		std::cout << "y max : " << this->transform.translation.y + collider.yMax << "\n";
+		std::cout << "z min : " << this->transform.translation.z + collider.zMin << "\n";
+		std::cout << "z max : " << this->transform.translation.z + collider.zMax << "\n";
 
 	}
 	void NrdPlayer::update()

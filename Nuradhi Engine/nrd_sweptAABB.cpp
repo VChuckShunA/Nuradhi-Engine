@@ -4,11 +4,6 @@
 namespace nrd {
 	NrdSweptAABB::NrdSweptAABB(lve::LveDevice& lveDevice)
 	{
-		glm::vec3 point1={ 8.5f, 2.5f, 0.0f };
-		glm::vec3 point2 = { 1.0f, 0.0f, 0.0f };
-		debugLineBuilder.vertices.push_back({ { point1 }, { point2 }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {}, {} });
-		debugLineBuilder.vertices.push_back({ { point1 }, { point2 }, {}, {} });
 		colliderBox = std::make_unique<NrdDebugLine>(lveDevice, debugLineBuilder);
 
 		//draw debug lines here
@@ -22,7 +17,8 @@ namespace nrd {
 		float zb1, float zb2, float zb3, float zb4):
 		x1(x1),x2(x2),x3(x3),x4(x4),
 		y1(y1),y2(y2),y3(y3),y4(y4), 
-		zf1(zf1), zf2(zf2), zf3(zf3),zf4(zf4), zb1(zb1), zb2(zb2), zb3(zb3), zb4(zb4)
+		zf1(zf1), zf2(zf2), zf3(zf3),zf4(zf4), zb1(zb1), zb2(zb2), zb3(zb3), zb4(zb4),
+		xMin(x1),xMax(x4),yMin(y1),yMax(y4),zMin(zb1),zMax(zb2)
 	{
 		createPoint(x1, y1, zf1, pointBFL);
 		createPoint(x2, y2, zf2, pointTFL);
@@ -67,7 +63,6 @@ namespace nrd {
 	}
 	void NrdSweptAABB::createLine(glm::vec3& point1, glm::vec3& point2)
 	{
-		std::cout << glm::to_string(point1) << " " << glm::to_string(point2)<< "\n";
 		debugLineBuilder.vertices.push_back({ point1, { 1.0f, 0.0f, 0.0f }, {}, {} });
 		debugLineBuilder.vertices.push_back({ point2, { 1.0f, 0.0f, 0.0f }, {}, {} });
 		debugLineBuilder.vertices.push_back({ point1, { 1.0f, 0.0f, 0.0f }, {}, {} });

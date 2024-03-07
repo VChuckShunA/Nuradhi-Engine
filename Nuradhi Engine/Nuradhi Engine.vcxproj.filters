@@ -117,6 +117,9 @@
     <ClCompile Include="nrd_sweptAABB.cpp">
       <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
+    <ClCompile Include="nrd_solidObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simple_render_system.hpp">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="nrd_sweptAABB.hpp">
       <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_solidObject.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

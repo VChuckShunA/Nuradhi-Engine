@@ -10,10 +10,12 @@
 #include "nrd_movement_controller.hpp"
 #include "nrd_debugLinePipeline.hpp"
 #include "nrd_debugLine.hpp"
+#include "nrd_solidObject.hpp"
 #include <stdexcept>
 #include <array>
 #include <chrono>
 #include <cassert>
+#include <glm/gtx/string_cast.hpp>
 //libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -95,13 +97,19 @@ void nrd::TestLevel::run()
 	NrdPlayer* playerGO = new NrdPlayer(lveDevice);
 	playerGO->index = gameObjects.size();
 	playerGO->model = playerModel;
-	playerGO->transform.translation = { -.5f,-.3f,0.f };
+	playerGO->transform.translation = { -.5f,0.f,0.f };
 	playerGO->transform.scale = { .5f,.5f,.5f };
 	playerGO->transform.rotation = { 1.5708f,0.f,0.f };
 	gameObjects.emplace_back(playerGO);
 	
-
-	
+	//Flat vase GameObject
+	std::shared_ptr<lve::LveModel> flatVaseModel = lve::LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
+	NrdSolidObject* flatVaseGo= new NrdSolidObject(lveDevice);
+	flatVaseGo->index = gameObjects.size();
+	flatVaseGo->model = flatVaseModel;
+	flatVaseGo->transform.translation = { 2.f,.5f,0.f };
+	flatVaseGo->transform.scale ={ 1.f,1.0f,1.f };
+	gameObjects.emplace_back(flatVaseGo);
 	
 
 
@@ -114,7 +122,7 @@ void nrd::TestLevel::run()
 		auto newTime = std::chrono::high_resolution_clock::now();
 		float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
-		cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject);
+		cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject,gameObjects);
 		//camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
 		
@@ -129,7 +137,7 @@ void nrd::TestLevel::run()
 			viewerObject.transform.rotation.y,
 			viewerObject.transform.rotation.z
 			});
-
+		//std::cout << glm::to_string(playerGO->transform.translation)<<"\n";
 		float aspect = lveRenderer.getAspectRatio();
 		
 		//camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);

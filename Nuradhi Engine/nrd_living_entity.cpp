@@ -2,7 +2,7 @@
 
 namespace nrd {
 
-	void NrdLivingEntity::updateHitBox()
+	/*void NrdLivingEntity::updateHitBox()
 	{
 	}
 
@@ -11,7 +11,7 @@ namespace nrd {
 			invincibleTimer -= nrd::NrdTimeController::nrdTimeController.dT;
 		}
 	}
-
+	*/
 	
 
 	NrdLivingEntity::NrdLivingEntity()

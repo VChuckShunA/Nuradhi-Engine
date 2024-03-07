@@ -12,6 +12,7 @@ namespace nrd {
 	class NrdDebugLine;
 	class NrdSweptAABB {
 	public:
+		float xMin, xMax, yMin, yMax, zMin, zMax;
 		float x1, x2, x3, x4;
 		float y1, y2, y3, y4;
 		float zf1, zf2, zf3, zf4, zb1, zb2, zb3, zb4; 

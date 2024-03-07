@@ -43,7 +43,7 @@ namespace nrd {
 		virtual void updateMovement();
 		virtual void updateCollisionBox();
 
-		virtual void changeAnimation(int newState, bool resetFrameToBegining) = 0; //abstract function
+		//virtual void changeAnimation(int newState, bool resetFrameToBegining) = 0; //abstract function
 		virtual void updateCollisions(); //how we bump into stuff in the world
 		virtual void crashOntoSolid() { ; }//if dieonSolids is true, then this function will deal with dying
 

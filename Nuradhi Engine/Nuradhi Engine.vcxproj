@@ -170,6 +170,7 @@
     <ClCompile Include="nrd_movement_controller.cpp" />
     <ClCompile Include="nrd_player.cpp" />
     <ClCompile Include="nrd_random_number.cpp" />
+    <ClCompile Include="nrd_solidObject.cpp" />
     <ClCompile Include="nrd_sweptAABB.cpp" />
     <ClCompile Include="nrd_test_level.cpp" />
     <ClCompile Include="nrd_time_controller.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="nrd_movement_controller.hpp" />
     <ClInclude Include="nrd_player.hpp" />
     <ClInclude Include="nrd_random_number.hpp" />
+    <ClInclude Include="nrd_solidObject.hpp" />
     <ClInclude Include="nrd_sweptAABB.hpp" />
     <ClInclude Include="nrd_test_level.hpp" />
     <ClInclude Include="nrd_time_controller.hpp" />

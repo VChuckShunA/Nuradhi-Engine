@@ -25,7 +25,7 @@ namespace nrd {
 		if (direction != newDirection)
 		{
 			direction = newDirection;
-			changeAnimation(state, false);
+			//changeAnimation(state, false);
 		}
 	}
 

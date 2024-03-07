@@ -1,7 +1,8 @@
 #include "keyboard_movement_controller.hpp"
-
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 namespace lve {
-	void KeyboardMovementController::moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject)
+	void KeyboardMovementController::moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject, lve::LveGameObject::Map& gameObjects)
 	{
 		glm::vec3 rotate{ 0 };
 		if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotate.y += 1.f;
@@ -33,9 +34,19 @@ namespace lve {
 		if (glfwGetKey(window, keys.moveDown) == GLFW_PRESS) moveDir -= upDir;
 
 
+		
 		//only normalize moveDir if it's NOT ZERO
 		if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) {
 			gameObject.transform.translation += moveSpeed * dt * glm::normalize(moveDir);
 		}
+
+		LveGameObject& playerObject = *gameObjects[gameObject.index].get();
+		// Use playerObject here as needed
+		//printCordinates(gameObjects[gameObject.index]);
+	}
+	void KeyboardMovementController::printCordinates(std::shared_ptr<LveGameObject> gameObject)
+	{
+		glm::vec3 globalPosition = gameObject->transform.translation;
+		std::cout << glm::to_string(globalPosition) << "\n";
 	}
 }
