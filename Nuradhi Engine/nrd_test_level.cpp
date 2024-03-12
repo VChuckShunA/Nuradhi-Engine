@@ -137,7 +137,10 @@ void nrd::TestLevel::run()
 			viewerObject.transform.rotation.y,
 			viewerObject.transform.rotation.z
 			});
-		//std::cout << glm::to_string(playerGO->transform.translation)<<"\n";
+		//std::cout << "distance to vase : "<<playerGO->distanceBetweenTwoEntities(playerGO, flatVaseGo) << "\n";
+		
+		//std::cout << std::to_string(NrdEntity::entities.size()) << "\n";
+		
 		float aspect = lveRenderer.getAspectRatio();
 		
 		//camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
@@ -190,6 +193,8 @@ void nrd::TestLevel::run()
 	vkDeviceWaitIdle(lveDevice.device());
 	playerGO->destroyDebugLine();
 	playerGO->collider.destroyDebugLine();
+	flatVaseGo->destroyDebugLine();
+			
 }
 
 void nrd::TestLevel::loadGameObjects()

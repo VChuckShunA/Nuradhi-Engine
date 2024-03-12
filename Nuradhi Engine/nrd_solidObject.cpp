@@ -3,13 +3,14 @@
 namespace nrd {
 
 	NrdSolidObject::NrdSolidObject(lve::LveDevice& lveDevice)
+		: NrdLivingEntity(lveDevice, -.25, .25, -.25, .25, 0, -.5)
 	{
-		nrd::NrdSweptAABB collider(lveDevice, -.25, -.25, .25, .25, -.25, .25, .25, -.25, 0, 0, 0, 0, -.5, -.5, -.5, -.5);
-		nrd::NrdDebugLine::Builder debugLineBuilder{};
-		debugLineBuilder = collider.getCollider();
+		//nrd::NrdSweptAABB collider(lveDevice, -.25,.25, -.25, .25, 0, -.5);
+		//nrd::NrdDebugLine::Builder debugLineBuilder{};
+		//debugLineBuilder = collider.getCollider();
 		
-		
-		debugline = std::make_unique<NrdDebugLine>(lveDevice, debugLineBuilder);
+
+		//debugline = std::make_unique<NrdDebugLine>(lveDevice, debugLineBuilder);
 	}
 
 	void NrdSolidObject::draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout)

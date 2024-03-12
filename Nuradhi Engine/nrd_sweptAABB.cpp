@@ -2,6 +2,9 @@
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 namespace nrd {
+	NrdSweptAABB::NrdSweptAABB()
+	{
+	}
 	NrdSweptAABB::NrdSweptAABB(lve::LveDevice& lveDevice)
 	{
 		colliderBox = std::make_unique<NrdDebugLine>(lveDevice, debugLineBuilder);
@@ -10,27 +13,24 @@ namespace nrd {
 		//debugline->bind(frameInfo.commandBuffer);
 		//debugline->draw(frameInfo.commandBuffer);
 	}
+	std::list<NrdSweptAABB*> NrdSweptAABB::collisionBoxes;
 	NrdSweptAABB::NrdSweptAABB(lve::LveDevice& lveDevice,
-		float x1, float x2, float x3, float x4, 
-		float y1, float y2, float y3, float y4, 
-		float zf1, float zf2, float zf3, float zf4, 
-		float zb1, float zb2, float zb3, float zb4):
-		x1(x1),x2(x2),x3(x3),x4(x4),
-		y1(y1),y2(y2),y3(y3),y4(y4), 
-		zf1(zf1), zf2(zf2), zf3(zf3),zf4(zf4), zb1(zb1), zb2(zb2), zb3(zb3), zb4(zb4),
-		xMin(x1),xMax(x4),yMin(y1),yMax(y4),zMin(zb1),zMax(zb2)
+		float xMin, float xMax, float yMin, float yMax, float zMin, float zMax):
+		xMin(xMin),xMax(xMax),yMin(yMin),yMax(yMax),zMin(zMin),zMax(zMax)
 	{
-		createPoint(x1, y1, zf1, pointBFL);
-		createPoint(x2, y2, zf2, pointTFL);
-		createPoint(x3, y3, zf3, pointTFR);
-		createPoint(x4, y4, zf4, pointBFR);
-		createPoint(x1, y1, zb1, pointBBL);
-		createPoint(x2, y2, zb2, pointTBL);
-		createPoint(x3, y3, zb3, pointTBR);
-		createPoint(x4, y4, zb4, pointBBR);
+		createPoint(xMin, yMin, zMin, pointBFL);
+		createPoint(xMin, yMax, zMin, pointTFL);
+		createPoint(xMax, yMax, zMin, pointTFR);
+		createPoint(xMax, yMin, zMin, pointBFR);
+		createPoint(xMin, yMin, zMax, pointBBL);
+		createPoint(xMin, yMax, zMax, pointTBL);
+		createPoint(xMax, yMax, zMax, pointTBR);
+		createPoint(xMax, yMin, zMax, pointBBR);
 		
 		createBox(pointBFL, pointTFL, pointTFR, pointBFR, pointBBL, pointTBL, pointTBR, pointBBR);
 		colliderBox = std::make_unique<NrdDebugLine>(lveDevice, debugLineBuilder);
+
+		NrdSweptAABB::collisionBoxes.push_back(this);
 		// Set up vertices for a line, you may need to adjust these coordinates
 	}
 	NrdSweptAABB::~NrdSweptAABB()

@@ -9,9 +9,9 @@ namespace nrd {
 	public:
 		NrdSolidObject(lve::LveDevice& lveDevice); 
 		virtual void draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout) override;
-		void destroyDebugLine() { debugline = nullptr; }
+		//void destroyDebugLine() { debugline = nullptr; }
 	private:
-		std::unique_ptr<nrd::NrdDebugLine> debugline = nullptr;
+		//std::unique_ptr<nrd::NrdDebugLine> debugline = nullptr;
 		
 	};
 }

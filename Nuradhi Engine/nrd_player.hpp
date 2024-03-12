@@ -44,8 +44,8 @@ namespace nrd {
 		void changeAnimation(int newState, bool resetFrameToBegining);
 		void updateAnimation();
 		void updateDamage();
-		void destroyDebugLine() { debugline = nullptr; }
+		//void destroyDebugLine() { debugline = nullptr; }
 		private:
-			std::unique_ptr<nrd::NrdDebugLine> debugline=nullptr;
+			//std::unique_ptr<nrd::NrdDebugLine> debugline=nullptr;
 	};
 }

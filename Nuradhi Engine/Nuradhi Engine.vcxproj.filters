@@ -118,7 +118,7 @@
       <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
     <ClCompile Include="nrd_solidObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

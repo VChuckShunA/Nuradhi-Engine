@@ -2,12 +2,14 @@
 #include "lve_game_object.hpp"
 #include "nrd_globals.hpp"
 #include "nrd_time_controller.hpp"
-
+#include "nrd_sweptAABB.hpp"
 namespace nrd {
 	class NrdEntity : public lve::LveGameObject {
-	public://reference constants
+	public:
+		nrd::NrdSweptAABB collider;
+		float xMin, xMax, yMin, yMax, zMin, zMax;
+		//reference constants
 		static const int DIR_UP, DIR_DOWN, DIR_LEFT, DIR_RIGHT, DIR_NONE;
-
 		//quick label to see what the entity is up to
 		int state;
 
@@ -63,7 +65,10 @@ namespace nrd {
 		static bool EntityCompare(const NrdEntity* const& a, const NrdEntity* const& b);// compare 2 entities in a list to help sorting (sorts based on y value)
 		static void removeInactiveEntitiesFromList(std::list<NrdEntity*>* entityList, bool deleteEntities);
 		static void removeAllFromList(std::list<NrdEntity*>* entityList, bool deleteEntities);
-
-		NrdEntity();
+		//virtual void draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout) override;
+		NrdEntity(lve::LveDevice& lveDevice,float xMin,float xMax, float yMin,float yMax,float zMin,float zMax);
+		void destroyDebugLine() { debugline = nullptr; }
+		std::unique_ptr<nrd::NrdDebugLine> debugline = nullptr;
+	private:
 	};
 }

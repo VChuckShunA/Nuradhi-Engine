@@ -19,7 +19,7 @@ namespace nrd {
 		virtual void hitLanded(NrdLivingEntity* entity) { ; }
 		*/
 		
-		NrdLivingEntity();
+		NrdLivingEntity(lve::LveDevice& lveDevice, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
 	};
 
 }

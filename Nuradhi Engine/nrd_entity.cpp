@@ -1,4 +1,5 @@
 #include "nrd_entity.hpp"
+#include "nrd_solidObject.hpp"
 
 const int	nrd::NrdEntity::DIR_UP = 0, 
 			nrd::NrdEntity::DIR_DOWN = 1, 
@@ -98,7 +99,8 @@ namespace nrd {
 
 	float NrdEntity::distanceBetweenTwoEntities(NrdEntity* e1, NrdEntity* e2)
 	{
-		float d = abs(sqrt(pow(e2->x - e1->x, 2) + pow(e2->y - e1->y, 2)));
+		//float d = abs(sqrt(pow(e2->x - e1->x, 2) + pow(e2->y - e1->y, 2)));
+		float d = abs(sqrt(pow(e2->transform.translation.x - e1->transform.translation.x, 2) + pow(e2->transform.translation.y - e1->transform.translation.y, 2) + pow(e2->transform.translation.z - e1->transform.translation.z, 2)));
 		return d;
 	}
 
@@ -188,8 +190,19 @@ namespace nrd {
 		}
 	}
 
-	NrdEntity::NrdEntity()
+	
+
+	std::list<NrdEntity*> NrdEntity::entities;
+	NrdEntity::NrdEntity(lve::LveDevice& lveDevice, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax):
+		xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax), zMin(zMin), zMax(zMax),
+		collider(lveDevice, xMin, xMax, yMin, yMax, zMin, zMax)
 	{
+		NrdEntity::entities.push_back(this);
+		//nrd::NrdSweptAABB collider(lveDevice);
+		nrd::NrdDebugLine::Builder colliderLineBuilder{};
+		colliderLineBuilder = collider.getCollider();
+
+		debugline = std::make_unique<NrdDebugLine>(lveDevice, colliderLineBuilder);
 	}
 
 
