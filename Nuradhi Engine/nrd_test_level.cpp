@@ -97,8 +97,8 @@ void nrd::TestLevel::run()
 	NrdPlayer* playerGO = new NrdPlayer(lveDevice);
 	playerGO->index = gameObjects.size();
 	playerGO->model = playerModel;
-	playerGO->transform.translation = { -.5f,0.f,0.f };
-	playerGO->transform.scale = { .5f,.5f,.5f };
+	playerGO->transform.translation = { -3.f,0.f,0.f };
+	playerGO->transform.scale = { 0.5f,0.5f,0.5f };
 	playerGO->transform.rotation = { 1.5708f,0.f,0.f };
 	gameObjects.emplace_back(playerGO);
 	
@@ -107,8 +107,9 @@ void nrd::TestLevel::run()
 	NrdSolidObject* flatVaseGo= new NrdSolidObject(lveDevice);
 	flatVaseGo->index = gameObjects.size();
 	flatVaseGo->model = flatVaseModel;
-	flatVaseGo->transform.translation = { 2.f,.5f,0.f };
-	flatVaseGo->transform.scale ={ 1.f,1.0f,1.f };
+	flatVaseGo->transform.translation = {0.f,0.f,0.f };
+	flatVaseGo->transform.scale ={ 1.0f,1.0f,1.0f };
+	//flatVaseGo->transform.rotation = { 0.f,0.f,0.f };
 	gameObjects.emplace_back(flatVaseGo);
 	
 
@@ -144,7 +145,7 @@ void nrd::TestLevel::run()
 		float aspect = lveRenderer.getAspectRatio();
 		
 		//camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
-		camera.setOrthographicProjection(-aspect, aspect, -1, 1, 0.1f, 10.f);
+		camera.setOrthographicProjection(-aspect, aspect, -1, 1, 0.1f, 100.f);
 
 		//begin frame function will return a null ptr if the swap chain needs to be created
 			auto commandBuffer = lveRenderer.beginFrame();

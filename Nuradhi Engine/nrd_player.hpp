@@ -7,7 +7,6 @@ namespace nrd {
 	class NrdPlayer :public nrd::NrdLivingEntity {
 
 	public:
-		nrd::NrdSweptAABB collider;
 		//reference variabls
 		static const std::string HERO_ANIM_UP;
 		static const std::string HERO_ANIM_DOWN;

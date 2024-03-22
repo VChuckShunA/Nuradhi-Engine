@@ -13,7 +13,6 @@ namespace lve {
 	class LveModel
 	{
 	public:
-
 		struct Vertex {
 			glm::vec3 position{};
 			glm::vec3 colour{};
@@ -38,7 +37,6 @@ namespace lve {
 
 		LveModel(LveDevice &device, const LveModel::Builder &builder);
 		~LveModel();
-
 		//Delete these cuz the model class manages the buffer and memory objects
 		LveModel(const LveModel&) = delete;
 		LveModel& operator=(const LveModel&) = delete;

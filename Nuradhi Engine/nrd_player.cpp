@@ -33,16 +33,10 @@ namespace nrd {
 		: NrdLivingEntity(lveDevice,-1.0f,1.0f, -1.0f, 1.0f, -1.0f, 1.0f)
 		{
 		moveSpeed = 0;
-		moveSpeedMax = 4.0f;
+		moveSpeedMax = 0.5f;
 		hp = hpMax = 20;
 		damage = 0;
 		direction = DIR_DOWN;
-
-		//nrd::NrdSweptAABB collider(lveDevice);
-		//nrd::NrdDebugLine::Builder colliderLineBuilder{};
-		//colliderLineBuilder= collider.getCollider() ;
-	
-		//debugline = std::make_unique<NrdDebugLine>(lveDevice, colliderLineBuilder);
 
 		}
 	void NrdPlayer::draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout)
@@ -51,28 +45,76 @@ namespace nrd {
 		//draw debug lines here
 		debugline->bind(frameInfo.commandBuffer);
 		debugline->draw(frameInfo.commandBuffer);
-		/*std::cout << "x min : " << this->transform.translation.x + collider.xMin << "\n";
-		std::cout << "x max : " << this->transform.translation.x + collider.xMax << "\n";
-		std::cout << "y min : " << this->transform.translation.y + collider.yMin << "\n";
-		std::cout << "y max : " << this->transform.translation.y + collider.yMax << "\n";
-		std::cout << "z min : " << this->transform.translation.z + collider.zMin << "\n";
-		std::cout << "z max : " << this->transform.translation.z + collider.zMax << "\n";
-*/
 
 
 //list of potential collisions
 
 		/**/
+		float xdist, ydist, zdist;
 		for (auto i = nrd::NrdEntity::entities.begin(); i != nrd::NrdEntity::entities.end(); i++)
 		{
-			if ((*i)!=this && distanceBetweenTwoEntities(this,*i)<3)
-			{
-				std::cout << "Collision ahead: " << distanceBetweenTwoEntities(this, *i) << "\n";
-				//if (this->collider.xMax <1 &&
-				//	this->collider.yMax < &&)
+			if ((*i)!=this)
+			{//Actual testing
+				/*
+				//std::cout << "HIT" << "\n";
+				//std::cout << "Object y : " << (*i)->transform.translation.y << "\n";
+				//std::cout << "Player y : " << this->transform.translation.y << "\n";y
+				/*std::cout <<"Object x Min: " << (*i)->collider.xMin * (*i)->transform.scale.x + (*i)->transform.translation.x << "\n";
+				std::cout << "Player x Max: " << this->collider.xMax * this->transform.scale.x + this->transform.translation.x << "\n";
+				std::cout << "Object x Max: " << (*i)->collider.xMax * (*i)->transform.scale.x + (*i)->transform.translation.x << "\n";
+				*/
+				
+				if (!
+					((this->collider.xMax * this->transform.scale.x + this->transform.translation.x <= (*i)->collider.xMin * (*i)->transform.scale.x + (*i)->transform.translation.x) &&
+						(this->collider.xMin * this->transform.scale.x + this->transform.translation.x <= (*i)->collider.xMin * (*i)->transform.scale.x + (*i)->transform.translation.x)
+						||
+						(this->collider.xMax * this->transform.scale.x + this->transform.translation.x >= (*i)->collider.xMax * (*i)->transform.scale.x + (*i)->transform.translation.x) &&
+						(this->collider.xMin * this->transform.scale.x + this->transform.translation.x >= (*i)->collider.xMax * (*i)->transform.scale.x + (*i)->transform.translation.x))
+					)
+				{
+					//std::cout << "X HIT" << "\n";
+					if (!
+						((this->collider.yMax * this->transform.scale.y + this->transform.translation.y >= (*i)->collider.zMin * (*i)->transform.scale.z + (*i)->transform.translation.y) &&
+							(this->collider.yMin * this->transform.scale.y + this->transform.translation.y >= (*i)->collider.zMin * (*i)->transform.scale.z + (*i)->transform.translation.y)
+							||
+							(this->collider.yMax * this->transform.scale.y + this->transform.translation.y <= (*i)->collider.zMax * (*i)->transform.scale.z + (*i)->transform.translation.y) &&
+							(this->collider.yMin * this->transform.scale.y + this->transform.translation.y <= (*i)->collider.zMax * (*i)->transform.scale.z + (*i)->transform.translation.y))
+						)
+					{
+						//std::cout << "Y HIT" << "\n";
+						if (!
+							((this->collider.zMax * this->transform.scale.z + this->transform.translation.z <= (*i)->collider.yMin * (*i)->transform.scale.y + (*i)->transform.translation.z) &&
+								(this->collider.zMin * this->transform.scale.z + this->transform.translation.z <= (*i)->collider.yMin * (*i)->transform.scale.y + (*i)->transform.translation.z)
+								||
+								(this->collider.zMax * this->transform.scale.z + this->transform.translation.z >= (*i)->collider.yMax * (*i)->transform.scale.y + (*i)->transform.translation.z) &&
+								(this->collider.zMin * this->transform.scale.z + this->transform.translation.z >= (*i)->collider.yMax * (*i)->transform.scale.y + (*i)->transform.translation.z))
+							)
+						{
+							//std::cout << "Full Collision" << "\n";
+							float xmaxdif = this->collider.xMax * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMin * (*i)->transform.scale.x + (*i)->transform.translation.x;
+							float xmindif = this->collider.xMin * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMax * (*i)->transform.scale.x + (*i)->transform.translation.x;
+
+							std::cout << "xmaxdif" << xmaxdif << "\n";
+							std::cout << "xmindif" << xmaxdif << "\n";
+							if (abs(xmaxdif) < abs(xmindif))
+							{
+								this->transform.translation.x -= abs(xmaxdif);
+								std::cout << "xmaxdif" << xmaxdif<<"\n";
+							}
+							else if (abs(xmindif) < abs(xmaxdif))
+							{
+								this->transform.translation.x += abs(xmindif);
+								std::cout << "xmindif" << xmaxdif << "\n";
+							}
+						}
+					}
+				}
+				
+				
+				
 			}
 			else {
-				std::cout << "Nothing to collide with" << "\n";
+				//std::cout << "Nothing to collide with" << "\n";
 			}
 		}
 /*
