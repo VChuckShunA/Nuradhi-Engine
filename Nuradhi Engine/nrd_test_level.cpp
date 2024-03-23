@@ -97,7 +97,7 @@ void nrd::TestLevel::run()
 	NrdPlayer* playerGO = new NrdPlayer(lveDevice);
 	playerGO->index = gameObjects.size();
 	playerGO->model = playerModel;
-	playerGO->transform.translation = { -3.f,0.f,0.f };
+	playerGO->transform.translation = { -1.f,0.f,0.f };
 	playerGO->transform.scale = { 0.5f,0.5f,0.5f };
 	playerGO->transform.rotation = { 1.5708f,0.f,0.f };
 	gameObjects.emplace_back(playerGO);
