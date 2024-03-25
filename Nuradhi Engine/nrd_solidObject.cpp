@@ -2,8 +2,8 @@
 
 namespace nrd {
 
-	NrdSolidObject::NrdSolidObject(lve::LveDevice& lveDevice)
-		: NrdLivingEntity(lveDevice, -.25, .25, -.25, .25, 0, -.5)
+	NrdSolidObject::NrdSolidObject(lve::LveDevice& lveDevice, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax)
+		: NrdLivingEntity(lveDevice, xMin,xMax,yMin,yMax,zMin,zMax)
 	{
 		//nrd::NrdSweptAABB collider(lveDevice, -.25,.25, -.25, .25, 0, -.5);
 		//nrd::NrdDebugLine::Builder debugLineBuilder{};

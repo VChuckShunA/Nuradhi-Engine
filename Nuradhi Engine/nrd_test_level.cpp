@@ -97,21 +97,51 @@ void nrd::TestLevel::run()
 	NrdPlayer* playerGO = new NrdPlayer(lveDevice);
 	playerGO->index = gameObjects.size();
 	playerGO->model = playerModel;
-	playerGO->transform.translation = { -1.f,0.f,0.f };
+	playerGO->transform.translation = { 1.f,1.f,3.f };
 	playerGO->transform.scale = { 0.5f,0.5f,0.5f };
 	playerGO->transform.rotation = { 1.5708f,0.f,0.f };
 	gameObjects.emplace_back(playerGO);
-	
+	/*
 	//Flat vase GameObject
 	std::shared_ptr<lve::LveModel> flatVaseModel = lve::LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
-	NrdSolidObject* flatVaseGo= new NrdSolidObject(lveDevice);
+	NrdSolidObject* flatVaseGo= new NrdSolidObject(lveDevice, -4, 4, -4, 0.4, 0, -0.1);
 	flatVaseGo->index = gameObjects.size();
 	flatVaseGo->model = flatVaseModel;
-	flatVaseGo->transform.translation = {0.f,0.f,0.f };
+	flatVaseGo->transform.translation = {3.f,0.5f,0.5f };
 	flatVaseGo->transform.scale ={ 1.0f,1.0f,1.0f };
 	//flatVaseGo->transform.rotation = { 0.f,0.f,0.f };
 	gameObjects.emplace_back(flatVaseGo);
-	
+	*/
+	//Flat vase GameObject
+	std::shared_ptr<lve::LveModel> flatVaseModel2 = lve::LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
+	NrdSolidObject* flatVaseGo2 = new NrdSolidObject(lveDevice, - .25, .25, -.25, .25, 0, -.5);
+	flatVaseGo2->index = gameObjects.size();
+	flatVaseGo2->model = flatVaseModel2;
+	flatVaseGo2->transform.translation = { 2.f,1.5f,1.f };
+	flatVaseGo2->transform.scale = { 1.0f,1.0f,1.0f };
+	//flatVaseGo->transform.rotation = { 0.f,0.f,0.f };
+	gameObjects.emplace_back(flatVaseGo2);
+
+	//Floor GameObject
+	std::shared_ptr<lve::LveModel> floorModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
+	NrdSolidObject* floorGameObj = new NrdSolidObject(lveDevice, -1, 1, -1, 1, 0.1,0);
+	//-.5, 1.5, -2, 2, .6, .5
+	floorGameObj->index = gameObjects.size();
+	floorGameObj->model = floorModel;
+	floorGameObj->transform.translation = { 0.f,1.5f,2.f };
+	floorGameObj->transform.scale = { 5.0f,1.0f,1.0f };
+	//flatVaseGo->transform.rotation = { 0.f,0.f,0.f };
+	gameObjects.emplace_back(floorGameObj);
+
+	NrdSolidObject* floorGameObj2 = new NrdSolidObject(lveDevice, -1, 1, -1, 1, 0.1, 0);
+	//-.5, 1.5, -2, 2, .6, .5
+	floorGameObj2->index = gameObjects.size();
+	floorGameObj2->model = floorModel;
+	floorGameObj2->transform.translation = { 0.f,1.5f,4.f };
+	floorGameObj2->transform.scale = { 5.0f,1.0f,1.0f };
+	//flatVaseGo->transform.rotation = { 0.f,0.f,0.f };
+	gameObjects.emplace_back(floorGameObj2);
+
 
 
 
@@ -194,12 +224,19 @@ void nrd::TestLevel::run()
 	vkDeviceWaitIdle(lveDevice.device());
 	playerGO->destroyDebugLine();
 	playerGO->collider.destroyDebugLine();
-	flatVaseGo->destroyDebugLine();
+	//flatVaseGo->destroyDebugLine();
+	//flatVaseGo->collider.destroyDebugLine(); 
+	flatVaseGo2->destroyDebugLine();
+	flatVaseGo2->collider.destroyDebugLine(); 
+	floorGameObj->destroyDebugLine();
+	floorGameObj->collider.destroyDebugLine();
+	floorGameObj2->destroyDebugLine();
+	floorGameObj2->collider.destroyDebugLine();
 			
 }
 
 void nrd::TestLevel::loadGameObjects()
-{
+{/*
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::shared_ptr<lve::LveModel> lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
 	lve::LveGameObject* flatVase= new lve::LveGameObject{};
@@ -225,7 +262,7 @@ void nrd::TestLevel::loadGameObjects()
 	floor->transform.scale = { 3.f,1.f,3.f };
 	gameObjects.emplace_back(floor);
 
-	
+	*/
 	
 
 

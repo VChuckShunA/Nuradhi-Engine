@@ -7,7 +7,7 @@ namespace nrd {
 
 	class NrdSolidObject :public nrd::NrdLivingEntity {
 	public:
-		NrdSolidObject(lve::LveDevice& lveDevice); 
+		NrdSolidObject(lve::LveDevice& lveDevice,float xMin,float xMax, float yMin, float yMax, float zMin, float zMax);
 		virtual void draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout) override;
 		//void destroyDebugLine() { debugline = nullptr; }
 	private:

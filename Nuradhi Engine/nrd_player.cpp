@@ -46,11 +46,10 @@ namespace nrd {
 		debugline->bind(frameInfo.commandBuffer);
 		debugline->draw(frameInfo.commandBuffer);
 
-
 //list of potential collisions
 
-		/**/
-		float xdist, ydist, zdist;
+		//this->transform.translation.y += .0001;
+		
 		for (auto i = nrd::NrdEntity::entities.begin(); i != nrd::NrdEntity::entities.end(); i++)
 		{
 			if ((*i)!=this)
@@ -79,66 +78,67 @@ namespace nrd {
 								(this->collider.zMin * this->transform.scale.z + this->transform.translation.z >= (*i)->collider.yMax * (*i)->transform.scale.y + (*i)->transform.translation.z))
 							)
 						{
-							float xmaxdif = this->collider.xMax * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMin * (*i)->transform.scale.x + (*i)->transform.translation.x;
-							float xmindif = this->collider.xMin * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMax * (*i)->transform.scale.x + (*i)->transform.translation.x;
+							std::cout << " Collission" << "\n";
+							float xmaxdif = this->collider.xMax * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMin * (*i)->transform.scale.x - (*i)->transform.translation.x;
+							float xmindif = this->collider.xMin * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMax * (*i)->transform.scale.x - (*i)->transform.translation.x;
 
-							float xDist=90, yDist=90, zDist=90;
+							float xDist=0, yDist=0, zDist=0;
 							
-							if (abs(xmaxdif) < abs(xmindif))
+							if (abs(xmaxdif) <= abs(xmindif))
 							{
 								xDist = abs(xmaxdif) * -1;
 							}
-							else if (abs(xmindif) < abs(xmaxdif))
+							else if (abs(xmindif) <= abs(xmaxdif))
 							{
 								xDist = abs(xmindif);
 							}
 
-							float ymaxdif = this->collider.yMax * this->transform.scale.y + this->transform.translation.y - (*i)->collider.zMax * (*i)->transform.scale.z + (*i)->transform.translation.y;
-							float ymindif = this->collider.yMin * this->transform.scale.y + this->transform.translation.y - (*i)->collider.zMin * (*i)->transform.scale.z + (*i)->transform.translation.y;
+							float ymaxdif = this->collider.yMax * this->transform.scale.y + this->transform.translation.y - (*i)->collider.zMax * (*i)->transform.scale.z - (*i)->transform.translation.y;
+							float ymindif = this->collider.yMin * this->transform.scale.y + this->transform.translation.y - (*i)->collider.zMin * (*i)->transform.scale.z - (*i)->transform.translation.y;
 
-							if ((abs(ymaxdif)!=0) && (abs(ymaxdif) < abs(ymindif)))
+							if ((abs(ymaxdif)!=0) && (abs(ymaxdif) <= abs(ymindif)))
 							{
 								yDist = abs(ymaxdif) * -1;
 							}
-							else if ((abs(ymindif)!=0) && (abs(ymindif) < abs(ymaxdif)))
+							else if ((abs(ymindif)!=0) && (abs(ymindif) <= abs(ymaxdif)))
 							{
 							yDist = abs(ymindif);
 							}
 
-							float zMaxDif = this->collider.zMax * this->transform.scale.z + this->transform.translation.z - (*i)->collider.yMin * (*i)->transform.scale.y + (*i)->transform.translation.z;
-							float zMinDif = this->collider.zMin * this->transform.scale.z + this->transform.translation.z - (*i)->collider.yMax * (*i)->transform.scale.y + (*i)->transform.translation.z;
-							if (abs(zMaxDif) < abs(zMinDif))
+							float zMaxDif = this->collider.zMax * this->transform.scale.z + this->transform.translation.z - (*i)->collider.yMin * (*i)->transform.scale.y - (*i)->transform.translation.z;
+							float zMinDif = this->collider.zMin * this->transform.scale.z + this->transform.translation.z - (*i)->collider.yMax * (*i)->transform.scale.y - (*i)->transform.translation.z;
+							if (abs(zMaxDif) <= abs(zMinDif))
 							{
 								zDist = abs(zMaxDif) * -1;
 							}
-							else if (abs(zMinDif) < abs(zMaxDif))
+							else if (abs(zMinDif) <= abs(zMaxDif))
 							{
 
 								zDist = abs(zMinDif);
 							}
-
-							if (abs(xDist) < abs(zDist))
+							if (abs(xDist) < abs(zDist) && abs(xDist) < abs(yDist))
 							{
-								if (abs(xDist) < abs(yDist))
-								{
-									this->transform.translation.x += xDist;
-								}
-								else
-								{
-									this->transform.translation.y += yDist;
-								}
+								this->transform.translation.x += xDist;
+								std::cout << "X Collission" << "\n";
+								std::cout << "Y Dist" << yDist << "\n";
+								std::cout << "X Dist" << xDist << "\n";
+								std::cout << "Z Dist" << zDist << "\n";
 							}
-							else if (abs(zDist) < abs(xDist))
-							{
-								if (abs(zDist) < abs(yDist))
-								{
-									this->transform.translation.z += zDist;
-								}
-								else
-								{
-									this->transform.translation.y += yDist;
-								}
+							else if(abs(yDist) < abs(xDist) && abs(yDist) < abs(zDist)) {
+								this->transform.translation.y += yDist;
+								std::cout << "Y Collission" << "\n";
+								std::cout << "Y Dist" << yDist<< "\n";
+								std::cout << "X Dist" << xDist << "\n";
+								std::cout << "Z Dist" << zDist << "\n";
 							}
+							else if (abs(zDist) < abs(xDist) && abs(zDist) < abs(yDist)) {
+								this->transform.translation.z += zDist;
+								std::cout << "Z Collission" << "\n";
+								std::cout << "Y Dist" << yDist << "\n";
+								std::cout << "X Dist" << xDist << "\n";
+								std::cout << "Z Dist" << zDist << "\n";
+							}
+							
 						}
 					}
 				}

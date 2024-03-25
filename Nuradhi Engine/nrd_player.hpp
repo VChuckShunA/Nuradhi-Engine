@@ -31,6 +31,7 @@ namespace nrd {
 		static const int HERO_STATE_SLASH;
 		static const int HERO_STATE_DASH;
 		static const int HERO_STATE_DEAD;
+
 		//Collision
 		//NrdPlayer(AnimationSet* animSet);
 		NrdPlayer(lve::LveDevice& lveDevice);//Temporary Constructor
