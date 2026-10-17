@@ -76,6 +76,8 @@ StyleCopReport.xml
 *.ilk
 *.meta
 *.obj
+# ...but the engine's 3D models are .obj files too, and the game loads them at runtime
+!Nuradhi Engine/models/*.obj
 *.iobj
 *.pch
 *.pdb
