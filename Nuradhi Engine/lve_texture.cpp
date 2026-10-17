@@ -56,6 +56,8 @@ namespace lve {
 		//transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		//relace transition with generate mipmaps
 		generateMipmaps();
+		//generateMipmaps leaves every mip level in SHADER_READ_ONLY_OPTIMAL, descriptors need to know that
+		imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		VkSamplerCreateInfo samplerInfo{};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;

@@ -20,6 +20,7 @@ namespace lve {
         };
 
         void moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject, lve::LveGameObject::Map& gameObjects);
+        void lookAround(GLFWwindow* window, float dt, LveGameObject& gameObject); //arrow keys only, no movement
         void printCordinates(std::shared_ptr<LveGameObject> gameObject);
         KeyMappings keys{};
         float moveSpeed{ 3.f };

@@ -1,11 +1,12 @@
 #pragma once
 #include "nrd_entity.hpp"
-
+#include "lve_texture.hpp"
 namespace nrd {
 	class NrdLivingEntity : public nrd::NrdEntity {
 
 	public:
 
+		//lve::Texture objTexture = lve::Texture(lveDevice, "Images/Sprites/Blaze.png");
 		int hp, hpMax;
 		int damage = 0;
 		//SDL_Rect hitBox;//similar to collisionBox, but describes damaging area

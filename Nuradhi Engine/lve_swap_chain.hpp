@@ -80,8 +80,12 @@ namespace lve {
         VkSwapchainKHR swapChain;
         std::shared_ptr<LveSwapChain> oldSwapChain;
 
+        // per frame in flight
         std::vector<VkSemaphore> imageAvailableSemaphores;
+        // per swap chain image, indexed by the acquired image index: a present may still be
+        // waiting on its semaphore until that image is acquired again
         std::vector<VkSemaphore> renderFinishedSemaphores;
+        // per frame in flight
         std::vector<VkFence> inFlightFences;
         std::vector<VkFence> imagesInFlight;
         size_t currentFrame = 0;

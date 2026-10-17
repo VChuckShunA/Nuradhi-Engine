@@ -17,6 +17,7 @@ namespace nrd {
 	public:
 		static constexpr int WIDTH = 1920;
 		static constexpr int HEIGHT = 1080;
+		static constexpr uint32_t MAX_TEXTURES = 16; //sizes the descriptor pool, each texture needs one global descriptor set per frame
 
 		TestLevel();
 		~TestLevel();

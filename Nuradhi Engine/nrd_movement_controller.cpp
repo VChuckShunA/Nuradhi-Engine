@@ -13,24 +13,22 @@ namespace nrd {
 	}
 	void NrdMovementController::moveInPlaneXZ(GLFWwindow* window, float dt, lve::LveGameObject* player)
 	{
-		
-		//prevent objects from going upside down
-		player->transform.rotation.x = glm::clamp(player->transform.rotation.x, -1.5f, 1.5f);
+
+		//no pitch clamp here: the sprite quad stands upright at rotation.x = pi/2, and clamping to 1.5 tilted it
 		player->transform.rotation.y = glm::mod(player->transform.rotation.y, glm::two_pi<float>());
 
 
 		float yaw = player->transform.rotation.y;
 		const glm::vec3 forwardDir{ sin(yaw),0.f,cos(yaw) };
 		const glm::vec3 rightDir{ forwardDir.z,0.f,-forwardDir.x };
-		const glm::vec3 upDir{ 0.f,-1.f,0.f };
 
+		//vertical movement comes from gravity and jumping, not from keys
 		glm::vec3 moveDir{ 0.f };
 		if (glfwGetKey(window, keys.moveForward) == GLFW_PRESS) moveDir += forwardDir;
 		if (glfwGetKey(window, keys.moveBackward) == GLFW_PRESS) moveDir -= forwardDir;
 		if (glfwGetKey(window, keys.moveRight) == GLFW_PRESS) moveDir += rightDir;
 		if (glfwGetKey(window, keys.moveLeft) == GLFW_PRESS) moveDir -= rightDir;
-		if (glfwGetKey(window, keys.moveUp) == GLFW_PRESS) moveDir += upDir;
-		if (glfwGetKey(window, keys.moveDown) == GLFW_PRESS) moveDir -= upDir;
+		if (glfwGetKey(window, keys.spaceKey) == GLFW_PRESS) nrdPlayer->jump(); //only takes effect while grounded
 
 
 		//only normalize moveDir if it's NOT ZERO

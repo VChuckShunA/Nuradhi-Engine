@@ -15,6 +15,7 @@
 #include <array>
 #include <chrono>
 #include <cassert>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 //libs
 #define GLM_FORCE_RADIANS
@@ -23,10 +24,11 @@
 #include <glm/gtc/constants.hpp>
 nrd::TestLevel::TestLevel()
 {
+	//every texture gets its own global descriptor set per frame, so the pool holds frames * textures sets
 	globalPool = lve::LveDescriptorPool::Builder(lveDevice)
-		.setMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-		.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-		.addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.setMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT * MAX_TEXTURES)
+		.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT * MAX_TEXTURES)
+		.addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT * MAX_TEXTURES)
 		.build();
 	loadGameObjects();
 }
@@ -53,21 +55,38 @@ void nrd::TestLevel::run()
 		.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		.build();
 
-	lve::Texture texture = lve::Texture(lveDevice, "Images/Sprites/Blaze.png");
 
-	VkDescriptorImageInfo imageInfo = {};
-	imageInfo.sampler = texture.getSampler();
-	imageInfo.imageView = texture.getImageView();
-	imageInfo.imageLayout = texture.getImageLayout();
+	//textures are indexed by LveGameObject::textureIndex, index 0 is used by any object that doesn't pick one
+	constexpr size_t defaultTextureIndex = 0;
+	constexpr size_t playerTextureIndex = 1;
+	std::vector<std::unique_ptr<lve::Texture>> textures;
+	textures.push_back(std::make_unique<lve::Texture>(lveDevice, "Images/Sprites/Nuradhi Logo copy.png"));
+	textures.push_back(std::make_unique<lve::Texture>(lveDevice, "Images/Sprites/Blaze.png"));
+	assert(textures.size() <= MAX_TEXTURES && "Raise TestLevel::MAX_TEXTURES, the descriptor pool is too small");
 
-	std::vector<VkDescriptorSet> globalDescriptorSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+	//one global descriptor set per frame per texture: binding 0 is that frame's UBO, binding 1 is the texture
+	//indexed as globalDescriptorSets[frameIndex][textureIndex]
+	std::vector<std::vector<VkDescriptorSet>> globalDescriptorSets(
+		lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT, std::vector<VkDescriptorSet>(textures.size()));
 	for (int i = 0; i < globalDescriptorSets.size(); i++) {
 		auto bufferInfo = uboBuffers[i]->descriptorInfo();
-		lve::LveDescriptorWriter(*globalSetLayout, *globalPool)
-			.writeBuffer(0, &bufferInfo)
-			.writeImage(1,&imageInfo)
-			.build(globalDescriptorSets[i]);
+		for (size_t t = 0; t < textures.size(); t++) {
+			VkDescriptorImageInfo imageInfo{};
+			imageInfo.sampler = textures[t]->getSampler();
+			imageInfo.imageView = textures[t]->getImageView();
+			imageInfo.imageLayout = textures[t]->getImageLayout();
+
+			bool built = lve::LveDescriptorWriter(*globalSetLayout, *globalPool)
+				.writeBuffer(0, &bufferInfo)
+				.writeImage(1, &imageInfo)
+				.build(globalDescriptorSets[i][t]);
+			if (!built) {
+				throw std::runtime_error("Failed to allocate global descriptor set");
+			}
+		}
 	}
+
+
 
 	lve::SimpleRenderSystem simpleRenderSystem{
 		lveDevice,
@@ -96,6 +115,7 @@ void nrd::TestLevel::run()
 	std::shared_ptr<lve::LveModel> playerModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
 	NrdPlayer* playerGO = new NrdPlayer(lveDevice);
 	playerGO->index = gameObjects.size();
+	playerGO->textureIndex = playerTextureIndex;
 	playerGO->model = playerModel;
 	playerGO->transform.translation = { 1.f,1.f,3.f };
 	playerGO->transform.scale = { 0.5f,0.5f,0.5f };
@@ -153,13 +173,17 @@ void nrd::TestLevel::run()
 		auto newTime = std::chrono::high_resolution_clock::now();
 		float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
-		cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject,gameObjects);
+		//the camera follows the player, so only its arrow-key yaw is used (WASD/QE move the player)
+		cameraController.lookAround(lveWindow.getGLFWwindow(), frameTime, viewerObject);
 		//camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
 		
 		//Player Controller
 		nrd::NrdMovementController playerController(playerGO);
 		playerController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, gameObjects[playerGO->index].get());
+		//physics runs once per frame after input, before anything is drawn
+		playerGO->applyGravity(frameTime);
+		playerGO->resolveCollisions();
 
 		camera.setViewYXZ({ gameObjects[playerGO->index].get()->transform.translation.x -0.4f,
 							-0.75f ,
@@ -187,10 +211,12 @@ void nrd::TestLevel::run()
 				frameTime,
 				commandBuffer,
 				camera,
-				globalDescriptorSets[frameIndex],
-				gameObjects
+				globalDescriptorSets[frameIndex][defaultTextureIndex],
+				gameObjects,
+				globalDescriptorSets[frameIndex]
 			};
 
+			
 
 			simpleRenderSystem.getlvePipelinePtr()->bind(commandBuffer);
 			lveRenderer.bindPipelineEssentials(commandBuffer, frameInfo);
@@ -212,7 +238,9 @@ void nrd::TestLevel::run()
 			nrd::NrdDebugLinePipeline* debugPipelinePtr = simpleRenderSystem.getDebugPipelinePtr();
 			debugPipelinePtr->bind(commandBuffer);
 			lveRenderer.bindPipelineEssentials(commandBuffer, frameInfo);
-			simpleRenderSystem.bindDescriptorSets(frameInfo);
+			simpleRenderSystem.bindDescriptorSets(frameInfo); 
+			
+			
 			//render
 			// Update and render the debug line
 			simpleRenderSystem.renderGameObects(frameInfo);
@@ -236,34 +264,7 @@ void nrd::TestLevel::run()
 }
 
 void nrd::TestLevel::loadGameObjects()
-{/*
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	std::shared_ptr<lve::LveModel> lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
-	lve::LveGameObject* flatVase= new lve::LveGameObject{};
-	flatVase->index = gameObjects.size();
-	flatVase->model = lveModel;
-	flatVase->transform.translation = { -.5f,.5f,0.f };
-	flatVase->transform.scale = { 3.f,1.5f,3.f };
-	gameObjects.emplace_back(flatVase);
-
-	lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/smooth_vase.obj");
-	lve::LveGameObject* smoothVase = new lve::LveGameObject{};
-	smoothVase->index = gameObjects.size();
-	smoothVase->model = lveModel;
-	smoothVase->transform.translation = { .5f,.5f,0.f };
-	smoothVase->transform.scale = { 3.f,1.5f,3.f };
-	gameObjects.emplace_back(smoothVase);
-
-	lveModel = lve::LveModel::createModelFromFile(lveDevice, "models/quad.obj");
-	lve::LveGameObject* floor= new lve::LveGameObject{};
-	floor->index = gameObjects.size();
-	floor->model = lveModel;
-	floor->transform.translation = { 0.f,0.5f,0.f };
-	floor->transform.scale = { 3.f,1.f,3.f };
-	gameObjects.emplace_back(floor);
-
-	*/
-	
+{
 
 
 	//pointlights

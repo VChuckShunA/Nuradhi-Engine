@@ -1,4 +1,5 @@
 #include "nrd_sweptAABB.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 namespace nrd {

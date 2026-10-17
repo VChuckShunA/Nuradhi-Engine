@@ -10,12 +10,10 @@ namespace nrd {
 
         NrdMovementController(NrdPlayer* player); // Constructor
             struct KeyMappings {
-                int moveLeft = GLFW_KEY_J;
-                int moveRight = GLFW_KEY_L;
-                int moveForward = GLFW_KEY_I;
-                int moveBackward = GLFW_KEY_K;
-                int moveUp = GLFW_KEY_U;
-                int moveDown = GLFW_KEY_O;
+                int moveLeft = GLFW_KEY_A;
+                int moveRight = GLFW_KEY_D;
+                int moveForward = GLFW_KEY_W;
+                int moveBackward = GLFW_KEY_S;
                 int vKey = GLFW_KEY_V;
                 int spaceKey = GLFW_KEY_SPACE;
             };

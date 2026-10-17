@@ -1,7 +1,9 @@
 #include "nrd_player.hpp"
 #include "nrd_debugLine.hpp"
 #include "lve_frame_info.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
+#include <algorithm>
 
 #include "nrd_solidObject.hpp"
 const std::string nrd::NrdPlayer::HERO_ANIM_UP = "up";
@@ -45,11 +47,29 @@ namespace nrd {
 		//draw debug lines here
 		debugline->bind(frameInfo.commandBuffer);
 		debugline->draw(frameInfo.commandBuffer);
+	}
 
+	void NrdPlayer::applyGravity(float dt)
+	{
+		//a long frame (window drag, breakpoint) would otherwise drop the player through thin floors in one step
+		dt = std::min(dt, MAX_GRAVITY_STEP);
+		verticalVelocity = std::min(verticalVelocity + gravity * dt, terminalVelocity);
+		transform.translation.y += verticalVelocity * dt;
+	}
+
+	void NrdPlayer::jump()
+	{
+		if (grounded)
+		{
+			verticalVelocity = -jumpSpeed; //-y is up in Vulkan
+			grounded = false;
+		}
+	}
+
+	void NrdPlayer::resolveCollisions()
+	{
+		grounded = false;
 //list of potential collisions
-
-		//this->transform.translation.y += .0001;
-		
 		for (auto i = nrd::NrdEntity::entities.begin(); i != nrd::NrdEntity::entities.end(); i++)
 		{
 			if ((*i)!=this)
@@ -78,7 +98,7 @@ namespace nrd {
 								(this->collider.zMin * this->transform.scale.z + this->transform.translation.z >= (*i)->collider.yMax * (*i)->transform.scale.y + (*i)->transform.translation.z))
 							)
 						{
-							std::cout << " Collission" << "\n";
+							if (NrdGlobals::debugging) std::cout << " Collission" << "\n";
 							float xmaxdif = this->collider.xMax * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMin * (*i)->transform.scale.x - (*i)->transform.translation.x;
 							float xmindif = this->collider.xMin * this->transform.scale.x + this->transform.translation.x - (*i)->collider.xMax * (*i)->transform.scale.x - (*i)->transform.translation.x;
 
@@ -119,24 +139,40 @@ namespace nrd {
 							if (abs(xDist) < abs(zDist) && abs(xDist) < abs(yDist))
 							{
 								this->transform.translation.x += xDist;
-								std::cout << "X Collission" << "\n";
-								std::cout << "Y Dist" << yDist << "\n";
-								std::cout << "X Dist" << xDist << "\n";
-								std::cout << "Z Dist" << zDist << "\n";
+								if (NrdGlobals::debugging) {
+									std::cout << "X Collission" << "\n";
+									std::cout << "Y Dist" << yDist << "\n";
+									std::cout << "X Dist" << xDist << "\n";
+									std::cout << "Z Dist" << zDist << "\n";
+								}
 							}
 							else if(abs(yDist) < abs(xDist) && abs(yDist) < abs(zDist)) {
 								this->transform.translation.y += yDist;
-								std::cout << "Y Collission" << "\n";
-								std::cout << "Y Dist" << yDist<< "\n";
-								std::cout << "X Dist" << xDist << "\n";
-								std::cout << "Z Dist" << zDist << "\n";
+								//pushed up out of a solid means we landed on it, pushed down means we hit its underside
+								if (yDist < 0)
+								{
+									grounded = true;
+									verticalVelocity = std::min(verticalVelocity, 0.0f);
+								}
+								else if (verticalVelocity < 0)
+								{
+									verticalVelocity = 0;
+								}
+								if (NrdGlobals::debugging) {
+									std::cout << "Y Collission" << "\n";
+									std::cout << "Y Dist" << yDist << "\n";
+									std::cout << "X Dist" << xDist << "\n";
+									std::cout << "Z Dist" << zDist << "\n";
+								}
 							}
 							else if (abs(zDist) < abs(xDist) && abs(zDist) < abs(yDist)) {
 								this->transform.translation.z += zDist;
-								std::cout << "Z Collission" << "\n";
-								std::cout << "Y Dist" << yDist << "\n";
-								std::cout << "X Dist" << xDist << "\n";
-								std::cout << "Z Dist" << zDist << "\n";
+								if (NrdGlobals::debugging) {
+									std::cout << "Z Collission" << "\n";
+									std::cout << "Y Dist" << yDist << "\n";
+									std::cout << "X Dist" << xDist << "\n";
+									std::cout << "Z Dist" << zDist << "\n";
+								}
 							}
 							
 						}

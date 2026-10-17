@@ -1,24 +1,11 @@
 #include "keyboard_movement_controller.hpp"
 #include <iostream>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 namespace lve {
 	void KeyboardMovementController::moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject, lve::LveGameObject::Map& gameObjects)
 	{
-		glm::vec3 rotate{ 0 };
-		if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotate.y += 1.f;
-		if (glfwGetKey(window, keys.lookLeft) == GLFW_PRESS) rotate.y -= 1.f;
-		if (glfwGetKey(window, keys.lookUp) == GLFW_PRESS) rotate.x += 1.f;
-		if (glfwGetKey(window, keys.lookDown) == GLFW_PRESS) rotate.x -= 1.f;
-
-		//only normalize rotation if it's NOT ZERO
-		 if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) 
-		 {
-			gameObject.transform.rotation += lookSpeed * dt * glm::normalize(rotate);
-		 }
-		//prevent objects from going upside down
-		gameObject.transform.rotation.x = glm::clamp(gameObject.transform.rotation.x, -1.5f, 1.5f); 
-		gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
-
+		lookAround(window, dt, gameObject);
 
 		float yaw = gameObject.transform.rotation.y;
 		const glm::vec3 forwardDir{ sin(yaw),0.f,cos(yaw) };
@@ -34,7 +21,7 @@ namespace lve {
 		if (glfwGetKey(window, keys.moveDown) == GLFW_PRESS) moveDir -= upDir;
 
 
-		
+
 		//only normalize moveDir if it's NOT ZERO
 		if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) {
 			gameObject.transform.translation += moveSpeed * dt * glm::normalize(moveDir);
@@ -43,6 +30,23 @@ namespace lve {
 		LveGameObject& playerObject = *gameObjects[gameObject.index].get();
 		// Use playerObject here as needed
 		//printCordinates(gameObjects[gameObject.index]);
+	}
+	void KeyboardMovementController::lookAround(GLFWwindow* window, float dt, LveGameObject& gameObject)
+	{
+		glm::vec3 rotate{ 0 };
+		if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotate.y += 1.f;
+		if (glfwGetKey(window, keys.lookLeft) == GLFW_PRESS) rotate.y -= 1.f;
+		if (glfwGetKey(window, keys.lookUp) == GLFW_PRESS) rotate.x += 1.f;
+		if (glfwGetKey(window, keys.lookDown) == GLFW_PRESS) rotate.x -= 1.f;
+
+		//only normalize rotation if it's NOT ZERO
+		 if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) 
+		 {
+			gameObject.transform.rotation += lookSpeed * dt * glm::normalize(rotate);
+		 }
+		//prevent objects from going upside down
+		gameObject.transform.rotation.x = glm::clamp(gameObject.transform.rotation.x, -1.5f, 1.5f); 
+		gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
 	}
 	void KeyboardMovementController::printCordinates(std::shared_ptr<LveGameObject> gameObject)
 	{

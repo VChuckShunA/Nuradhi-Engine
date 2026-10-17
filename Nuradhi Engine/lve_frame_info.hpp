@@ -37,5 +37,6 @@ namespace lve {
 		LveCamera& camera;
 		VkDescriptorSet globalDescriptorSet;
 		LveGameObject::Map& gameObjects;
+		std::vector<VkDescriptorSet>& textureDescriptorSets; //this frame's global descriptor sets, one per texture, indexed by LveGameObject::textureIndex
 	};
 }

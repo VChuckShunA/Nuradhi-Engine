@@ -60,6 +60,7 @@ namespace lve {
 		//Nrd Implementation
 		LveGameObject();
 		size_t index = 0;
+		size_t textureIndex = 0; //which of the level's textures this object samples from (0 = default texture)
 
 		virtual void draw(FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout);
 		virtual void bind(FrameInfo& frameInfo);

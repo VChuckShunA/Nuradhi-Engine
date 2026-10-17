@@ -95,7 +95,18 @@ namespace lve {
 			//obj->transform.rotation.y = glm::mod(obj->transform.rotation.y + 0.0001f, glm::two_pi<float>());
 			//obj->transform.rotation.x = glm::mod(obj->transform.rotation.x + 0.0001f, glm::two_pi<float>());
 
-			
+			//each texture has its own global descriptor set, so bind the one this object samples from
+			assert(obj->textureIndex < frameInfo.textureDescriptorSets.size() && "Game object's textureIndex has no descriptor set");
+			vkCmdBindDescriptorSets(
+				frameInfo.commandBuffer,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				pipelineLayout,
+				0,
+				1,
+				&frameInfo.textureDescriptorSets[obj->textureIndex],
+				0,
+				nullptr);
+
 			obj->bind(frameInfo);
 			obj->draw(frameInfo, pipelineLayout);
 		}
