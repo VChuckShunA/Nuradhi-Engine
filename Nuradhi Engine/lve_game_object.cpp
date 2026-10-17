@@ -81,9 +81,17 @@ namespace lve {
 
 	void LveGameObject::draw(FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout)
 	{
+		drawModel(frameInfo, pipelineLayout, transform, uvRect);
+	}
+
+	void LveGameObject::drawModel(FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout, TransformComponent renderTransform, const glm::vec4& textureRect)
+	{
 		SimplePushConstantData push{};
-		push.modelMatrix = transform.mat4();
-		push.normalMatrix = transform.normalMatrix();
+		push.modelMatrix = renderTransform.mat4();
+		push.normalMatrix = renderTransform.normalMatrix();
+		//the shaders only use the normal matrix's 3x3 part, so its last column carries the texture rectangle.
+		//That keeps the push constants at 128 bytes, the size every Vulkan device guarantees.
+		push.normalMatrix[3] = textureRect;
 
 		vkCmdPushConstants(
 			frameInfo.commandBuffer,

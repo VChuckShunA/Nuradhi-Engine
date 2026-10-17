@@ -25,7 +25,7 @@ namespace lve {
 	};
 	struct SimplePushConstantData {
 		glm::mat4 modelMatrix{ 1.f };
-		glm::mat4 normalMatrix{ 1.f };
+		glm::mat4 normalMatrix{ 1.f }; //3x3 normal matrix; column 3 holds the texture rectangle (xy offset, zw size)
 		//alignas(16) glm::vec3 colour; //*IMPORTANT!*
 		//using align as to account for how this info is Stored
 	};

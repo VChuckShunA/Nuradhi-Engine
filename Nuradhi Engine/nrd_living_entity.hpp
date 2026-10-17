@@ -19,8 +19,6 @@ namespace nrd {
 		virtual void updateInvincibleTimer();
 		virtual void hitLanded(NrdLivingEntity* entity) { ; }
 		*/
-		
-		NrdLivingEntity(lve::LveDevice& lveDevice, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
 	};
 
 }

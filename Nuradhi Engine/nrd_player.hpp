@@ -1,8 +1,7 @@
 #pragma once
 #include "nrd_living_entity.hpp"
 #include "nrd_movement_controller.hpp"
-#include "nrd_debugLine.hpp"
-#include "nrd_sweptAABB.hpp"
+#include "nrd_collision.hpp"
 namespace nrd {
 	class NrdPlayer :public nrd::NrdLivingEntity {
 
@@ -26,16 +25,19 @@ namespace nrd {
 		static const std::string HERO_DASH_ANIM_RIGHT;
 		static const std::string HERO_ANIM_DIE;
 
+		//sprite animations the player plays; register them on its sprite sheet under these names
+		static const std::string ANIM_IDLE;
+		static const std::string ANIM_WALK;
+		static const std::string ANIM_JUMP;
+
 		static const int HERO_STATE_IDLE;
 		static const int HERO_STATE_MOVE;
 		static const int HERO_STATE_SLASH;
 		static const int HERO_STATE_DASH;
 		static const int HERO_STATE_DEAD;
 
-		//Collision
 		//NrdPlayer(AnimationSet* animSet);
-		NrdPlayer(lve::LveDevice& lveDevice);//Temporary Constructor
-		virtual void draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout) override;
+		NrdPlayer();
 
 		//Gravity and jumping, in world units and seconds (+y is down in Vulkan)
 		float gravity = 9.8f;
@@ -47,7 +49,9 @@ namespace nrd {
 
 		void applyGravity(float dt);
 		void jump();
-		void resolveCollisions(); //once per frame, after all movement
+		void resolveCollisions(const CollisionWorld& world); //once per frame, after all movement
+
+		glm::vec3 moveInput{ 0.f }; //this frame's walking direction from input, zero when standing still
 
 		void update();
 		void slash();
@@ -55,7 +59,7 @@ namespace nrd {
 		void die();
 		void revive();
 		void changeAnimation(int newState, bool resetFrameToBegining);
-		void updateAnimation();
+		void updateAnimation(float dt); //picks idle, walk or jump and faces the walking direction; call after resolveCollisions
 		void updateDamage();
 		//void destroyDebugLine() { debugline = nullptr; }
 		private:

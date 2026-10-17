@@ -114,7 +114,13 @@
     <ClCompile Include="nrd_debugLine.cpp">
       <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_sweptAABB.cpp">
+    <ClCompile Include="nrd_collision.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_collision_debug.cpp">
+      <Filter>Source Files\Nuradhi</Filter>
+    </ClCompile>
+    <ClCompile Include="nrd_sprite.cpp">
       <Filter>Source Files\Nuradhi</Filter>
     </ClCompile>
     <ClCompile Include="nrd_solidObject.cpp">
@@ -206,7 +212,13 @@
     <ClInclude Include="nrd_debugLine.hpp">
       <Filter>Header Files\Nuradhi</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_sweptAABB.hpp">
+    <ClInclude Include="nrd_collision.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_collision_debug.hpp">
+      <Filter>Header Files\Nuradhi</Filter>
+    </ClInclude>
+    <ClInclude Include="nrd_sprite.hpp">
       <Filter>Header Files\Nuradhi</Filter>
     </ClInclude>
     <ClInclude Include="nrd_solidObject.hpp">

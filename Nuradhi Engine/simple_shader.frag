@@ -56,7 +56,10 @@ void main(){
 	specularLight= intensity*blinnTerm;
 	}
 	
-	vec3 imageColour = texture(image, fragUV).rgb;
+	vec4 texel = texture(image, fragUV);
+	//transparent texels (the gaps around a sprite) aren't drawn at all
+	if (texel.a < 0.5) discard;
+	vec3 imageColour = texel.rgb;
   
 	outColour = vec4((diffuseLight * imageColour + specularLight * imageColour), 1.0);
 	//outColour = vec4(diffuseLight * fragColour +specularLight*fragColour,1.0);

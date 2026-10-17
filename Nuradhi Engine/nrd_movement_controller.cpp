@@ -32,8 +32,10 @@ namespace nrd {
 
 
 		//only normalize moveDir if it's NOT ZERO
+		nrdPlayer->moveInput = glm::vec3{ 0.f };
 		if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) {
-			player->transform.translation += moveSpeed * dt * glm::normalize(moveDir);
+			nrdPlayer->moveInput = glm::normalize(moveDir);
+			player->transform.translation += moveSpeed * dt * nrdPlayer->moveInput;
 		}
 	}
 	

@@ -42,5 +42,7 @@ void main(){
 	fragNormalWorld=normalize(mat3(push.normalMatrix)*normal);
 	fragPosWorld=positionWorld.xyz;
 	fragColour=colour;
-	fragUV=uv;
+	//normalMatrix's last column is the texture rectangle: xy offset, zw size (a sprite's frame on its sheet)
+	vec4 uvRect = push.normalMatrix[3];
+	fragUV = uvRect.xy + uv * uvRect.zw;
 }

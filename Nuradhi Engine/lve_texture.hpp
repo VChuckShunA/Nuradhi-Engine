@@ -4,9 +4,14 @@
 #include <string>
 
 namespace lve {
+	enum class TextureFilter {
+		Smooth, //linear filtering with mipmaps, for regular textures
+		Pixelated, //nearest filtering, top mip only, clamped: crisp pixel art, and frames on a sprite sheet can't bleed into each other
+	};
+
 	class Texture {
 	public:
-		Texture(LveDevice& device, const std::string& filepath);
+		Texture(LveDevice& device, const std::string& filepath, TextureFilter filter = TextureFilter::Smooth);
 		~Texture();
 
 

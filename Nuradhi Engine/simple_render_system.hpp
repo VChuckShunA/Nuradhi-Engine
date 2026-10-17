@@ -19,6 +19,7 @@ namespace lve {
 
 		[[nodiscard]] nrd::NrdDebugLinePipeline* getDebugPipelinePtr() const { return nrdDebugLinePipeline.get(); }
 		[[nodiscard]] lve::LvePipeline* getlvePipelinePtr() const { return lvePipeline.get(); }
+		[[nodiscard]] VkPipelineLayout getPipelineLayout() const { return pipelineLayout; }
 
 		//Delete these cuz we're using a pointer to our GLFW window
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;

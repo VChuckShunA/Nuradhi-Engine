@@ -61,9 +61,13 @@ namespace lve {
 		LveGameObject();
 		size_t index = 0;
 		size_t textureIndex = 0; //which of the level's textures this object samples from (0 = default texture)
+		glm::vec4 uvRect{ 0.f, 0.f, 1.f, 1.f }; //part of the texture to show: xy = offset, zw = size (negative width mirrors)
 
 		virtual void draw(FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout);
 		virtual void bind(FrameInfo& frameInfo);
+	protected:
+		//draws the model with an explicit transform and texture rectangle instead of this object's own
+		void drawModel(FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout, TransformComponent renderTransform, const glm::vec4& textureRect);
 	private:
 
 		id_t id;

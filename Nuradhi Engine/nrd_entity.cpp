@@ -1,5 +1,4 @@
 #include "nrd_entity.hpp"
-#include "nrd_solidObject.hpp"
 
 const int	nrd::NrdEntity::DIR_UP = 0, 
 			nrd::NrdEntity::DIR_DOWN = 1, 
@@ -11,6 +10,15 @@ const int	nrd::NrdEntity::DIR_UP = 0,
 namespace nrd {
 	void NrdEntity::update()
 	{
+	}
+
+	void NrdEntity::draw(lve::FrameInfo& frameInfo, VkPipelineLayout& pipelineLayout)
+	{
+		if (!sprite) {
+			lve::LveGameObject::draw(frameInfo, pipelineLayout);
+			return;
+		}
+		drawModel(frameInfo, pipelineLayout, sprite->frameTransform(transform.translation), sprite->frameUvRect());
 	}
 
 	
@@ -87,14 +95,6 @@ namespace nrd {
 		//updateCollisionBox();
 		//to help with collision checking, union collisionBox with lastCollisionBox
 		//SDL_UnionRect(&collisionBox, &lastCollisionBox, &collisionBox);
-	}
-
-	void NrdEntity::updateCollisionBox()
-	{
-	}
-
-	void NrdEntity::updateCollisions()
-	{
 	}
 
 	float NrdEntity::distanceBetweenTwoEntities(NrdEntity* e1, NrdEntity* e2)
@@ -190,20 +190,6 @@ namespace nrd {
 		}
 	}
 
-	
-
-	std::list<NrdEntity*> NrdEntity::entities;
-	NrdEntity::NrdEntity(lve::LveDevice& lveDevice, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax):
-		xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax), zMin(zMin), zMax(zMax),
-		collider(lveDevice, xMin, xMax, yMin, yMax, zMin, zMax)
-	{
-		NrdEntity::entities.push_back(this);
-		//nrd::NrdSweptAABB collider(lveDevice);
-		nrd::NrdDebugLine::Builder colliderLineBuilder{};
-		colliderLineBuilder = collider.getCollider();
-
-		debugline = std::make_unique<NrdDebugLine>(lveDevice, colliderLineBuilder);
-	}
 
 
 }
