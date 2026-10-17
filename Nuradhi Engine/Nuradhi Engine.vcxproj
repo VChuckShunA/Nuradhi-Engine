@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -78,7 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,7 +97,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,7 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,7 +135,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,80 +147,71 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="first_app.cpp" />
-    <ClCompile Include="keyboard_movement_controller.cpp" />
-    <ClCompile Include="lve_buffer.cpp" />
-    <ClCompile Include="lve_camera.cpp" />
-    <ClCompile Include="lve_descriptors.cpp" />
-    <ClCompile Include="lve_device.cpp" />
-    <ClCompile Include="lve_game_object.cpp" />
-    <ClCompile Include="lve_model.cpp" />
-    <ClCompile Include="lve_pipeline.cpp" />
-    <ClCompile Include="lve_renderer.cpp" />
-    <ClCompile Include="lve_swap_chain.cpp" />
-    <ClCompile Include="lve_texture.cpp" />
-    <ClCompile Include="lve_window.cpp" />
+    <ClCompile Include="engine\core\components.cpp" />
+    <ClCompile Include="engine\core\engine.cpp" />
+    <ClCompile Include="engine\input\input.cpp" />
+    <ClCompile Include="engine\physics\collision.cpp" />
+    <ClCompile Include="engine\physics\physics.cpp" />
+    <ClCompile Include="engine\platform\lve_window.cpp" />
+    <ClCompile Include="engine\render\debug_render_system.cpp" />
+    <ClCompile Include="engine\render\mesh_render_system.cpp" />
+    <ClCompile Include="engine\render\point_light_system.cpp" />
+    <ClCompile Include="engine\render\renderer.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_buffer.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_camera.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_descriptors.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_device.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_model.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_pipeline.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_renderer.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_swap_chain.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_texture.cpp" />
+    <ClCompile Include="engine\render\vulkan\nrd_debugLine.cpp" />
+    <ClCompile Include="engine\render\vulkan\nrd_debugLinePipeline.cpp" />
+    <ClCompile Include="engine\sprite\sprite.cpp" />
+    <ClCompile Include="game\game_systems.cpp" />
+    <ClCompile Include="game\test_level.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="nrd_camera_controller.cpp" />
-    <ClCompile Include="nrd_debugLine.cpp" />
-    <ClCompile Include="nrd_debugLinePipeline.cpp" />
-    <ClCompile Include="nrd_entity.cpp" />
-    <ClCompile Include="nrd_globals.cpp" />
-    <ClCompile Include="nrd_living_entity.cpp" />
-    <ClCompile Include="nrd_movement_controller.cpp" />
-    <ClCompile Include="nrd_player.cpp" />
-    <ClCompile Include="nrd_random_number.cpp" />
-    <ClCompile Include="nrd_solidObject.cpp" />
-    <ClCompile Include="nrd_collision.cpp" />
-    <ClCompile Include="nrd_collision_debug.cpp" />
-    <ClCompile Include="nrd_sprite.cpp" />
-    <ClCompile Include="nrd_test_level.cpp" />
-    <ClCompile Include="nrd_time_controller.cpp" />
-    <ClCompile Include="point_light_system.cpp" />
-    <ClCompile Include="simple_render_system.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="first_app.hpp" />
-    <ClInclude Include="keyboard_movement_controller.hpp" />
-    <ClInclude Include="lve_buffer.hpp" />
-    <ClInclude Include="lve_camera.hpp" />
-    <ClInclude Include="lve_descriptors.hpp" />
-    <ClInclude Include="lve_device.hpp" />
-    <ClInclude Include="lve_frame_info.hpp" />
-    <ClInclude Include="lve_game_object.hpp" />
-    <ClInclude Include="lve_model.hpp" />
-    <ClInclude Include="lve_pipeline.hpp" />
-    <ClInclude Include="lve_renderer.hpp" />
-    <ClInclude Include="lve_swap_chain.hpp" />
-    <ClInclude Include="lve_texture.hpp" />
-    <ClInclude Include="lve_utils.hpp" />
-    <ClInclude Include="lve_window.hpp" />
-    <ClInclude Include="nrd_camera_controller.hpp" />
-    <ClInclude Include="nrd_debugLinePipeline.hpp" />
-    <ClInclude Include="nrd_debugLine.hpp" />
-    <ClInclude Include="nrd_entity.hpp" />
-    <ClInclude Include="nrd_globals.hpp" />
-    <ClInclude Include="nrd_living_entity.hpp" />
-    <ClInclude Include="nrd_movement_controller.hpp" />
-    <ClInclude Include="nrd_player.hpp" />
-    <ClInclude Include="nrd_random_number.hpp" />
-    <ClInclude Include="nrd_solidObject.hpp" />
-    <ClInclude Include="nrd_collision.hpp" />
-    <ClInclude Include="nrd_collision_debug.hpp" />
-    <ClInclude Include="nrd_sprite.hpp" />
-    <ClInclude Include="nrd_test_level.hpp" />
-    <ClInclude Include="nrd_time_controller.hpp" />
-    <ClInclude Include="point_light_system.hpp" />
-    <ClInclude Include="simple_render_system.hpp" />
+    <ClInclude Include="engine\core\components.hpp" />
+    <ClInclude Include="engine\core\engine.hpp" />
+    <ClInclude Include="engine\ecs\registry.hpp" />
+    <ClInclude Include="engine\input\input.hpp" />
+    <ClInclude Include="engine\physics\collision.hpp" />
+    <ClInclude Include="engine\physics\physics.hpp" />
+    <ClInclude Include="engine\platform\lve_window.hpp" />
+    <ClInclude Include="engine\render\debug_render_system.hpp" />
+    <ClInclude Include="engine\render\mesh_render_system.hpp" />
+    <ClInclude Include="engine\render\point_light_system.hpp" />
+    <ClInclude Include="engine\render\render_components.hpp" />
+    <ClInclude Include="engine\render\renderer.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_buffer.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_camera.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_descriptors.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_device.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_frame_info.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_model.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_pipeline.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_renderer.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_swap_chain.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_texture.hpp" />
+    <ClInclude Include="engine\render\vulkan\lve_utils.hpp" />
+    <ClInclude Include="engine\render\vulkan\nrd_debugLine.hpp" />
+    <ClInclude Include="engine\render\vulkan\nrd_debugLinePipeline.hpp" />
+    <ClInclude Include="engine\sprite\sprite.hpp" />
+    <ClInclude Include="game\game_components.hpp" />
+    <ClInclude Include="game\game_systems.hpp" />
+    <ClInclude Include="game\test_level.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="compile.bat" />
-    <None Include="green_shader.frag" />
-    <None Include="green_shader.vert" />
-    <None Include="point_light.frag" />
-    <None Include="point_light.vert" />
-    <None Include="simple_shader.frag" />
-    <None Include="simple_shader.vert" />
+    <None Include="shaders\compile.bat" />
+    <None Include="shaders\green_shader.frag" />
+    <None Include="shaders\green_shader.vert" />
+    <None Include="shaders\point_light.frag" />
+    <None Include="shaders\point_light.vert" />
+    <None Include="shaders\simple_shader.frag" />
+    <None Include="shaders\simple_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

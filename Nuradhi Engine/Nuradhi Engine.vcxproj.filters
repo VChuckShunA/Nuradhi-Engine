@@ -1,248 +1,224 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{9be3c1e7-2807-4565-8657-b391f128e335}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Engine\Core">
+      <UniqueIdentifier>{1443668f-db82-4327-ab66-4b7fc0f123a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Engine\Ecs">
+      <UniqueIdentifier>{80d73cda-c6b7-4e92-b27f-e85d7f540e71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Input">
+      <UniqueIdentifier>{b90b7350-a4e6-48cd-8819-049debe5ec0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Physics">
+      <UniqueIdentifier>{218e699e-4c58-460e-b4dd-c7b2fc0b2889}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Platform">
+      <UniqueIdentifier>{28a1ffcc-5361-4514-ae82-785a1d9ffc04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Render">
+      <UniqueIdentifier>{db7c75a9-a4ea-4356-a6ce-2e6aa6607b2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Render\Vulkan">
+      <UniqueIdentifier>{e1d0662b-8ad1-4bff-915c-78740b3bab1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Sprite">
+      <UniqueIdentifier>{ab6c4b52-fde9-4caa-ac84-2972c3c17f64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{bfa5e95e-318f-4ac2-ada5-14022519f6ac}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shaders">
-      <UniqueIdentifier>{39f5756d-3391-445e-9294-a4e2dd0c5360}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Systems">
-      <UniqueIdentifier>{549acdfc-46c9-4f5b-b343-ed795a6810d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Lve">
-      <UniqueIdentifier>{a7b502f5-bb1b-4fb5-9043-e6f3ad201561}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Nuradhi">
-      <UniqueIdentifier>{68805dc8-b9ab-4be5-bc4d-5721937e903e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Lve">
-      <UniqueIdentifier>{ca331bcb-5690-4776-9aa4-63c9ab35dd65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Nuradhi">
-      <UniqueIdentifier>{d82b3591-722c-424e-9ef0-3333a09af098}</UniqueIdentifier>
+      <UniqueIdentifier>{280a7939-4bf2-4795-88cf-4e0730780dc6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="simple_render_system.cpp">
-      <Filter>Systems</Filter>
+    <ClCompile Include="engine\core\components.cpp">
+      <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="point_light_system.cpp">
-      <Filter>Systems</Filter>
+    <ClCompile Include="engine\core\engine.cpp">
+      <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="first_app.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\input\input.cpp">
+      <Filter>Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="keyboard_movement_controller.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\physics\collision.cpp">
+      <Filter>Engine\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="lve_buffer.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\physics\physics.cpp">
+      <Filter>Engine\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="lve_camera.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\platform\lve_window.cpp">
+      <Filter>Engine\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="lve_descriptors.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\debug_render_system.cpp">
+      <Filter>Engine\Render</Filter>
     </ClCompile>
-    <ClCompile Include="lve_device.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\mesh_render_system.cpp">
+      <Filter>Engine\Render</Filter>
     </ClCompile>
-    <ClCompile Include="lve_game_object.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\point_light_system.cpp">
+      <Filter>Engine\Render</Filter>
     </ClCompile>
-    <ClCompile Include="lve_model.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\renderer.cpp">
+      <Filter>Engine\Render</Filter>
     </ClCompile>
-    <ClCompile Include="lve_pipeline.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_buffer.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="lve_renderer.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_camera.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="lve_swap_chain.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_descriptors.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="lve_window.cpp">
-      <Filter>Source Files\Lve</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_device.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_model.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_entity.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_pipeline.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_globals.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_renderer.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_living_entity.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_swap_chain.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_movement_controller.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\render\vulkan\lve_texture.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_player.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\render\vulkan\nrd_debugLine.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_random_number.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\render\vulkan\nrd_debugLinePipeline.cpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_test_level.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="engine\sprite\sprite.cpp">
+      <Filter>Engine\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_time_controller.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="game\game_systems.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="nrd_camera_controller.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
+    <ClCompile Include="game\test_level.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="lve_texture.cpp">
-      <Filter>Source Files\Lve</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_debugLinePipeline.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_debugLine.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_collision.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_collision_debug.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_sprite.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
-    </ClCompile>
-    <ClCompile Include="nrd_solidObject.cpp">
-      <Filter>Source Files\Nuradhi</Filter>
-    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="simple_render_system.hpp">
-      <Filter>Systems</Filter>
+    <ClInclude Include="engine\core\components.hpp">
+      <Filter>Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="point_light_system.hpp">
-      <Filter>Systems</Filter>
+    <ClInclude Include="engine\core\engine.hpp">
+      <Filter>Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="first_app.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\ecs\registry.hpp">
+      <Filter>Engine\Ecs</Filter>
     </ClInclude>
-    <ClInclude Include="keyboard_movement_controller.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\input\input.hpp">
+      <Filter>Engine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="lve_buffer.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\physics\collision.hpp">
+      <Filter>Engine\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="lve_camera.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\physics\physics.hpp">
+      <Filter>Engine\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="lve_descriptors.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\platform\lve_window.hpp">
+      <Filter>Engine\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="lve_device.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\debug_render_system.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="lve_frame_info.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\mesh_render_system.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="lve_game_object.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\point_light_system.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="lve_model.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\render_components.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="lve_pipeline.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\renderer.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="lve_renderer.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_buffer.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="lve_swap_chain.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_camera.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="lve_utils.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_descriptors.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="lve_window.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_device.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_entity.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_frame_info.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_globals.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_model.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_living_entity.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_pipeline.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_random_number.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_renderer.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_test_level.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_swap_chain.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_time_controller.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_texture.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_player.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\lve_utils.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_movement_controller.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\nrd_debugLine.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_camera_controller.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="engine\render\vulkan\nrd_debugLinePipeline.hpp">
+      <Filter>Engine\Render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="lve_texture.hpp">
-      <Filter>Header Files\Lve</Filter>
+    <ClInclude Include="engine\sprite\sprite.hpp">
+      <Filter>Engine\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_debugLinePipeline.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="game\game_components.hpp">
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_debugLine.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="game\game_systems.hpp">
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="nrd_collision.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
-    </ClInclude>
-    <ClInclude Include="nrd_collision_debug.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
-    </ClInclude>
-    <ClInclude Include="nrd_sprite.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
-    </ClInclude>
-    <ClInclude Include="nrd_solidObject.hpp">
-      <Filter>Header Files\Nuradhi</Filter>
+    <ClInclude Include="game\test_level.hpp">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="simple_shader.vert">
+    <None Include="shaders\compile.bat">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="simple_shader.frag">
+    <None Include="shaders\green_shader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="compile.bat" />
-    <None Include="point_light.vert">
+    <None Include="shaders\green_shader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="point_light.frag">
+    <None Include="shaders\point_light.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="green_shader.vert">
+    <None Include="shaders\point_light.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="green_shader.frag">
+    <None Include="shaders\simple_shader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\simple_shader.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

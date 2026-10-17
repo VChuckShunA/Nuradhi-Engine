@@ -1,18 +1,24 @@
-#include "first_app.hpp"
-#include "nrd_test_level.hpp"
+#include "engine/core/engine.hpp"
+#include "game/test_level.hpp"
+
 //std
 #include <cstdlib>
-#include<iostream>
-#include<stdexcept>
+#include <iostream>
+#include <stdexcept>
+#include <string>
 
-int main() {
-	//lve::FirstApp app{};
-	nrd::TestLevel testLevel{};
+//  --debug-log   print collision contacts every frame and the sprite sheets' detected frames
+int main(int argc, char** argv) {
 	try {
-		//app.run();
-		testLevel.run();
+		nrd::Engine engine{ { 1920, 1080, "Nuradhi - A Film Noir Game Engine" } };
+		for (int i = 1; i < argc; i++) {
+			if (std::string{ argv[i] } == "--debug-log") engine.debugLog = true;
+		}
+
+		game::loadTestLevel(engine);
+		engine.run();
 	}
-	catch (const std::exception &e) {
+	catch (const std::exception& e) {
 		std::cerr << e.what() << '\n';
 		return EXIT_FAILURE;
 	}

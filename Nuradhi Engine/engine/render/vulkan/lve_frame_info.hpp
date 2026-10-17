@@ -1,0 +1,51 @@
+#pragma once
+
+#include "lve_camera.hpp"
+#include "lve_model.hpp"
+#include "engine/ecs/registry.hpp"
+
+//lib
+#include "vulkan/vulkan.h"
+
+//std
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+namespace lve {
+
+#define MAX_LIGHTS 10
+
+	struct PointLight {
+		glm::vec4 position{}; //ignore w
+		glm::vec4 colour{}; //w is intensity
+	};
+
+	struct GlobalUbo {
+		glm::mat4 projection{ 1.f };
+		glm::mat4 view{ 1.f };
+		glm::mat4 inverseView{1.f};
+		glm::vec4 ambientLightColour{ 1.f,1.f,1.f,.02f };//w is intensity
+		PointLight pointLight[MAX_LIGHTS];
+		int numLights;
+	};
+	struct SimplePushConstantData {
+		glm::mat4 modelMatrix{ 1.f };
+		glm::mat4 normalMatrix{ 1.f }; //3x3 normal matrix; column 3 holds the texture rectangle (xy offset, zw size)
+		//alignas(16) glm::vec3 colour; //*IMPORTANT!*
+		//using align as to account for how this info is Stored
+	};
+
+	//Everything a render system needs to record one frame
+	struct FrameInfo {
+		int frameIndex;
+		float frameTime;
+		VkCommandBuffer commandBuffer;
+		LveCamera& camera;
+		VkDescriptorSet globalDescriptorSet; //this frame's set for the default texture
+		nrd::ecs::Registry& registry;
+		std::vector<VkDescriptorSet>& textureDescriptorSets; //this frame's global descriptor sets, one per texture, indexed by TextureHandle
+		const std::vector<std::shared_ptr<LveModel>>& meshes; //indexed by MeshHandle
+		std::uint32_t spriteQuadMesh; //mesh every Sprite is drawn on
+	};
+}
