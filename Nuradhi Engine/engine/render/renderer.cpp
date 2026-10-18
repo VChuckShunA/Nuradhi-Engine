@@ -61,6 +61,7 @@ namespace nrd {
 		std::unique_ptr<DebugRenderSystem> debugSystem;
 		lve::LveCamera camera;
 		bool debugOverlay = true;
+		std::vector<Aabb> debugBoxes; //queued by drawDebugBox, cleared every frame
 
 		TextureHandle addTexture(std::unique_ptr<lve::Texture> texture)
 		{
@@ -167,12 +168,15 @@ namespace nrd {
 
 	void Renderer::setDebugOverlay(bool enabled) { impl->debugOverlay = enabled; }
 	bool Renderer::debugOverlay() const { return impl->debugOverlay; }
+	void Renderer::drawDebugBox(const Aabb& box) { impl->debugBoxes.push_back(box); }
 
 	float Renderer::aspectRatio() const { return impl->swapchain.getAspectRatio(); }
 
 	void Renderer::render(ecs::Registry& registry, float frameTime)
 	{
 		Impl& r = *impl;
+		const std::vector<Aabb> debugBoxes = std::move(r.debugBoxes);
+		r.debugBoxes.clear();
 		VkCommandBuffer commandBuffer = r.swapchain.beginFrame();
 		if (!commandBuffer) return; //the swapchain was just recreated; draw next frame
 
@@ -204,6 +208,7 @@ namespace nrd {
 		if (r.debugOverlay) {
 			r.meshSystem->render(frameInfo, true);
 			r.debugSystem->renderColliders(frameInfo, r.meshSystem->pipelineLayout());
+			r.debugSystem->renderBoxes(frameInfo, r.meshSystem->pipelineLayout(), debugBoxes);
 		}
 		r.swapchain.endSwapChainRenderPass(commandBuffer);
 		r.swapchain.endFrame();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/ecs/registry.hpp"
+#include "engine/physics/collision.hpp"
 #include "engine/render/render_components.hpp"
 
 //std
@@ -35,6 +36,8 @@ namespace nrd {
 		//green wireframes of every mesh plus collider boxes, drawn over the scene
 		void setDebugOverlay(bool enabled);
 		bool debugOverlay() const;
+		//draws a wire box in the debug overlay for the next frame only, e.g. an attack's hitbox while it's active
+		void drawDebugBox(const Aabb& box);
 
 		float aspectRatio() const;
 

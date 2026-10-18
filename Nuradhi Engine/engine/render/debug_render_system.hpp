@@ -3,9 +3,11 @@
 #include "engine/render/vulkan/lve_device.hpp"
 #include "engine/render/vulkan/lve_frame_info.hpp"
 #include "engine/render/vulkan/nrd_debugLine.hpp"
+#include "engine/physics/collision.hpp"
 
 //std
 #include <memory>
+#include <vector>
 
 namespace nrd {
 
@@ -19,8 +21,11 @@ namespace nrd {
 		DebugRenderSystem& operator=(const DebugRenderSystem&) = delete;
 
 		void renderColliders(lve::FrameInfo& frameInfo, VkPipelineLayout pipelineLayout);
+		void renderBoxes(lve::FrameInfo& frameInfo, VkPipelineLayout pipelineLayout, const std::vector<Aabb>& boxes);
 
 	private:
+		void drawBox(lve::FrameInfo& frameInfo, VkPipelineLayout pipelineLayout, const Aabb& bounds);
+
 		std::unique_ptr<NrdDebugLine> unitCube; //the 12 edges of the [-1, 1] cube, shared by every collider
 	};
 }

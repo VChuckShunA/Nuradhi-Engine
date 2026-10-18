@@ -8,14 +8,37 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+//std
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
 namespace game {
 
 	using nrd::ecs::Entity;
 
+	void playerAttackInputSystem(nrd::Engine& engine, float dt)
+	{
+		const nrd::Input& input = engine.input();
+		engine.registry().each<PlayerController, Combat, nrd::RigidBody>([&](Entity, PlayerController&, Combat& combat, nrd::RigidBody& body) {
+			if (combat.attacking() || !body.grounded) return;
+			if (input.actionPressed("punch")) combat.start("punch");
+			else if (input.actionPressed("kick")) combat.start("kick");
+		});
+	}
+
 	void playerControlSystem(nrd::Engine& engine, float dt)
 	{
 		const nrd::Input& input = engine.input();
-		engine.registry().each<PlayerController, nrd::RigidBody>([&](Entity, PlayerController& controller, nrd::RigidBody& body) {
+		nrd::ecs::Registry& registry = engine.registry();
+		registry.each<PlayerController, nrd::RigidBody>([&](Entity entity, PlayerController& controller, nrd::RigidBody& body) {
+			//committed to an attack: plant the feet
+			const Combat* combat = registry.tryGet<Combat>(entity);
+			if (combat && combat->attacking()) {
+				body.velocity.x = body.velocity.z = 0.f;
+				return;
+			}
+
 			//+z is forward, away from the camera
 			glm::vec3 direction{ input.axis("moveX"), 0.f, input.axis("moveZ") };
 			if (glm::dot(direction, direction) > 0.f) direction = glm::normalize(direction);
@@ -53,10 +76,61 @@ namespace game {
 		}
 	}
 
+	void attackSystem(nrd::Engine& engine, float dt)
+	{
+		nrd::ecs::Registry& registry = engine.registry();
+		std::vector<Entity> defeated;
+		registry.each<Combat, nrd::Transform>([&](Entity attacker, Combat& combat, nrd::Transform& transform) {
+			const AttackMove* move = combat.current();
+			if (!move) {
+				combat.currentMove.clear();
+				return;
+			}
+
+			combat.timer += dt;
+			if (combat.timer >= move->duration) {
+				combat.currentMove.clear();
+				return;
+			}
+			if (combat.timer < move->activeStart || combat.timer > move->activeEnd) return;
+
+			//the hitbox is authored facing right; sprites facing left mirror it
+			const nrd::Sprite* sprite = registry.tryGet<nrd::Sprite>(attacker);
+			const float facing = sprite && sprite->flipX ? -1.f : 1.f;
+			const glm::vec3 offset{ move->hitboxOffset.x * facing, move->hitboxOffset.y, move->hitboxOffset.z };
+			const nrd::Aabb hitbox = nrd::Aabb::fromCenterHalfExtents(transform.position + offset, move->hitboxHalfExtents);
+			engine.renderer().drawDebugBox(hitbox);
+
+			registry.each<Health, nrd::Collider, nrd::Transform>([&](Entity target, Health& health, nrd::Collider& collider, nrd::Transform& targetTransform) {
+				if (target == attacker || health.hp <= 0) return;
+				if (std::find(combat.hitThisAttack.begin(), combat.hitThisAttack.end(), target) != combat.hitThisAttack.end()) return;
+				if (!hitbox.overlaps(collider.worldBounds(targetTransform.position))) return;
+
+				combat.hitThisAttack.push_back(target);
+				health.hp -= move->damage;
+				if (nrd::RigidBody* body = registry.tryGet<nrd::RigidBody>(target)) body->velocity.x = move->knockback * facing;
+				if (engine.debugLog) {
+					std::cout << "hit " << combat.currentMove << " target " << target << " hp " << health.hp << "/" << health.maxHp << "\n";
+				}
+				if (health.hp <= 0) defeated.push_back(target);
+			});
+		});
+		//destroyed after the loops: entities can't be removed while they're being iterated
+		for (const Entity entity : defeated) registry.destroy(entity);
+	}
+
 	void characterAnimationSystem(nrd::Engine& engine, float dt)
 	{
-		engine.registry().each<CharacterAnimations, nrd::Sprite, nrd::RigidBody>(
-			[&](Entity, CharacterAnimations& animations, nrd::Sprite& sprite, nrd::RigidBody& body) {
+		nrd::ecs::Registry& registry = engine.registry();
+		registry.each<CharacterAnimations, nrd::Sprite, nrd::RigidBody>(
+			[&](Entity entity, CharacterAnimations& animations, nrd::Sprite& sprite, nrd::RigidBody& body) {
+				//an attack overrides everything, and keeps the facing it started with
+				if (Combat* combat = registry.tryGet<Combat>(entity); combat && combat->attacking()) {
+					if (const AttackMove* move = combat->current()) sprite.animator.play(move->animation, combat->justStarted);
+					combat->justStarted = false;
+					return;
+				}
+
 				//face the way we're walking; the sheets are drawn facing right
 				if (body.velocity.x < 0.f) sprite.flipX = true;
 				else if (body.velocity.x > 0.f) sprite.flipX = false;

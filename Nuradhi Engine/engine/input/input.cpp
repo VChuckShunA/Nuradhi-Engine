@@ -4,8 +4,11 @@
 namespace nrd {
 
 	namespace {
-		//GLFW key code for each Key, in enum order
-		constexpr std::array<int, static_cast<std::size_t>(Key::Count)> GLFW_KEYS{
+		constexpr std::size_t FIRST_MOUSE_BUTTON = static_cast<std::size_t>(Key::MouseLeft);
+		constexpr std::array<int, 3> GLFW_MOUSE_BUTTONS{ GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_RIGHT, GLFW_MOUSE_BUTTON_MIDDLE };
+
+		//GLFW key code for each keyboard Key, in enum order
+		constexpr std::array<int, FIRST_MOUSE_BUTTON> GLFW_KEYS{
 			GLFW_KEY_A, GLFW_KEY_B, GLFW_KEY_C, GLFW_KEY_D, GLFW_KEY_E, GLFW_KEY_F, GLFW_KEY_G, GLFW_KEY_H, GLFW_KEY_I,
 			GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_M, GLFW_KEY_N, GLFW_KEY_O, GLFW_KEY_P, GLFW_KEY_Q, GLFW_KEY_R,
 			GLFW_KEY_S, GLFW_KEY_T, GLFW_KEY_U, GLFW_KEY_V, GLFW_KEY_W, GLFW_KEY_X, GLFW_KEY_Y, GLFW_KEY_Z,
@@ -26,8 +29,11 @@ namespace nrd {
 	{
 		previous = current;
 		GLFWwindow* glfwWindow = window.getGLFWwindow();
-		for (std::size_t key = 0; key < KEY_COUNT; key++) {
+		for (std::size_t key = 0; key < FIRST_MOUSE_BUTTON; key++) {
 			current[key] = glfwGetKey(glfwWindow, GLFW_KEYS[key]) == GLFW_PRESS;
+		}
+		for (std::size_t button = 0; button < GLFW_MOUSE_BUTTONS.size(); button++) {
+			current[FIRST_MOUSE_BUTTON + button] = glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTONS[button]) == GLFW_PRESS;
 		}
 	}
 

@@ -37,18 +37,27 @@ namespace nrd {
 	{
 		unitCube->bind(frameInfo.commandBuffer);
 		frameInfo.registry.each<Transform, Collider>([&](ecs::Entity, Transform& transform, Collider& collider) {
-			const Aabb bounds = collider.worldBounds(transform.position);
-
-			lve::SimplePushConstantData push{};
-			push.modelMatrix = glm::scale(glm::translate(glm::mat4{ 1.f }, bounds.center()), bounds.halfExtents());
-			vkCmdPushConstants(
-				frameInfo.commandBuffer,
-				pipelineLayout,
-				VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-				0,
-				sizeof(lve::SimplePushConstantData),
-				&push);
-			unitCube->draw(frameInfo.commandBuffer);
+			drawBox(frameInfo, pipelineLayout, collider.worldBounds(transform.position));
 		});
+	}
+
+	void DebugRenderSystem::renderBoxes(lve::FrameInfo& frameInfo, VkPipelineLayout pipelineLayout, const std::vector<Aabb>& boxes)
+	{
+		unitCube->bind(frameInfo.commandBuffer);
+		for (const Aabb& box : boxes) drawBox(frameInfo, pipelineLayout, box);
+	}
+
+	void DebugRenderSystem::drawBox(lve::FrameInfo& frameInfo, VkPipelineLayout pipelineLayout, const Aabb& bounds)
+	{
+		lve::SimplePushConstantData push{};
+		push.modelMatrix = glm::scale(glm::translate(glm::mat4{ 1.f }, bounds.center()), bounds.halfExtents());
+		vkCmdPushConstants(
+			frameInfo.commandBuffer,
+			pipelineLayout,
+			VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+			0,
+			sizeof(lve::SimplePushConstantData),
+			&push);
+		unitCube->draw(frameInfo.commandBuffer);
 	}
 }

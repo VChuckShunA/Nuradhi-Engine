@@ -31,6 +31,37 @@ namespace game {
 			input.bindAction("jump", Key::Space);
 			input.bindAxis("cameraYaw", Key::Left, Key::Right);
 			input.bindAction("toggleDebug", Key::F1);
+			input.bindAction("punch", Key::MouseLeft);
+			input.bindAction("kick", Key::MouseRight);
+		}
+
+		//Blaze's attacks. Each animation's frames last exactly the move's duration (3 frames at 12 fps = 0.25 s),
+		//and the hitbox is live on the middle frame, where the fist or foot is out.
+		Combat blazeCombat()
+		{
+			Combat combat{};
+			AttackMove punch{};
+			punch.animation = "punch";
+			punch.duration = 3.f / 12.f;
+			punch.activeStart = 1.f / 12.f;
+			punch.activeEnd = 2.f / 12.f;
+			punch.hitboxOffset = { 0.38f, -0.72f, 0.f }; //a fist's length in front, at chest height
+			punch.hitboxHalfExtents = { 0.14f, 0.1f, 0.25f };
+			punch.damage = 1;
+			punch.knockback = 0.5f;
+			combat.moves["punch"] = punch;
+
+			AttackMove kick{};
+			kick.animation = "kick";
+			kick.duration = 3.f / 10.f;
+			kick.activeStart = 1.f / 10.f;
+			kick.activeEnd = 2.f / 10.f;
+			kick.hitboxOffset = { 0.55f, -0.55f, 0.f }; //longer reach, waist height
+			kick.hitboxHalfExtents = { 0.25f, 0.12f, 0.25f };
+			kick.damage = 2;
+			kick.knockback = 1.f;
+			combat.moves["kick"] = kick;
+			return combat;
 		}
 
 		//Blaze's sprite sheet: the frames are found from the image itself, the animations pick which frames to play
@@ -43,6 +74,11 @@ namespace game {
 				6.f, true });
 			sheet->addRowAnimation("walk", row0, 3, 6, 10.f);
 			sheet->addRowAnimation("jump", row0, 10, 3, 8.f, false); //crouch, rise, then hold the falling pose
+			const int row3 = 3, row4 = 4;
+			sheet->addAnimation({ "punch", //wind up, straight jab, pull back
+				{ sheet->frameAt(row3, 11), sheet->frameAt(row3, 10), sheet->frameAt(row3, 11) }, 12.f, false });
+			sheet->addAnimation({ "kick", //chamber, front kick, recover
+				{ sheet->frameAt(row4, 2), sheet->frameAt(row4, 0), sheet->frameAt(row4, 2) }, 10.f, false });
 			if (describe) sheet->describe(std::cout); //every detected frame with its row and column
 			return sheet;
 		}
@@ -84,12 +120,22 @@ namespace game {
 		//Blaze. Her position is her feet, like the sprite's pivot, so her body box sits on top of it (-y is up):
 		//1 unit tall like the sprite, half a unit wide and deep.
 		const Entity player = registry.create();
+		const std::shared_ptr<SpriteSheet> blazeSheet = loadBlazeSheet(engine.debugLog);
 		registry.add<Transform>(player, Transform{ { 1.f, 1.5f, 3.f } });
-		registry.add<Sprite>(player, loadBlazeSheet(engine.debugLog), blazeTexture, BLAZE_PIXELS_PER_UNIT);
+		registry.add<Sprite>(player, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT);
 		registry.add<RigidBody>(player);
 		registry.add<Collider>(player, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }, false));
 		registry.add<PlayerController>(player);
 		registry.add<CharacterAnimations>(player, CharacterAnimations{ "idle", "walk", "jump" });
+		registry.add<Combat>(player, blazeCombat());
+
+		//training dummy: a second Blaze, facing her from the left. She's solid and breaks after 5 points of damage.
+		const Entity dummy = registry.create();
+		registry.add<Transform>(dummy, Transform{ { -0.6f, 1.5f, 3.f } });
+		Sprite& dummySprite = registry.add<Sprite>(dummy, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT);
+		dummySprite.animator.play("idle");
+		registry.add<Collider>(dummy, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }));
+		registry.add<Health>(dummy, Health{ 5, 5 });
 
 		//Colliders are in world units around each entity's position, and +y is down: a box with offset y = -0.25
 		//and half height 0.25 sits on top of its position, one with offset y = +0.05 hangs just below it.
@@ -99,6 +145,7 @@ namespace game {
 		registry.add<Transform>(vase, Transform{ { 2.f, 1.5f, 1.f } });
 		registry.add<MeshRenderer>(vase, MeshRenderer{ vaseMesh, logoTexture });
 		registry.add<Collider>(vase, Collider::box({ 0.25f, 0.25f, 0.25f }, { 0.f, -0.25f, 0.f }));
+		registry.add<Health>(vase, Health{ 2, 2 }); //low: only kicks reach it
 
 		//two 10 x 2 floor slabs, 0.1 thick, whose top surface is at their position
 		for (const float z : { 2.f, 4.f }) {
@@ -115,10 +162,12 @@ namespace game {
 		registry.add<CameraFollow>(camera, CameraFollow{ player, { true, false, false }, { -0.4f, 0.f, 0.f } });
 		registry.add<CameraYawControl>(camera);
 
+		engine.addSystem(Phase::Update, playerAttackInputSystem);
 		engine.addSystem(Phase::Update, playerControlSystem);
 		engine.addSystem(Phase::Update, cameraYawSystem);
 		engine.addSystem(Phase::Update, orbitSystem);
 		engine.addSystem(Phase::Update, debugOverlayToggleSystem);
+		engine.addSystem(Phase::LateUpdate, attackSystem);
 		engine.addSystem(Phase::LateUpdate, characterAnimationSystem);
 	}
 }

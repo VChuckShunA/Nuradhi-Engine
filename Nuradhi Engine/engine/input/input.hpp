@@ -21,6 +21,7 @@ namespace nrd {
 		Left, Right, Up, Down,
 		LeftShift, RightShift, LeftControl, RightControl, LeftAlt, RightAlt,
 		F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+		MouseLeft, MouseRight, MouseMiddle, //mouse buttons work like keys: bind them to actions and axes the same way
 		Count
 	};
 
