@@ -31,11 +31,10 @@ namespace nrd {
 		auto previousTime = std::chrono::high_resolution_clock::now();
 		while (!window->shouldClose()) {
 			glfwPollEvents();
-			keyboard->update();
-
 			const auto now = std::chrono::high_resolution_clock::now();
 			const float dt = std::chrono::duration<float, std::chrono::seconds::period>(now - previousTime).count();
 			previousTime = now;
+			keyboard->update(dt);
 
 			for (System& system : updateSystems) system(*this, dt);
 			stepPhysics(world, dt, physics, debugLog);

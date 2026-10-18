@@ -98,6 +98,7 @@ namespace game {
 				{ sheet->frameAt(row0, 0), sheet->frameAt(row0, 1), sheet->frameAt(row0, 2), sheet->frameAt(row0, 1) },
 				6.f, true });
 			sheet->addRowAnimation("walk", row0, 3, 6, 10.f);
+			sheet->addRowAnimation("run", 8, 1, 6, 14.f); //row 8: six-frame sprint
 			sheet->addRowAnimation("jump", row0, 10, 3, 8.f, false); //crouch, rise, then hold the falling pose
 			const int row3 = 3, row4 = 4;
 			sheet->addAnimation({ "punch", //wind up, straight jab, pull back
@@ -155,7 +156,7 @@ namespace game {
 		registry.add<RigidBody>(player);
 		registry.add<Collider>(player, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }, false));
 		registry.add<PlayerController>(player);
-		registry.add<CharacterAnimations>(player, CharacterAnimations{ "idle", "walk", "jump" });
+		registry.add<CharacterAnimations>(player, CharacterAnimations{ "idle", "walk", "run", "jump" });
 		registry.add<Combat>(player, blazeCombat());
 
 		//training dummy: a second Blaze, facing her from the left. She's solid and breaks after 5 points of damage.

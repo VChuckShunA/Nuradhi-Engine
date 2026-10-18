@@ -23,10 +23,12 @@ namespace nrd {
 
 	Input::Input(lve::LveWindow& window) : window{ window }
 	{
+		lastPressTime.fill(-1000.f);
 	}
 
-	void Input::update()
+	void Input::update(float dt)
 	{
+		time += dt;
 		previous = current;
 		GLFWwindow* glfwWindow = window.getGLFWwindow();
 		for (std::size_t key = 0; key < FIRST_MOUSE_BUTTON; key++) {
@@ -34,6 +36,14 @@ namespace nrd {
 		}
 		for (std::size_t button = 0; button < GLFW_MOUSE_BUTTONS.size(); button++) {
 			current[FIRST_MOUSE_BUTTON + button] = glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTONS[button]) == GLFW_PRESS;
+		}
+
+		for (std::size_t key = 0; key < KEY_COUNT; key++) {
+			doubleTapped[key] = false;
+			if (!current[key] || previous[key]) continue; //only on the frame it goes down
+			doubleTapped[key] = time - lastPressTime[key] <= doubleTapWindow;
+			//a double tap uses up both presses, so a third quick tap starts a new pair instead of counting again
+			lastPressTime[key] = doubleTapped[key] ? -1000.f : time;
 		}
 	}
 
@@ -89,5 +99,16 @@ namespace nrd {
 			if (isDown(positive)) value += 1.f;
 		}
 		return value < -1.f ? -1.f : (value > 1.f ? 1.f : value);
+	}
+
+	float Input::axisDoubleTapped(const std::string& axis) const
+	{
+		const auto found = axes.find(axis);
+		if (found == axes.end()) return 0.f;
+		for (const auto& [negative, positive] : found->second) {
+			if (wasDoubleTapped(negative)) return -1.f;
+			if (wasDoubleTapped(positive)) return 1.f;
+		}
+		return 0.f;
 	}
 }

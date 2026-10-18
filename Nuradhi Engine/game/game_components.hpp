@@ -12,17 +12,22 @@
 
 namespace game {
 
-	//Walks with the "moveX"/"moveZ" axes and jumps with the "jump" action. Needs a RigidBody.
+	//Walks with the "moveX"/"moveZ" axes and jumps with the "jump" action. Double tapping a "moveX" direction on
+	//the ground and holding it sprints. Needs a RigidBody.
 	struct PlayerController {
 		float moveSpeed = 0.5f; //world units per second
+		float sprintSpeed = 1.25f; //along x while sprinting; depth (z) stays at moveSpeed
 		float jumpSpeed = 3.5f; //upward speed at take-off; height is jumpSpeed^2 / (2 * gravity)
+		float sprintDirection = 0.f; //-1 or +1 while sprinting, 0 otherwise
 	};
 
 	//Sprite animations a character plays, by name on its sprite sheet. Needs a Sprite and a RigidBody.
 	struct CharacterAnimations {
 		std::string idle;
 		std::string walk;
+		std::string run; //at runSpeed or faster along the ground; leave empty to always walk
 		std::string jump; //anything airborne
+		float runSpeed = 0.8f;
 	};
 
 	//Circles the entity around a point

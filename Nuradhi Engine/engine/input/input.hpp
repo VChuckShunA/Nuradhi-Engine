@@ -34,12 +34,15 @@ namespace nrd {
 	public:
 		explicit Input(lve::LveWindow& window);
 
-		//the engine calls this every frame, after polling window events
-		void update();
+		//the engine calls this every frame, after polling window events, with the frame's duration
+		void update(float dt);
 
 		bool isDown(Key key) const { return current[index(key)]; }
 		bool wasPressed(Key key) const { return current[index(key)] && !previous[index(key)]; } //went down this frame
 		bool wasReleased(Key key) const { return !current[index(key)] && previous[index(key)]; } //came up this frame
+		//went down this frame for the second time within doubleTapWindow seconds
+		bool wasDoubleTapped(Key key) const { return doubleTapped[index(key)]; }
+		float doubleTapWindow = 0.25f;
 
 		//an action can have several keys; it's down if any of them is
 		void bindAction(const std::string& action, Key key);
@@ -51,6 +54,8 @@ namespace nrd {
 		//Several key pairs can feed the same axis.
 		void bindAxis(const std::string& axis, Key negative, Key positive);
 		float axis(const std::string& axis) const;
+		//-1 or +1 when one of the axis's negative or positive keys was double tapped this frame, otherwise 0
+		float axisDoubleTapped(const std::string& axis) const;
 
 	private:
 		static constexpr std::size_t KEY_COUNT = static_cast<std::size_t>(Key::Count);
@@ -59,6 +64,9 @@ namespace nrd {
 		lve::LveWindow& window;
 		std::array<bool, KEY_COUNT> current{};
 		std::array<bool, KEY_COUNT> previous{};
+		std::array<bool, KEY_COUNT> doubleTapped{};
+		std::array<float, KEY_COUNT> lastPressTime{}; //in `time`; very negative until a key is first pressed
+		float time = 0.f; //seconds since the engine started
 		std::unordered_map<std::string, std::vector<Key>> actions;
 		std::unordered_map<std::string, std::vector<std::pair<Key, Key>>> axes;
 	};

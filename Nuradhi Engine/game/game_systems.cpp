@@ -45,15 +45,35 @@ namespace game {
 			const Combat* combat = registry.tryGet<Combat>(entity);
 			if (combat && combat->attacking()) {
 				const AttackMove* move = combat->current();
-				if (!move || !move->airborne) body.velocity.x = body.velocity.z = 0.f;
+				if (!move || !move->airborne) {
+					body.velocity.x = body.velocity.z = 0.f;
+					controller.sprintDirection = 0.f; //a ground attack stops a sprint
+				}
 				return;
 			}
 
-			//+z is forward, away from the camera
-			glm::vec3 direction{ input.axis("moveX"), 0.f, input.axis("moveZ") };
-			if (glm::dot(direction, direction) > 0.f) direction = glm::normalize(direction);
-			body.velocity.x = direction.x * controller.moveSpeed;
-			body.velocity.z = direction.z * controller.moveSpeed;
+			//sprint: double tap a direction on the ground, then keep holding it. Letting go or turning around stops.
+			const float moveX = input.axis("moveX");
+			const float moveZ = input.axis("moveZ");
+			const float doubleTap = input.axisDoubleTapped("moveX");
+			const float sprintBefore = controller.sprintDirection;
+			if (doubleTap != 0.f && body.grounded) controller.sprintDirection = doubleTap;
+			if (moveX != controller.sprintDirection) controller.sprintDirection = 0.f;
+			if (engine.debugLog && controller.sprintDirection != sprintBefore) {
+				std::cout << (controller.sprintDirection != 0.f ? "sprint start " : "sprint stop ") << controller.sprintDirection << "\n";
+			}
+
+			if (controller.sprintDirection != 0.f) {
+				body.velocity.x = controller.sprintDirection * controller.sprintSpeed;
+				body.velocity.z = moveZ * controller.moveSpeed;
+			}
+			else {
+				//+z is forward, away from the camera
+				glm::vec3 direction{ moveX, 0.f, moveZ };
+				if (glm::dot(direction, direction) > 0.f) direction = glm::normalize(direction);
+				body.velocity.x = direction.x * controller.moveSpeed;
+				body.velocity.z = direction.z * controller.moveSpeed;
+			}
 
 			//holding jump jumps again on landing
 			if (input.actionDown("jump") && body.grounded) {
@@ -149,9 +169,10 @@ namespace game {
 				if (body.velocity.x < 0.f) sprite.flipX = true;
 				else if (body.velocity.x > 0.f) sprite.flipX = false;
 
-				const bool walking = body.velocity.x != 0.f || body.velocity.z != 0.f;
+				const float groundSpeed = glm::length(glm::vec2{ body.velocity.x, body.velocity.z });
 				if (!body.grounded) sprite.animator.play(animations.jump);
-				else if (walking) sprite.animator.play(animations.walk);
+				else if (!animations.run.empty() && groundSpeed >= animations.runSpeed) sprite.animator.play(animations.run);
+				else if (groundSpeed > 0.f) sprite.animator.play(animations.walk);
 				else sprite.animator.play(animations.idle);
 			});
 	}
