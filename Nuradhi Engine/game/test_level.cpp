@@ -61,6 +61,31 @@ namespace game {
 			kick.damage = 2;
 			kick.knockback = 1.f;
 			combat.moves["kick"] = kick;
+
+			//jump attacks hold their pose and stay live until she lands (a jump lasts about 0.7 s)
+			AttackMove jumpPunch{}; //flying knee
+			jumpPunch.animation = "jumpPunch";
+			jumpPunch.duration = 0.6f;
+			jumpPunch.activeStart = 0.05f;
+			jumpPunch.activeEnd = 0.6f;
+			jumpPunch.hitboxOffset = { 0.3f, -0.55f, 0.f }; //the knee, in front at mid height
+			jumpPunch.hitboxHalfExtents = { 0.18f, 0.2f, 0.25f }; //tall enough to catch a standing head even at the top of the jump
+			jumpPunch.damage = 1;
+			jumpPunch.knockback = 0.8f;
+			jumpPunch.airborne = true;
+			combat.moves["jumpPunch"] = jumpPunch;
+
+			AttackMove jumpKick{}; //diagonal flying kick
+			jumpKick.animation = "jumpKick";
+			jumpKick.duration = 0.6f;
+			jumpKick.activeStart = 0.1f; //after the turn into the kick
+			jumpKick.activeEnd = 0.6f;
+			jumpKick.hitboxOffset = { 0.5f, -0.2f, 0.f }; //the foot, low and in front
+			jumpKick.hitboxHalfExtents = { 0.25f, 0.15f, 0.25f };
+			jumpKick.damage = 2;
+			jumpKick.knockback = 1.2f;
+			jumpKick.airborne = true;
+			combat.moves["jumpKick"] = jumpKick;
 			return combat;
 		}
 
@@ -79,6 +104,10 @@ namespace game {
 				{ sheet->frameAt(row3, 11), sheet->frameAt(row3, 10), sheet->frameAt(row3, 11) }, 12.f, false });
 			sheet->addAnimation({ "kick", //chamber, front kick, recover
 				{ sheet->frameAt(row4, 2), sheet->frameAt(row4, 0), sheet->frameAt(row4, 2) }, 10.f, false });
+			const int row1 = 1; //airborne poses
+			sheet->addAnimation({ "jumpPunch", { sheet->frameAt(row1, 1) }, 10.f, false }); //flying knee, held
+			sheet->addAnimation({ "jumpKick", //turn into a diagonal kick, held until landing
+				{ sheet->frameAt(row1, 0), sheet->frameAt(row1, 2) }, 10.f, false });
 			if (describe) sheet->describe(std::cout); //every detected frame with its row and column
 			return sheet;
 		}
@@ -122,7 +151,7 @@ namespace game {
 		const Entity player = registry.create();
 		const std::shared_ptr<SpriteSheet> blazeSheet = loadBlazeSheet(engine.debugLog);
 		registry.add<Transform>(player, Transform{ { 1.f, 1.5f, 3.f } });
-		registry.add<Sprite>(player, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT);
+		registry.add<Sprite>(player, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT).keepBackInsideCollider = true;
 		registry.add<RigidBody>(player);
 		registry.add<Collider>(player, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }, false));
 		registry.add<PlayerController>(player);
@@ -134,6 +163,7 @@ namespace game {
 		registry.add<Transform>(dummy, Transform{ { -0.6f, 1.5f, 3.f } });
 		Sprite& dummySprite = registry.add<Sprite>(dummy, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT);
 		dummySprite.animator.play("idle");
+		dummySprite.keepBackInsideCollider = true;
 		registry.add<Collider>(dummy, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }));
 		registry.add<Health>(dummy, Health{ 5, 5 });
 

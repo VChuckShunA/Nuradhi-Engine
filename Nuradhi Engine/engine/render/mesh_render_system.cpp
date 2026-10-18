@@ -4,6 +4,7 @@
 
 //std
 #include <cassert>
+#include <optional>
 #include <stdexcept>
 #include <vector>
 
@@ -110,9 +111,11 @@ namespace nrd {
 		});
 
 		lve::LveModel& spriteQuad = *frameInfo.meshes[frameInfo.spriteQuadMesh];
-		frameInfo.registry.each<Transform, Sprite>([&](ecs::Entity, Transform& transform, Sprite& sprite) {
+		frameInfo.registry.each<Transform, Sprite>([&](ecs::Entity entity, Transform& transform, Sprite& sprite) {
+			const Collider* collider = frameInfo.registry.tryGet<Collider>(entity);
+			const std::optional<Aabb> body = collider ? std::optional<Aabb>{ collider->worldBounds(transform.position) } : std::nullopt;
 			bindTexture(frameInfo, sprite.texture);
-			pushConstants(frameInfo, sprite.frameTransform(transform.position), sprite.frameUvRect());
+			pushConstants(frameInfo, sprite.frameTransform(transform.position, body ? &*body : nullptr), sprite.frameUvRect());
 			spriteQuad.bind(frameInfo.commandBuffer);
 			spriteQuad.draw(frameInfo.commandBuffer);
 		});

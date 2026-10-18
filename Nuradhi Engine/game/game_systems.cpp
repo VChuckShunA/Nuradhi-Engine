@@ -21,9 +21,18 @@ namespace game {
 	{
 		const nrd::Input& input = engine.input();
 		engine.registry().each<PlayerController, Combat, nrd::RigidBody>([&](Entity, PlayerController&, Combat& combat, nrd::RigidBody& body) {
-			if (combat.attacking() || !body.grounded) return;
-			if (input.actionPressed("punch")) combat.start("punch");
-			else if (input.actionPressed("kick")) combat.start("kick");
+			if (combat.attacking()) return;
+			if (body.grounded) {
+				if (input.actionPressed("punch")) combat.start("punch");
+				else if (input.actionPressed("kick")) combat.start("kick");
+			}
+			else if (!combat.airAttackUsed) {
+				const char* move = input.actionPressed("punch") ? "jumpPunch" : (input.actionPressed("kick") ? "jumpKick" : nullptr);
+				if (move) {
+					combat.start(move);
+					combat.airAttackUsed = true;
+				}
+			}
 		});
 	}
 
@@ -32,10 +41,11 @@ namespace game {
 		const nrd::Input& input = engine.input();
 		nrd::ecs::Registry& registry = engine.registry();
 		registry.each<PlayerController, nrd::RigidBody>([&](Entity entity, PlayerController& controller, nrd::RigidBody& body) {
-			//committed to an attack: plant the feet
+			//committed to an attack: plant the feet, or keep flying on the jump's momentum
 			const Combat* combat = registry.tryGet<Combat>(entity);
 			if (combat && combat->attacking()) {
-				body.velocity.x = body.velocity.z = 0.f;
+				const AttackMove* move = combat->current();
+				if (!move || !move->airborne) body.velocity.x = body.velocity.z = 0.f;
 				return;
 			}
 
@@ -81,6 +91,10 @@ namespace game {
 		nrd::ecs::Registry& registry = engine.registry();
 		std::vector<Entity> defeated;
 		registry.each<Combat, nrd::Transform>([&](Entity attacker, Combat& combat, nrd::Transform& transform) {
+			const nrd::RigidBody* body = registry.tryGet<nrd::RigidBody>(attacker);
+			const bool grounded = body && body->grounded;
+			if (grounded) combat.airAttackUsed = false;
+
 			const AttackMove* move = combat.current();
 			if (!move) {
 				combat.currentMove.clear();
@@ -88,7 +102,7 @@ namespace game {
 			}
 
 			combat.timer += dt;
-			if (combat.timer >= move->duration) {
+			if (combat.timer >= move->duration || (move->airborne && grounded)) {
 				combat.currentMove.clear();
 				return;
 			}

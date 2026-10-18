@@ -2,6 +2,7 @@
 
 #include "engine/core/components.hpp"
 #include "engine/ecs/registry.hpp"
+#include "engine/physics/collision.hpp"
 #include "engine/render/render_components.hpp"
 
 //libs
@@ -102,10 +103,15 @@ namespace nrd {
 		TextureHandle texture;
 		float pixelsPerUnit; //sheet pixels per world unit
 		bool flipX = false; //mirror horizontally, e.g. to face left with a sheet drawn facing right
+		//never let the frame's back edge (the left edge facing right, the right edge facing left) stick out
+		//behind the entity's Collider. Poses whose lowest pixels are an outstretched foot, like a flying kick,
+		//would otherwise be pushed backwards by the foot pivot and jump sideways between frames.
+		bool keepBackInsideCollider = false;
 
 		//transform for the renderer's sprite quad (a unit quad whose bottom-centre is its origin) that puts the
-		//current frame's pivot on `position`
-		Transform frameTransform(const glm::vec3& position) const;
+		//current frame's pivot on `position`; with keepBackInsideCollider and a `body`, it's then nudged forward
+		//until the back edge is inside the body box
+		Transform frameTransform(const glm::vec3& position, const Aabb* body = nullptr) const;
 		glm::vec4 frameUvRect() const;
 	};
 

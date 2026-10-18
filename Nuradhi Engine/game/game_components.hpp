@@ -49,6 +49,9 @@ namespace game {
 		glm::vec3 hitboxHalfExtents{ 0.1f };
 		int damage = 1;
 		float knockback = 0.f; //horizontal speed given to a target that has a RigidBody
+		//jump attack: only starts in the air, keeps the jump's momentum instead of planting the feet, and ends on
+		//landing even if `duration` hasn't run out
+		bool airborne = false;
 	};
 
 	//Lets an entity attack. Game systems pick which move to start; attackSystem plays it out and lands hits on
@@ -58,6 +61,7 @@ namespace game {
 		std::string currentMove; //empty when not attacking
 		float timer = 0.f;
 		bool justStarted = false; //restart the move's animation even if the same move just ended
+		bool airAttackUsed = false; //one jump attack per jump; cleared on landing
 		std::vector<nrd::ecs::Entity> hitThisAttack; //each target is hit once per attack
 
 		bool attacking() const { return !currentMove.empty(); }

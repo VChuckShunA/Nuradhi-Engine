@@ -280,7 +280,7 @@ namespace nrd {
 		assert(pixelsPerUnit > 0.f && "pixelsPerUnit must be positive");
 	}
 
-	Transform Sprite::frameTransform(const glm::vec3& position) const
+	Transform Sprite::frameTransform(const glm::vec3& position, const Aabb* body) const
 	{
 		const SpriteFrame& frame = animator.currentFrame();
 
@@ -292,6 +292,18 @@ namespace nrd {
 		Transform transform{};
 		transform.position = position + glm::vec3{ -pivotX, pivotHeight, 0.f };
 		transform.scale = { frame.size.x / pixelsPerUnit, frame.size.y / pixelsPerUnit, 1.f };
+
+		if (keepBackInsideCollider && body) {
+			const float halfWidth = transform.scale.x * 0.5f;
+			if (!flipX) {
+				const float backEdge = transform.position.x - halfWidth; //facing right: the back is the left edge
+				if (backEdge < body->min.x) transform.position.x += body->min.x - backEdge;
+			}
+			else {
+				const float backEdge = transform.position.x + halfWidth; //facing left: the back is the right edge
+				if (backEdge > body->max.x) transform.position.x -= backEdge - body->max.x;
+			}
+		}
 		return transform;
 	}
 
