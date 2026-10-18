@@ -100,7 +100,24 @@ namespace game {
 			special.damage = 3;
 			special.knockback = 2.f;
 			special.cooldown = 1.5f;
+			special.cooldownGroup = "special";
 			combat.moves["special"] = special;
+
+			//jump special: a flaming dive. The fire wraps her body and trails out in front, so the hitbox is big;
+			//it's her one air attack for the jump and shares the ground special's cooldown.
+			AttackMove jumpSpecial{};
+			jumpSpecial.animation = "jumpSpecial";
+			jumpSpecial.duration = 0.7f;
+			jumpSpecial.activeStart = 0.08f; //after the tuck
+			jumpSpecial.activeEnd = 0.7f;
+			jumpSpecial.hitboxOffset = { 0.45f, -0.45f, 0.f };
+			jumpSpecial.hitboxHalfExtents = { 0.55f, 0.35f, 0.3f };
+			jumpSpecial.damage = 3;
+			jumpSpecial.knockback = 2.f;
+			jumpSpecial.airborne = true;
+			jumpSpecial.cooldown = 1.5f;
+			jumpSpecial.cooldownGroup = "special";
+			combat.moves["jumpSpecial"] = jumpSpecial;
 			return combat;
 		}
 
@@ -124,6 +141,8 @@ namespace game {
 			sheet->addAnimation({ "special", //charge twice, thrust the palm, then hold the long beam
 				{ sheet->frameAt(row2, 5), sheet->frameAt(row2, 6), sheet->frameAt(row2, 1), sheet->frameAt(row2, 2), sheet->frameAt(row2, 9), sheet->frameAt(row2, 9) },
 				12.f, false });
+			sheet->addAnimation({ "jumpSpecial", //tuck, then dive in a trail of fire until landing
+				{ sheet->frameAt(7, 10), sheet->frameAt(7, 11) }, 12.f, false });
 			const int row1 = 1; //airborne poses
 			sheet->addAnimation({ "jumpPunch", { sheet->frameAt(row1, 1) }, 10.f, false }); //flying knee, held
 			sheet->addAnimation({ "jumpKick", //turn into a diagonal kick, held until landing

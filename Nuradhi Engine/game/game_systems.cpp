@@ -28,7 +28,10 @@ namespace game {
 				else if (input.actionPressed("kick")) combat.start("kick");
 			}
 			else if (!combat.airAttackUsed) {
-				const char* move = input.actionPressed("punch") ? "jumpPunch" : (input.actionPressed("kick") ? "jumpKick" : nullptr);
+				const char* move = nullptr;
+				if (input.actionPressed("special") && combat.ready("jumpSpecial")) move = "jumpSpecial";
+				else if (input.actionPressed("punch")) move = "jumpPunch";
+				else if (input.actionPressed("kick")) move = "jumpKick";
 				if (move) {
 					combat.start(move);
 					combat.airAttackUsed = true;
@@ -125,7 +128,7 @@ namespace game {
 
 			combat.timer += dt;
 			if (combat.timer >= move->duration || (move->airborne && grounded)) {
-				if (move->cooldown > 0.f) combat.cooldowns[combat.currentMove] = move->cooldown;
+				if (move->cooldown > 0.f) combat.cooldowns[combat.cooldownKey(combat.currentMove)] = move->cooldown;
 				if (engine.debugLog) std::cout << "attack end " << combat.currentMove << "\n";
 				combat.currentMove.clear();
 				return;
