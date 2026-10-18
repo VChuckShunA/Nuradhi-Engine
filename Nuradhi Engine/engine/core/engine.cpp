@@ -1,4 +1,5 @@
 #include "engine/core/engine.hpp"
+#include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
 #include "engine/platform/lve_window.hpp"
 #include "engine/sprite/sprite.hpp"
@@ -37,6 +38,7 @@ namespace nrd {
 			keyboard->update(dt);
 
 			for (System& system : updateSystems) system(*this, dt);
+			updateBehaviorTrees(world, dt); //AI decides like a player would: after input, before physics
 			stepPhysics(world, dt, physics, debugLog);
 			for (System& system : lateUpdateSystems) system(*this, dt);
 			updateSpriteAnimations(world, dt);

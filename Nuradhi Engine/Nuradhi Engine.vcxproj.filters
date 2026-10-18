@@ -4,6 +4,9 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{9be3c1e7-2807-4565-8657-b391f128e335}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Ai">
+      <UniqueIdentifier>{3c6f1a52-8d4e-4b7a-9e21-5f0d7c8a4b19}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Core">
       <UniqueIdentifier>{1443668f-db82-4327-ab66-4b7fc0f123a3}</UniqueIdentifier>
     </Filter>
@@ -105,6 +108,12 @@
     <ClCompile Include="game\game_systems.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="game\enemy_ai.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\ai\behavior_tree.cpp">
+      <Filter>Engine\Ai</Filter>
+    </ClCompile>
     <ClCompile Include="game\test_level.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -191,6 +200,12 @@
     </ClInclude>
     <ClInclude Include="game\game_components.hpp">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\enemy_ai.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ai\behavior_tree.hpp">
+      <Filter>Engine\Ai</Filter>
     </ClInclude>
     <ClInclude Include="game\game_systems.hpp">
       <Filter>Game</Filter>

@@ -25,6 +25,7 @@ namespace nrd {
 
 	//When a game system runs within a frame:
 	//  Update      game logic and input (set velocities, jump, ...)
+	//  [ai]        engine: every BehaviorTree is ticked
 	//  [physics]   engine: gravity, movement, collision
 	//  LateUpdate  reactions to physics (pick animations from grounded, ...)
 	//  [engine]    sprite animation, camera follow, render

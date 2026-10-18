@@ -17,11 +17,37 @@ namespace game {
 
 	using nrd::ecs::Entity;
 
+	namespace {
+		bool isStunned(nrd::ecs::Registry& registry, Entity entity)
+		{
+			const Health* health = registry.tryGet<Health>(entity);
+			return health && health->stunned();
+		}
+	}
+
+	void hitStunSystem(nrd::Engine& engine, float dt)
+	{
+		constexpr float FRICTION = 4.f; //world units per second squared: a knocked back fighter slides to a stop
+		nrd::ecs::Registry& registry = engine.registry();
+		registry.each<Health>([&](Entity entity, Health& health) {
+			if (!health.stunned()) return;
+			health.hitStun = std::max(0.f, health.hitStun - dt);
+			if (nrd::RigidBody* body = registry.tryGet<nrd::RigidBody>(entity)) {
+				glm::vec2 slide{ body->velocity.x, body->velocity.z };
+				const float speed = glm::length(slide);
+				if (speed > 0.f) slide *= std::max(0.f, speed - FRICTION * dt) / speed;
+				body->velocity.x = slide.x;
+				body->velocity.z = slide.y;
+			}
+		});
+	}
+
 	void playerAttackInputSystem(nrd::Engine& engine, float dt)
 	{
 		const nrd::Input& input = engine.input();
-		engine.registry().each<PlayerController, Combat, nrd::RigidBody>([&](Entity, PlayerController&, Combat& combat, nrd::RigidBody& body) {
-			if (combat.attacking()) return;
+		nrd::ecs::Registry& registry = engine.registry();
+		registry.each<PlayerController, Combat, nrd::RigidBody>([&](Entity entity, PlayerController&, Combat& combat, nrd::RigidBody& body) {
+			if (combat.attacking() || isStunned(registry, entity)) return;
 			if (body.grounded) {
 				if (input.actionPressed("special") && combat.ready("special")) combat.start("special");
 				else if (input.actionPressed("punch")) combat.start("punch");
@@ -45,6 +71,12 @@ namespace game {
 		const nrd::Input& input = engine.input();
 		nrd::ecs::Registry& registry = engine.registry();
 		registry.each<PlayerController, nrd::RigidBody>([&](Entity entity, PlayerController& controller, nrd::RigidBody& body) {
+			//reeling from a hit: no control, the knockback slides out (hitStunSystem)
+			if (isStunned(registry, entity)) {
+				controller.sprintDirection = 0.f;
+				return;
+			}
+
 			//committed to an attack: plant the feet, or keep flying on the jump's momentum
 			const Combat* combat = registry.tryGet<Combat>(entity);
 			if (combat && combat->attacking()) {
@@ -148,12 +180,18 @@ namespace game {
 				if (!hitbox.overlaps(collider.worldBounds(targetTransform.position))) return;
 
 				combat.hitThisAttack.push_back(target);
-				health.hp -= move->damage;
-				if (nrd::RigidBody* body = registry.tryGet<nrd::RigidBody>(target)) body->velocity.x = move->knockback * facing;
-				if (engine.debugLog) {
-					std::cout << "hit " << combat.currentMove << " target " << target << " hp " << health.hp << "/" << health.maxHp << "\n";
+				health.hp = std::max(0, health.hp - move->damage);
+				health.hitStun = std::max(health.hitStun, move->hitStun);
+				if (nrd::RigidBody* body = registry.tryGet<nrd::RigidBody>(target)) {
+					body->velocity.x = move->knockback * facing;
+					body->velocity.z = 0.f;
 				}
-				if (health.hp <= 0) defeated.push_back(target);
+				//getting hit interrupts whatever the target was swinging
+				if (Combat* targetCombat = registry.tryGet<Combat>(target)) targetCombat->currentMove.clear();
+				if (engine.debugLog) {
+					std::cout << "hit " << combat.currentMove << " attacker " << attacker << " target " << target << " hp " << health.hp << "/" << health.maxHp << "\n";
+				}
+				if (health.defeated() && health.destroyOnDefeat) defeated.push_back(target);
 			});
 		});
 		//destroyed after the loops: entities can't be removed while they're being iterated
@@ -165,7 +203,13 @@ namespace game {
 		nrd::ecs::Registry& registry = engine.registry();
 		registry.each<CharacterAnimations, nrd::Sprite, nrd::RigidBody>(
 			[&](Entity entity, CharacterAnimations& animations, nrd::Sprite& sprite, nrd::RigidBody& body) {
-				//an attack overrides everything, and keeps the facing it started with
+				//reeling from a hit overrides everything
+				if (isStunned(registry, entity)) {
+					if (!animations.hurt.empty()) sprite.animator.play(animations.hurt);
+					return;
+				}
+
+				//an attack overrides the rest, and keeps the facing it started with
 				if (Combat* combat = registry.tryGet<Combat>(entity); combat && combat->attacking()) {
 					if (const AttackMove* move = combat->current()) sprite.animator.play(move->animation, combat->justStarted);
 					combat->justStarted = false;

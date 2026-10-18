@@ -1,6 +1,8 @@
 #include "game/test_level.hpp"
 #include "game/game_components.hpp"
 #include "game/game_systems.hpp"
+#include "game/enemy_ai.hpp"
+#include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
 #include "engine/physics/collision.hpp"
 #include "engine/physics/physics.hpp"
@@ -143,6 +145,7 @@ namespace game {
 				12.f, false });
 			sheet->addAnimation({ "jumpSpecial", //tuck, then dive in a trail of fire until landing
 				{ sheet->frameAt(7, 10), sheet->frameAt(7, 11) }, 12.f, false });
+			sheet->addAnimation({ "hurt", { sheet->frameAt(3, 3) }, 8.f, false }); //doubled over from a hit
 			const int row1 = 1; //airborne poses
 			sheet->addAnimation({ "jumpPunch", { sheet->frameAt(row1, 1) }, 10.f, false }); //flying knee, held
 			sheet->addAnimation({ "jumpKick", //turn into a diagonal kick, held until landing
@@ -194,17 +197,22 @@ namespace game {
 		registry.add<RigidBody>(player);
 		registry.add<Collider>(player, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }, false));
 		registry.add<PlayerController>(player);
-		registry.add<CharacterAnimations>(player, CharacterAnimations{ "idle", "walk", "run", "jump" });
+		registry.add<CharacterAnimations>(player, CharacterAnimations{ "idle", "walk", "run", "jump", "hurt" });
 		registry.add<Combat>(player, blazeCombat());
+		registry.add<Health>(player, Health{ 20, 20, 0.f, false }); //no game over yet: she stays at 0 hp
 
-		//training dummy: a second Blaze, facing her from the left. She's solid and breaks after 5 points of damage.
+		//sparring partner: a second Blaze run by a behaviour tree. She walks up, lines up in depth and trades
+		//punches and kicks, pausing after each attack. Fighters pass through each other, as in most beat 'em ups.
 		const Entity dummy = registry.create();
-		registry.add<Transform>(dummy, Transform{ { -0.6f, 1.5f, 3.f } });
-		Sprite& dummySprite = registry.add<Sprite>(dummy, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT);
-		dummySprite.animator.play("idle");
-		dummySprite.keepBackInsideCollider = true;
-		registry.add<Collider>(dummy, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }));
-		registry.add<Health>(dummy, Health{ 5, 5 });
+		registry.add<Transform>(dummy, Transform{ { -1.6f, 1.5f, 3.f } });
+		registry.add<Sprite>(dummy, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT).keepBackInsideCollider = true;
+		registry.add<RigidBody>(dummy);
+		registry.add<Collider>(dummy, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }, false));
+		registry.add<CharacterAnimations>(dummy, CharacterAnimations{ "idle", "walk", "run", "jump", "hurt" });
+		registry.add<Combat>(dummy, blazeCombat());
+		registry.add<Health>(dummy, Health{ 8, 8 });
+		registry.add<EnemyFighter>(dummy, EnemyFighter{ player });
+		registry.add<BehaviorTree>(dummy, BehaviorTree{ makeFighterTree() });
 
 		//Colliders are in world units around each entity's position, and +y is down: a box with offset y = -0.25
 		//and half height 0.25 sits on top of its position, one with offset y = +0.05 hangs just below it.
@@ -231,6 +239,7 @@ namespace game {
 		registry.add<CameraFollow>(camera, CameraFollow{ player, { true, false, false }, { -0.4f, 0.f, 0.f } });
 		registry.add<CameraYawControl>(camera);
 
+		engine.addSystem(Phase::Update, hitStunSystem);
 		engine.addSystem(Phase::Update, playerAttackInputSystem);
 		engine.addSystem(Phase::Update, playerControlSystem);
 		engine.addSystem(Phase::Update, cameraYawSystem);

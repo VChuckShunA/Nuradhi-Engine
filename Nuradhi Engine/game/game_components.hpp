@@ -27,6 +27,7 @@ namespace game {
 		std::string walk;
 		std::string run; //at runSpeed or faster along the ground; leave empty to always walk
 		std::string jump; //anything airborne
+		std::string hurt; //while in hit stun (see Health); leave empty to keep the current pose
 		float runSpeed = 0.8f;
 	};
 
@@ -54,6 +55,7 @@ namespace game {
 		glm::vec3 hitboxHalfExtents{ 0.1f };
 		int damage = 1;
 		float knockback = 0.f; //horizontal speed given to a target that has a RigidBody
+		float hitStun = 0.3f; //seconds the target is stunned: its attack is cancelled and it can't act
 		//jump attack: only starts in the air, keeps the jump's momentum instead of planting the feet, and ends on
 		//landing even if `duration` hasn't run out
 		bool airborne = false;
@@ -93,9 +95,26 @@ namespace game {
 		}
 	};
 
-	//Can be hit; the entity is destroyed when hp reaches 0
+	//Can be hit. Each hit stuns for a moment; at 0 hp the entity is destroyed, unless destroyOnDefeat is off
+	//(the player, for now: there's no game over yet).
 	struct Health {
 		int hp = 3;
 		int maxHp = 3;
+		float hitStun = 0.f; //seconds left; while > 0 the entity can't move or attack and slides to a stop
+		bool destroyOnDefeat = true;
+
+		bool stunned() const { return hitStun > 0.f; }
+		bool defeated() const { return hp <= 0; }
+	};
+
+	//An AI fighter's settings, read by its behaviour tree (see enemy_ai.hpp)
+	struct EnemyFighter {
+		nrd::ecs::Entity target = nrd::ecs::NullEntity; //who to fight
+		float moveSpeed = 0.4f;
+		float aggroRange = 4.f; //notices the target within this distance
+		float attackRange = 0.6f; //throws an attack when the target is this close along x...
+		float depthTolerance = 0.15f; //...and lined up within this along z (depth)
+		float recoverTime = 0.7f; //pause after each attack, so the target gets a chance to answer
+		float kickChance = 0.35f; //otherwise it punches
 	};
 }

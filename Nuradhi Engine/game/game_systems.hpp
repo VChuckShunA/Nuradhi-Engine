@@ -5,6 +5,7 @@
 namespace game {
 
 	//Phase::Update
+	void hitStunSystem(nrd::Engine& engine, float dt); //counts down hit stun and slides knocked back fighters to a stop; run first
 	void playerAttackInputSystem(nrd::Engine& engine, float dt); //"punch"/"kick" actions start Combat moves; run before playerControlSystem
 	void playerControlSystem(nrd::Engine& engine, float dt); //input axes and actions -> RigidBody velocity, jumping
 	void cameraYawSystem(nrd::Engine& engine, float dt);

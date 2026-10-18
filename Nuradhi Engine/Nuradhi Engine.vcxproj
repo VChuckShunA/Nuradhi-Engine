@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\ai\behavior_tree.cpp" />
     <ClCompile Include="engine\core\components.cpp" />
     <ClCompile Include="engine\core\engine.cpp" />
     <ClCompile Include="engine\input\input.cpp" />
@@ -169,11 +170,13 @@
     <ClCompile Include="engine\render\vulkan\nrd_debugLine.cpp" />
     <ClCompile Include="engine\render\vulkan\nrd_debugLinePipeline.cpp" />
     <ClCompile Include="engine\sprite\sprite.cpp" />
+    <ClCompile Include="game\enemy_ai.cpp" />
     <ClCompile Include="game\game_systems.cpp" />
     <ClCompile Include="game\test_level.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\ai\behavior_tree.hpp" />
     <ClInclude Include="engine\core\components.hpp" />
     <ClInclude Include="engine\core\engine.hpp" />
     <ClInclude Include="engine\ecs\registry.hpp" />
@@ -200,6 +203,7 @@
     <ClInclude Include="engine\render\vulkan\nrd_debugLine.hpp" />
     <ClInclude Include="engine\render\vulkan\nrd_debugLinePipeline.hpp" />
     <ClInclude Include="engine\sprite\sprite.hpp" />
+    <ClInclude Include="game\enemy_ai.hpp" />
     <ClInclude Include="game\game_components.hpp" />
     <ClInclude Include="game\game_systems.hpp" />
     <ClInclude Include="game\test_level.hpp" />
