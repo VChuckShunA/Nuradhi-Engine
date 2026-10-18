@@ -33,6 +33,7 @@ namespace game {
 			input.bindAction("toggleDebug", Key::F1);
 			input.bindAction("punch", Key::MouseLeft);
 			input.bindAction("kick", Key::MouseRight);
+			input.bindAction("special", Key::F);
 		}
 
 		//Blaze's attacks. Each animation's frames last exactly the move's duration (3 frames at 12 fps = 0.25 s),
@@ -86,6 +87,20 @@ namespace game {
 			jumpKick.knockback = 1.2f;
 			jumpKick.airborne = true;
 			combat.moves["jumpKick"] = jumpKick;
+
+			//special: an energy palm blast. Slow to come out, but the beam reaches well past a kick and hits
+			//everything in it, so it can only be used every 1.5 s.
+			AttackMove special{};
+			special.animation = "special";
+			special.duration = 6.f / 12.f;
+			special.activeStart = 2.f / 12.f; //after the two charge frames
+			special.activeEnd = 6.f / 12.f;
+			special.hitboxOffset = { 0.8f, -0.72f, 0.f }; //the beam, from her palm forward at chest height
+			special.hitboxHalfExtents = { 0.55f, 0.15f, 0.3f };
+			special.damage = 3;
+			special.knockback = 2.f;
+			special.cooldown = 1.5f;
+			combat.moves["special"] = special;
 			return combat;
 		}
 
@@ -105,6 +120,10 @@ namespace game {
 				{ sheet->frameAt(row3, 11), sheet->frameAt(row3, 10), sheet->frameAt(row3, 11) }, 12.f, false });
 			sheet->addAnimation({ "kick", //chamber, front kick, recover
 				{ sheet->frameAt(row4, 2), sheet->frameAt(row4, 0), sheet->frameAt(row4, 2) }, 10.f, false });
+			const int row2 = 2; //energy blast
+			sheet->addAnimation({ "special", //charge twice, thrust the palm, then hold the long beam
+				{ sheet->frameAt(row2, 5), sheet->frameAt(row2, 6), sheet->frameAt(row2, 1), sheet->frameAt(row2, 2), sheet->frameAt(row2, 9), sheet->frameAt(row2, 9) },
+				12.f, false });
 			const int row1 = 1; //airborne poses
 			sheet->addAnimation({ "jumpPunch", { sheet->frameAt(row1, 1) }, 10.f, false }); //flying knee, held
 			sheet->addAnimation({ "jumpKick", //turn into a diagonal kick, held until landing

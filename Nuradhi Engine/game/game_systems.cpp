@@ -23,7 +23,8 @@ namespace game {
 		engine.registry().each<PlayerController, Combat, nrd::RigidBody>([&](Entity, PlayerController&, Combat& combat, nrd::RigidBody& body) {
 			if (combat.attacking()) return;
 			if (body.grounded) {
-				if (input.actionPressed("punch")) combat.start("punch");
+				if (input.actionPressed("special") && combat.ready("special")) combat.start("special");
+				else if (input.actionPressed("punch")) combat.start("punch");
 				else if (input.actionPressed("kick")) combat.start("kick");
 			}
 			else if (!combat.airAttackUsed) {
@@ -114,6 +115,7 @@ namespace game {
 			const nrd::RigidBody* body = registry.tryGet<nrd::RigidBody>(attacker);
 			const bool grounded = body && body->grounded;
 			if (grounded) combat.airAttackUsed = false;
+			for (auto& [name, remaining] : combat.cooldowns) remaining -= dt;
 
 			const AttackMove* move = combat.current();
 			if (!move) {
@@ -123,6 +125,8 @@ namespace game {
 
 			combat.timer += dt;
 			if (combat.timer >= move->duration || (move->airborne && grounded)) {
+				if (move->cooldown > 0.f) combat.cooldowns[combat.currentMove] = move->cooldown;
+				if (engine.debugLog) std::cout << "attack end " << combat.currentMove << "\n";
 				combat.currentMove.clear();
 				return;
 			}

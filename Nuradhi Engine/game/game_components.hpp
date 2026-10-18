@@ -57,6 +57,7 @@ namespace game {
 		//jump attack: only starts in the air, keeps the jump's momentum instead of planting the feet, and ends on
 		//landing even if `duration` hasn't run out
 		bool airborne = false;
+		float cooldown = 0.f; //seconds after the move ends before it can be used again
 	};
 
 	//Lets an entity attack. Game systems pick which move to start; attackSystem plays it out and lands hits on
@@ -68,8 +69,13 @@ namespace game {
 		bool justStarted = false; //restart the move's animation even if the same move just ended
 		bool airAttackUsed = false; //one jump attack per jump; cleared on landing
 		std::vector<nrd::ecs::Entity> hitThisAttack; //each target is hit once per attack
+		std::unordered_map<std::string, float> cooldowns; //seconds left per move; counted down by attackSystem
 
 		bool attacking() const { return !currentMove.empty(); }
+		bool ready(const std::string& move) const {
+			const auto found = cooldowns.find(move);
+			return found == cooldowns.end() || found->second <= 0.f;
+		}
 		const AttackMove* current() const {
 			const auto found = moves.find(currentMove);
 			return found == moves.end() ? nullptr : &found->second;
