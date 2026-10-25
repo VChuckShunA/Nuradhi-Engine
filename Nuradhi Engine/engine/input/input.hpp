@@ -36,6 +36,8 @@ namespace nrd {
 
 		//the engine calls this every frame, after polling window events, with the frame's duration
 		void update(float dt);
+		//while blocked, the game sees those keys or buttons as up, e.g. when the UI has the keyboard or mouse
+		void setBlocked(bool keyboard, bool mouse) { keyboardBlocked = keyboard; mouseBlocked = mouse; }
 
 		bool isDown(Key key) const { return current[index(key)]; }
 		bool wasPressed(Key key) const { return current[index(key)] && !previous[index(key)]; } //went down this frame
@@ -67,6 +69,8 @@ namespace nrd {
 		std::array<bool, KEY_COUNT> doubleTapped{};
 		std::array<float, KEY_COUNT> lastPressTime{}; //in `time`; very negative until a key is first pressed
 		float time = 0.f; //seconds since the engine started
+		bool keyboardBlocked = false;
+		bool mouseBlocked = false;
 		std::unordered_map<std::string, std::vector<Key>> actions;
 		std::unordered_map<std::string, std::vector<std::pair<Key, Key>>> axes;
 	};

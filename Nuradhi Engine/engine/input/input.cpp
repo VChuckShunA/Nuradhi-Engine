@@ -32,10 +32,10 @@ namespace nrd {
 		previous = current;
 		GLFWwindow* glfwWindow = window.getGLFWwindow();
 		for (std::size_t key = 0; key < FIRST_MOUSE_BUTTON; key++) {
-			current[key] = glfwGetKey(glfwWindow, GLFW_KEYS[key]) == GLFW_PRESS;
+			current[key] = !keyboardBlocked && glfwGetKey(glfwWindow, GLFW_KEYS[key]) == GLFW_PRESS;
 		}
 		for (std::size_t button = 0; button < GLFW_MOUSE_BUTTONS.size(); button++) {
-			current[FIRST_MOUSE_BUTTON + button] = glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTONS[button]) == GLFW_PRESS;
+			current[FIRST_MOUSE_BUTTON + button] = !mouseBlocked && glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTONS[button]) == GLFW_PRESS;
 		}
 
 		for (std::size_t key = 0; key < KEY_COUNT; key++) {

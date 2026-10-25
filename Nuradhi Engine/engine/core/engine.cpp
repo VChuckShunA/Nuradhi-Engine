@@ -24,7 +24,11 @@ namespace nrd {
 
 	void Engine::addSystem(Phase phase, System system)
 	{
-		(phase == Phase::Update ? updateSystems : lateUpdateSystems).push_back(std::move(system));
+		switch (phase) {
+		case Phase::Ui: uiSystems.push_back(std::move(system)); break;
+		case Phase::Update: updateSystems.push_back(std::move(system)); break;
+		case Phase::LateUpdate: lateUpdateSystems.push_back(std::move(system)); break;
+		}
 	}
 
 	void Engine::run()
@@ -35,13 +39,20 @@ namespace nrd {
 			const auto now = std::chrono::high_resolution_clock::now();
 			const float dt = std::chrono::duration<float, std::chrono::seconds::period>(now - previousTime).count();
 			previousTime = now;
+
+			//the game doesn't see keys or clicks that the UI is using
+			graphics->beginUiFrame();
+			keyboard->setBlocked(graphics->uiWantsKeyboard(), graphics->uiWantsMouse());
 			keyboard->update(dt);
 
-			for (System& system : updateSystems) system(*this, dt);
-			updateBehaviorTrees(world, dt); //AI decides like a player would: after input, before physics
-			stepPhysics(world, dt, physics, debugLog);
-			for (System& system : lateUpdateSystems) system(*this, dt);
-			updateSpriteAnimations(world, dt);
+			for (System& system : uiSystems) system(*this, dt);
+			if (!paused) {
+				for (System& system : updateSystems) system(*this, dt);
+				updateBehaviorTrees(world, dt); //AI decides like a player would: after input, before physics
+				stepPhysics(world, dt, physics, debugLog);
+				for (System& system : lateUpdateSystems) system(*this, dt);
+				updateSpriteAnimations(world, dt);
+			}
 			updateCameraFollow(world);
 
 			graphics->render(world, dt);

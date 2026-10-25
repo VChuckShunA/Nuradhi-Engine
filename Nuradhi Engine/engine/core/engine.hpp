@@ -29,7 +29,8 @@ namespace nrd {
 	//  [physics]   engine: gravity, movement, collision
 	//  LateUpdate  reactions to physics (pick animations from grounded, ...)
 	//  [engine]    sprite animation, camera follow, render
-	enum class Phase { Update, LateUpdate };
+	//  Ui          runs first and even while paused: ImGui windows such as editors
+	enum class Phase { Ui, Update, LateUpdate };
 
 	//Owns the window, input, renderer and the entity registry, and runs the frame loop. Game code builds its
 	//scene through registry() and renderer(), adds systems, then calls run().
@@ -52,6 +53,7 @@ namespace nrd {
 
 		PhysicsSettings physics{};
 		bool debugLog = false; //prints collision contacts every frame (and whatever else games choose to log)
+		bool paused = false; //freezes the game (Update, AI, physics, LateUpdate, animation); Ui systems and rendering go on
 
 	private:
 		//declaration order matters: the renderer and input use the window, so it's created first and destroyed last
@@ -59,6 +61,7 @@ namespace nrd {
 		std::unique_ptr<Input> keyboard;
 		std::unique_ptr<Renderer> graphics;
 		ecs::Registry world;
+		std::vector<System> uiSystems;
 		std::vector<System> updateSystems;
 		std::vector<System> lateUpdateSystems;
 	};

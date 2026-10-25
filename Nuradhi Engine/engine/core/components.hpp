@@ -7,6 +7,9 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+//std
+#include <string>
+
 namespace nrd {
 
 	//Where an entity is. World space follows Vulkan: +x right, +y DOWN, +z away from the camera.
@@ -38,4 +41,9 @@ namespace nrd {
 	};
 
 	void updateCameraFollow(ecs::Registry& registry);
+
+	//A label for tools like the level editor; entities without one don't show up there
+	struct Name {
+		std::string value;
+	};
 }

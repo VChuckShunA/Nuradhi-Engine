@@ -2,6 +2,7 @@
 #include "game/game_components.hpp"
 #include "game/game_systems.hpp"
 #include "game/enemy_ai.hpp"
+#include "game/level_editor.hpp"
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
 #include "engine/physics/collision.hpp"
@@ -36,6 +37,7 @@ namespace game {
 			input.bindAction("punch", Key::MouseLeft);
 			input.bindAction("kick", Key::MouseRight);
 			input.bindAction("special", Key::F);
+			input.bindAction("toggleEditor", Key::F2);
 		}
 
 		//Blaze's attacks. Each animation's frames last exactly the move's duration (3 frames at 12 fps = 0.25 s),
@@ -171,6 +173,7 @@ namespace game {
 				registry.add<Transform>(light, Transform{ glm::vec3(placement * glm::vec4(-1.f, -1.f, -1.f, 1.f)) });
 				registry.add<PointLight>(light, PointLight{ colours[i], 0.2f, 0.1f });
 				registry.add<Orbit>(light, Orbit{ glm::vec3{ 0.f }, glm::vec3{ 0.f, -1.f, 0.f }, 1.f });
+				registry.add<Name>(light, Name{ "Light " + std::to_string(i + 1) });
 			}
 		}
 	}
@@ -200,6 +203,7 @@ namespace game {
 		registry.add<CharacterAnimations>(player, CharacterAnimations{ "idle", "walk", "run", "jump", "hurt" });
 		registry.add<Combat>(player, blazeCombat());
 		registry.add<Health>(player, Health{ 20, 20, 0.f, false }); //no game over yet: she stays at 0 hp
+		registry.add<Name>(player, Name{ "Blaze (player)" });
 
 		//sparring partner: a second Blaze run by a behaviour tree. She walks up, lines up in depth and trades
 		//punches and kicks, pausing after each attack. Fighters pass through each other, as in most beat 'em ups.
@@ -213,6 +217,7 @@ namespace game {
 		registry.add<Health>(dummy, Health{ 8, 8 });
 		registry.add<EnemyFighter>(dummy, EnemyFighter{ player });
 		registry.add<BehaviorTree>(dummy, BehaviorTree{ makeFighterTree() });
+		registry.add<Name>(dummy, Name{ "Sparring partner" });
 
 		//Colliders are in world units around each entity's position, and +y is down: a box with offset y = -0.25
 		//and half height 0.25 sits on top of its position, one with offset y = +0.05 hangs just below it.
@@ -223,13 +228,17 @@ namespace game {
 		registry.add<MeshRenderer>(vase, MeshRenderer{ vaseMesh, logoTexture });
 		registry.add<Collider>(vase, Collider::box({ 0.25f, 0.25f, 0.25f }, { 0.f, -0.25f, 0.f }));
 		registry.add<Health>(vase, Health{ 2, 2 }); //low: only kicks reach it
+		registry.add<Name>(vase, Name{ "Vase" });
 
 		//two 10 x 2 floor slabs, 0.1 thick, whose top surface is at their position
+		int floorNumber = 0;
 		for (const float z : { 2.f, 4.f }) {
 			const Entity floor = registry.create();
 			registry.add<Transform>(floor, Transform{ { 0.f, 1.5f, z }, glm::vec3{ 0.f }, { 5.f, 1.f, 1.f } });
 			registry.add<MeshRenderer>(floor, MeshRenderer{ quadMesh, logoTexture });
 			registry.add<Collider>(floor, Collider::box({ 5.f, 0.05f, 1.f }, { 0.f, 0.05f, 0.f }));
+			registry.add<EditorBounds>(floor, EditorBounds{ { -1.f, 0.f, -1.f }, { 1.f, 0.1f, 1.f } }); //the quad, 0.1 thick below it
+			registry.add<Name>(floor, Name{ "Floor " + std::to_string(++floorNumber) });
 		}
 
 		//orthographic side view, following Blaze along x, tilted down a little
@@ -247,5 +256,7 @@ namespace game {
 		engine.addSystem(Phase::Update, debugOverlayToggleSystem);
 		engine.addSystem(Phase::LateUpdate, attackSystem);
 		engine.addSystem(Phase::LateUpdate, characterAnimationSystem);
+
+		addLevelEditor(engine, logoTexture);
 	}
 }

@@ -13,9 +13,17 @@
 #include "engine/render/vulkan/lve_swap_chain.hpp"
 #include "engine/render/vulkan/lve_texture.hpp"
 
+//libs
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
+
 //std
+#include <algorithm>
 #include <array>
+#include <cmath>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -39,6 +47,11 @@ namespace nrd {
 			};
 			builder.indices = { 0, 1, 2, 2, 3, 0 };
 			return std::make_unique<lve::LveModel>(device, builder);
+		}
+
+		void checkImGuiVulkanResult(VkResult result)
+		{
+			if (result < 0) throw std::runtime_error("Dear ImGui Vulkan call failed: " + std::to_string(result));
 		}
 	}
 
@@ -146,9 +159,55 @@ namespace nrd {
 		const std::array<unsigned char, 4> white{ 255, 255, 255, 255 };
 		r.addTexture(std::make_unique<lve::Texture>(r.device, white.data(), 1, 1));
 		r.spriteQuad = r.addMesh(createSpriteQuadModel(r.device));
+
+		//Dear ImGui, drawn in the swapchain's render pass after everything else
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui::GetIO().IniFilename = nullptr; //don't write imgui.ini next to the game
+		ImGui::StyleColorsDark();
+		//ImGui's colours are sRGB values, but the swapchain is an sRGB format that encodes on write, so convert
+		//them to linear first or every window comes out washed out
+		for (ImVec4& colour : ImGui::GetStyle().Colors) {
+			colour.x = std::pow(colour.x, 2.2f);
+			colour.y = std::pow(colour.y, 2.2f);
+			colour.z = std::pow(colour.z, 2.2f);
+		}
+		ImGui_ImplGlfw_InitForVulkan(window.getGLFWwindow(), true); //chains to the window's own callbacks
+		ImGui_ImplVulkan_InitInfo imguiInfo{};
+		imguiInfo.ApiVersion = VK_API_VERSION_1_0;
+		imguiInfo.Instance = r.device.getInstance();
+		imguiInfo.PhysicalDevice = r.device.getPhysicalDevice();
+		imguiInfo.Device = r.device.device();
+		imguiInfo.QueueFamily = r.device.findPhysicalQueueFamilies().graphicsFamily;
+		imguiInfo.Queue = r.device.graphicsQueue();
+		imguiInfo.DescriptorPoolSize = 16; //the backend makes its own pool for its font and image descriptors
+		imguiInfo.MinImageCount = 2;
+		imguiInfo.ImageCount = std::max(2u, r.swapchain.getSwapChainImageCount());
+		imguiInfo.PipelineInfoMain.RenderPass = r.swapchain.getSwapChainRenderPass();
+		imguiInfo.PipelineInfoMain.Subpass = 0;
+		imguiInfo.PipelineInfoMain.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+		imguiInfo.CheckVkResultFn = checkImGuiVulkanResult;
+		if (!ImGui_ImplVulkan_Init(&imguiInfo)) throw std::runtime_error("Failed to initialise Dear ImGui's Vulkan backend");
 	}
 
-	Renderer::~Renderer() = default;
+	Renderer::~Renderer()
+	{
+		//ImGui's Vulkan objects go before the device does (impl is destroyed after this body)
+		waitIdle();
+		ImGui_ImplVulkan_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+	}
+
+	void Renderer::beginUiFrame()
+	{
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	bool Renderer::uiWantsKeyboard() const { return ImGui::GetIO().WantCaptureKeyboard; }
+	bool Renderer::uiWantsMouse() const { return ImGui::GetIO().WantCaptureMouse; }
 
 	TextureHandle Renderer::loadTexture(const std::string& path, TextureFilter filter)
 	{
@@ -177,6 +236,7 @@ namespace nrd {
 		Impl& r = *impl;
 		const std::vector<Aabb> debugBoxes = std::move(r.debugBoxes);
 		r.debugBoxes.clear();
+		ImGui::Render(); //every UI frame has to end, even if this frame is skipped below
 		VkCommandBuffer commandBuffer = r.swapchain.beginFrame();
 		if (!commandBuffer) return; //the swapchain was just recreated; draw next frame
 
@@ -210,6 +270,7 @@ namespace nrd {
 			r.debugSystem->renderColliders(frameInfo, r.meshSystem->pipelineLayout());
 			r.debugSystem->renderBoxes(frameInfo, r.meshSystem->pipelineLayout(), debugBoxes);
 		}
+		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
 		r.swapchain.endSwapChainRenderPass(commandBuffer);
 		r.swapchain.endFrame();
 	}

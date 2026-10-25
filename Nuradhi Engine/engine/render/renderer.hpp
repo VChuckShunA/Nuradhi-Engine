@@ -41,6 +41,12 @@ namespace nrd {
 
 		float aspectRatio() const;
 
+		//Dear ImGui: the engine starts a UI frame every frame, so game code can call ImGui:: functions from any
+		//system; the UI is drawn on top of everything else
+		void beginUiFrame();
+		bool uiWantsKeyboard() const; //an ImGui text field has focus
+		bool uiWantsMouse() const; //the mouse is over an ImGui window
+
 		void render(ecs::Registry& registry, float frameTime);
 		void waitIdle(); //blocks until the GPU is done, before anything it uses is destroyed
 
