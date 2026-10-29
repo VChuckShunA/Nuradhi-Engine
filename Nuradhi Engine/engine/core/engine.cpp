@@ -1,6 +1,7 @@
 #include "engine/core/engine.hpp"
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
+#include "engine/particles/particles.hpp"
 #include "engine/platform/lve_window.hpp"
 #include "engine/sprite/sprite.hpp"
 
@@ -52,6 +53,7 @@ namespace nrd {
 				stepPhysics(world, dt, physics, debugLog);
 				for (System& system : lateUpdateSystems) system(*this, dt);
 				updateSpriteAnimations(world, dt);
+				updateParticles(world, dt);
 			}
 			updateCameraFollow(world);
 

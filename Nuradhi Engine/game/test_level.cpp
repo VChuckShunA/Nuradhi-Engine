@@ -6,6 +6,7 @@
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
 #include "engine/physics/collision.hpp"
+#include "engine/particles/particles.hpp"
 #include "engine/physics/physics.hpp"
 #include "engine/render/render_components.hpp"
 #include "engine/sprite/sprite.hpp"
@@ -178,6 +179,27 @@ namespace game {
 		}
 	}
 
+	namespace {
+		//Weather: each kind is a particle volume that follows the player along x, so it's always on screen
+		void spawnWeather(ecs::Registry& registry, Entity player)
+		{
+			const auto add = [&](const char* name, const ParticleSettings& settings, const glm::vec3& position, bool enabled) {
+				const Entity weather = registry.create();
+				registry.add<Transform>(weather, Transform{ position });
+				ParticleEmitter& emitter = registry.add<ParticleEmitter>(weather, ParticleEmitter{ settings });
+				emitter.enabled = enabled;
+				emitter.randomState ^= static_cast<std::uint32_t>(weather) * 2654435761u; //different random streams per emitter
+				registry.add<CameraFollow>(weather, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
+				registry.add<Name>(weather, Name{ name });
+			};
+			//rain and snow fill the air from above the camera's view down to the floor (y = 1.5)
+			add("Rain", ParticleSettings::rain(), { 1.f, 0.2f, 3.f }, true);
+			add("Snow", ParticleSettings::snow(), { 1.f, 0.2f, 3.f }, false);
+			//fog hugs the ground
+			add("Fog", ParticleSettings::fog(), { 1.f, 1.38f, 3.f }, true);
+		}
+	}
+
 	void loadTestLevel(Engine& engine)
 	{
 		ecs::Registry& registry = engine.registry();
@@ -240,6 +262,8 @@ namespace game {
 			registry.add<EditorBounds>(floor, EditorBounds{ { -1.f, 0.f, -1.f }, { 1.f, 0.1f, 1.f } }); //the quad, 0.1 thick below it
 			registry.add<Name>(floor, Name{ "Floor " + std::to_string(++floorNumber) });
 		}
+
+		spawnWeather(registry, player);
 
 		//orthographic side view, following Blaze along x, tilted down a little
 		const Entity camera = registry.create();

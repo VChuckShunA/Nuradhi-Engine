@@ -1,13 +1,18 @@
 #include "game/level_editor.hpp"
 #include "engine/core/components.hpp"
+#include "engine/particles/particles.hpp"
 #include "engine/physics/collision.hpp"
 #include "engine/sprite/sprite.hpp"
 
 //libs
 #include <imgui.h>
+#include <ImGuizmo.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 //std
 #include <algorithm>
+#include <cmath>
 #include <cfloat>
 #include <memory>
 #include <string>
@@ -34,6 +39,8 @@ namespace game {
 			Entity selected = nrd::ecs::NullEntity;
 			int prefab = 0;
 			int placedCount = 0;
+			ImGuizmo::OPERATION gizmo = ImGuizmo::TRANSLATE;
+			ImGuizmo::MODE gizmoSpace = ImGuizmo::WORLD;
 			nrd::TextureHandle propTexture{};
 			std::vector<Prefab> prefabs;
 		};
@@ -92,6 +99,84 @@ namespace game {
 			}
 		}
 
+		//Transform::mat4 builds translate * Ry * Rx * Rz * scale; this takes such a matrix apart again
+		void decompose(const glm::mat4& matrix, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
+		{
+			position = glm::vec3(matrix[3]);
+			glm::vec3 axes[3] = { glm::vec3(matrix[0]), glm::vec3(matrix[1]), glm::vec3(matrix[2]) };
+			for (int i = 0; i < 3; i++) {
+				scale[i] = glm::length(axes[i]);
+				if (scale[i] > 0.f) axes[i] /= scale[i];
+			}
+			//column 2 is (cos x sin y, -sin x, cos x cos y); row 1 of columns 0 and 1 is (cos x sin z, cos x cos z)
+			rotation.x = std::asin(glm::clamp(-axes[2].y, -1.f, 1.f));
+			rotation.y = std::atan2(axes[2].x, axes[2].z);
+			rotation.z = std::atan2(axes[0].y, axes[1].y);
+		}
+
+		//the move/rotate/scale handles on the selected entity, drawn over the scene
+		void gizmo(nrd::Engine& engine, EditorState& state)
+		{
+			nrd::ecs::Registry& registry = engine.registry();
+			ImGuizmo::BeginFrame();
+			if (state.selected == nrd::ecs::NullEntity) return;
+
+			glm::mat4 view{ 1.f }, projection{ 1.f };
+			engine.renderer().cameraMatrices(registry, view, projection);
+			//our clip space has +y down (Vulkan); ImGuizmo expects OpenGL's +y up, so flip it
+			const glm::mat4 gizmoProjection = glm::scale(glm::mat4{ 1.f }, glm::vec3{ 1.f, -1.f, 1.f }) * projection;
+
+			const Entity camera = registry.findFirst<nrd::Transform, nrd::Camera>();
+			const bool orthographic = camera == nrd::ecs::NullEntity || registry.get<nrd::Camera>(camera).projection == nrd::Camera::Projection::Orthographic;
+			const ImGuiIO& io = ImGui::GetIO();
+			ImGuizmo::SetOrthographic(orthographic);
+			ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList()); //over the scene, under the editor window
+			ImGuizmo::SetRect(0.f, 0.f, io.DisplaySize.x, io.DisplaySize.y);
+
+			//sprites always face the camera at their own size, so they only get the move arrows
+			const ImGuizmo::OPERATION operation = registry.has<nrd::Sprite>(state.selected) ? ImGuizmo::TRANSLATE : state.gizmo;
+			nrd::Transform& transform = registry.get<nrd::Transform>(state.selected);
+			glm::mat4 matrix = transform.mat4();
+			if (ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(gizmoProjection), operation, state.gizmoSpace, glm::value_ptr(matrix))) {
+				glm::vec3 position, rotation, scale;
+				decompose(matrix, position, rotation, scale);
+				//copy back only what this handle changes, so the other values don't pick up rounding drift
+				if (operation == ImGuizmo::TRANSLATE) {
+					transform.position = position;
+				}
+				else if (operation == ImGuizmo::ROTATE) {
+					transform.rotation = rotation;
+				}
+				else {
+					scale = glm::max(scale, glm::vec3{ 0.01f });
+					rescaleCollider(registry, state.selected, transform.scale, scale);
+					transform.scale = scale;
+				}
+			}
+			//a click on a handle is for the editor, not for Blaze's fists
+			if (ImGuizmo::IsOver() || ImGuizmo::IsUsing()) engine.input().consumeMouse();
+		}
+
+		void gizmoControls(nrd::Engine& engine, EditorState& state)
+		{
+			//1/2/3 switch handles (W/E/R would fight with WASD)
+			const nrd::Input& input = engine.input();
+			if (input.wasPressed(nrd::Key::Num1)) state.gizmo = ImGuizmo::TRANSLATE;
+			if (input.wasPressed(nrd::Key::Num2)) state.gizmo = ImGuizmo::ROTATE;
+			if (input.wasPressed(nrd::Key::Num3)) state.gizmo = ImGuizmo::SCALE;
+
+			ImGui::SeparatorText("Gizmo");
+			if (ImGui::RadioButton("Move (1)", state.gizmo == ImGuizmo::TRANSLATE)) state.gizmo = ImGuizmo::TRANSLATE;
+			ImGui::SameLine();
+			if (ImGui::RadioButton("Rotate (2)", state.gizmo == ImGuizmo::ROTATE)) state.gizmo = ImGuizmo::ROTATE;
+			ImGui::SameLine();
+			if (ImGui::RadioButton("Scale (3)", state.gizmo == ImGuizmo::SCALE)) state.gizmo = ImGuizmo::SCALE;
+			if (ImGui::RadioButton("World", state.gizmoSpace == ImGuizmo::WORLD)) state.gizmoSpace = ImGuizmo::WORLD;
+			ImGui::SameLine();
+			if (ImGui::RadioButton("Local", state.gizmoSpace == ImGuizmo::LOCAL)) state.gizmoSpace = ImGuizmo::LOCAL;
+			ImGui::TextDisabled("+y points down in this engine, so the green arrow does too.");
+		}
+
 		void selectedObjectPanel(nrd::Engine& engine, EditorState& state)
 		{
 			nrd::ecs::Registry& registry = engine.registry();
@@ -139,6 +224,16 @@ namespace game {
 			ImGui::Checkbox("Pause game", &engine.paused);
 			ImGui::TextDisabled("F2 closes the editor");
 
+			ImGui::SeparatorText("Weather");
+			registry.each<nrd::ParticleEmitter, nrd::Name>([&](Entity entity, nrd::ParticleEmitter& emitter, nrd::Name& name) {
+				ImGui::PushID(static_cast<int>(entity));
+				ImGui::Checkbox(name.value.c_str(), &emitter.enabled);
+				ImGui::SameLine(120.f);
+				ImGui::SetNextItemWidth(150.f);
+				ImGui::SliderFloat("density", &emitter.density, 0.f, 2.f, "%.2f");
+				ImGui::PopID();
+			});
+
 			ImGui::SeparatorText("Place");
 			if (ImGui::BeginCombo("Prefab", state.prefabs[state.prefab].name)) {
 				for (int i = 0; i < static_cast<int>(state.prefabs.size()); i++) {
@@ -158,6 +253,7 @@ namespace game {
 			}
 
 			if (!registry.valid(state.selected) || !registry.has<nrd::Transform>(state.selected)) state.selected = nrd::ecs::NullEntity;
+			gizmoControls(engine, state);
 			if (state.selected != nrd::ecs::NullEntity) {
 				selectedObjectPanel(engine, state);
 			}
@@ -165,6 +261,7 @@ namespace game {
 				ImGui::TextDisabled("Select an object to edit it.");
 			}
 			ImGui::End();
+			gizmo(engine, state);
 
 			//outline the selection in the debug overlay
 			if (state.selected != nrd::ecs::NullEntity) {

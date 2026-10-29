@@ -4,6 +4,9 @@
 #include "engine/physics/collision.hpp"
 #include "engine/render/render_components.hpp"
 
+//libs
+#include <glm/glm.hpp>
+
 //std
 #include <cstdint>
 #include <memory>
@@ -40,6 +43,9 @@ namespace nrd {
 		void drawDebugBox(const Aabb& box);
 
 		float aspectRatio() const;
+		//view and projection of the registry's Camera entity for the current window size (Vulkan conventions:
+		//+y down in clip space, depth 0..1); identity if there's no camera
+		void cameraMatrices(ecs::Registry& registry, glm::mat4& view, glm::mat4& projection);
 
 		//Dear ImGui: the engine starts a UI frame every frame, so game code can call ImGui:: functions from any
 		//system; the UI is drawn on top of everything else

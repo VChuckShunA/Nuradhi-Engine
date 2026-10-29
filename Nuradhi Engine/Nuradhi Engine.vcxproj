@@ -78,7 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;$(ProjectDir)ImGuizmo;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,7 +97,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;$(ProjectDir)ImGuizmo;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,7 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;$(ProjectDir)ImGuizmo;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,7 +135,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLFW\glfw-3.3.9.bin.WIN32\include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\External Libs\GLM\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)imgui-master\imgui-master;$(ProjectDir)imgui-master\imgui-master\backends;$(ProjectDir)ImGuizmo;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\stb;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\tinyobjloader;$(VULKAN_SDK)\Include;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glm;C:\Users\VChuckShunA\Documents\Visual Studio 2022\Libraries\glfw-3.3.9.bin.WIN64\glfw-3.3.9.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,11 +151,13 @@
     <ClCompile Include="engine\core\components.cpp" />
     <ClCompile Include="engine\core\engine.cpp" />
     <ClCompile Include="engine\input\input.cpp" />
+    <ClCompile Include="engine\particles\particles.cpp" />
     <ClCompile Include="engine\physics\collision.cpp" />
     <ClCompile Include="engine\physics\physics.cpp" />
     <ClCompile Include="engine\platform\lve_window.cpp" />
     <ClCompile Include="engine\render\debug_render_system.cpp" />
     <ClCompile Include="engine\render\mesh_render_system.cpp" />
+    <ClCompile Include="engine\render\particle_render_system.cpp" />
     <ClCompile Include="engine\render\point_light_system.cpp" />
     <ClCompile Include="engine\render\renderer.cpp" />
     <ClCompile Include="engine\render\vulkan\lve_buffer.cpp" />
@@ -180,6 +182,7 @@
     <ClCompile Include="imgui-master\imgui-master\imgui_demo.cpp" />
     <ClCompile Include="imgui-master\imgui-master\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="imgui-master\imgui-master\backends\imgui_impl_vulkan.cpp" />
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="game\test_level.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -189,11 +192,13 @@
     <ClInclude Include="engine\core\engine.hpp" />
     <ClInclude Include="engine\ecs\registry.hpp" />
     <ClInclude Include="engine\input\input.hpp" />
+    <ClInclude Include="engine\particles\particles.hpp" />
     <ClInclude Include="engine\physics\collision.hpp" />
     <ClInclude Include="engine\physics\physics.hpp" />
     <ClInclude Include="engine\platform\lve_window.hpp" />
     <ClInclude Include="engine\render\debug_render_system.hpp" />
     <ClInclude Include="engine\render\mesh_render_system.hpp" />
+    <ClInclude Include="engine\render\particle_render_system.hpp" />
     <ClInclude Include="engine\render\point_light_system.hpp" />
     <ClInclude Include="engine\render\render_components.hpp" />
     <ClInclude Include="engine\render\renderer.hpp" />
@@ -215,12 +220,15 @@
     <ClInclude Include="game\game_components.hpp" />
     <ClInclude Include="game\game_systems.hpp" />
     <ClInclude Include="game\level_editor.hpp" />
+    <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="game\test_level.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />
     <None Include="shaders\green_shader.frag" />
     <None Include="shaders\green_shader.vert" />
+    <None Include="shaders\particle.frag" />
+    <None Include="shaders\particle.vert" />
     <None Include="shaders\point_light.frag" />
     <None Include="shaders\point_light.vert" />
     <None Include="shaders\simple_shader.frag" />

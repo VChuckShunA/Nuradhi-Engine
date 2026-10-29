@@ -38,6 +38,9 @@ namespace nrd {
 		void update(float dt);
 		//while blocked, the game sees those keys or buttons as up, e.g. when the UI has the keyboard or mouse
 		void setBlocked(bool keyboard, bool mouse) { keyboardBlocked = keyboard; mouseBlocked = mouse; }
+		//hides this frame's mouse buttons from everything that reads input later in the frame, e.g. when a tool
+		//decides a click was meant for it
+		void consumeMouse();
 
 		bool isDown(Key key) const { return current[index(key)]; }
 		bool wasPressed(Key key) const { return current[index(key)] && !previous[index(key)]; } //went down this frame

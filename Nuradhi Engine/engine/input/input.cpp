@@ -47,6 +47,15 @@ namespace nrd {
 		}
 	}
 
+	void Input::consumeMouse()
+	{
+		for (std::size_t button = FIRST_MOUSE_BUTTON; button < KEY_COUNT; button++) {
+			current[button] = false;
+			previous[button] = false; //no fake "released" either
+			doubleTapped[button] = false;
+		}
+	}
+
 	void Input::bindAction(const std::string& action, Key key)
 	{
 		actions[action].push_back(key);
