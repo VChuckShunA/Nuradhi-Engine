@@ -7,6 +7,12 @@
     <Filter Include="Engine\Ai">
       <UniqueIdentifier>{3c6f1a52-8d4e-4b7a-9e21-5f0d7c8a4b19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Fog">
+      <UniqueIdentifier>{6b3e2f91-0c4d-4e7a-9a15-2d8c7f3b5e64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Snow">
+      <UniqueIdentifier>{a4c71e2d-93f8-4b06-8d5a-1f2e6c9b7a30}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Particles">
       <UniqueIdentifier>{d1f0a7c4-5e2b-4a93-8c6d-7b2e9f4a1c58}</UniqueIdentifier>
     </Filter>
@@ -278,7 +284,22 @@
     <None Include="shaders\simple_shader.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\fog.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\fog.frag">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="shaders\particle.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\snow.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\snow.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\stylise.glsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\particle.frag">
@@ -286,14 +307,38 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\fog\fog_volume.cpp">
+      <Filter>Engine\Fog</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\fog_render_system.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
     <ClCompile Include="engine\particles\particles.cpp">
       <Filter>Engine\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\snow\snow_volume.cpp">
+      <Filter>Engine\Snow</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\snow_render_system.cpp">
+      <Filter>Engine\Render</Filter>
     </ClCompile>
     <ClCompile Include="engine\render\particle_render_system.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
+    <ClInclude Include="engine\fog\fog_volume.hpp">
+      <Filter>Engine\Fog</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\fog_render_system.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
     <ClInclude Include="engine\particles\particles.hpp">
       <Filter>Engine\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\snow\snow_volume.hpp">
+      <Filter>Engine\Snow</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\snow_render_system.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="engine\render\particle_render_system.hpp">
       <Filter>Engine\Render</Filter>

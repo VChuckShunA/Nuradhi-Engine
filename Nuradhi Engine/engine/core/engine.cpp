@@ -1,8 +1,10 @@
 #include "engine/core/engine.hpp"
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
+#include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/platform/lve_window.hpp"
+#include "engine/snow/snow_volume.hpp"
 #include "engine/sprite/sprite.hpp"
 
 //std
@@ -54,6 +56,8 @@ namespace nrd {
 				for (System& system : lateUpdateSystems) system(*this, dt);
 				updateSpriteAnimations(world, dt);
 				updateParticles(world, dt);
+				updateFogVolumes(world, dt);
+				updateSnowVolumes(world, dt);
 			}
 			updateCameraFollow(world);
 

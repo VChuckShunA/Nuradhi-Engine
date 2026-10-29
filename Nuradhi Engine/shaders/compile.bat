@@ -6,4 +6,8 @@
 "%VULKAN_SDK%\Bin\glslc.exe" green_shader.frag -o green_shader.frag.spv
 "%VULKAN_SDK%\Bin\glslc.exe" particle.vert -o particle.vert.spv
 "%VULKAN_SDK%\Bin\glslc.exe" particle.frag -o particle.frag.spv
+"%VULKAN_SDK%\Bin\glslc.exe" fog.vert -o fog.vert.spv
+"%VULKAN_SDK%\Bin\glslc.exe" fog.frag -o fog.frag.spv
+"%VULKAN_SDK%\Bin\glslc.exe" snow.vert -o snow.vert.spv
+"%VULKAN_SDK%\Bin\glslc.exe" snow.frag -o snow.frag.spv
 pause

@@ -1,7 +1,9 @@
 #include "game/level_editor.hpp"
 #include "engine/core/components.hpp"
+#include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/physics/collision.hpp"
+#include "engine/snow/snow_volume.hpp"
 #include "engine/sprite/sprite.hpp"
 
 //libs
@@ -231,6 +233,62 @@ namespace game {
 				ImGui::SameLine(120.f);
 				ImGui::SetNextItemWidth(150.f);
 				ImGui::SliderFloat("density", &emitter.density, 0.f, 2.f, "%.2f");
+				ImGui::PopID();
+			});
+			registry.each<nrd::FogVolume, nrd::Name>([&](Entity entity, nrd::FogVolume& fog, nrd::Name& name) {
+				ImGui::PushID(static_cast<int>(entity));
+				ImGui::Checkbox(name.value.c_str(), &fog.enabled);
+				if (ImGui::TreeNode("Fog settings")) {
+					if (ImGui::Button("Cinematic")) fog = nrd::FogVolume::cinematic();
+					ImGui::SameLine();
+					if (ImGui::Button("Graphic novel")) fog = nrd::FogVolume::graphicNovel();
+					ImGui::SliderFloat("height", &fog.height, 0.05f, 1.5f, "%.2f");
+					ImGui::SliderInt("slices", &fog.slices, 4, 96);
+					ImGui::ColorEdit3("colour", &fog.colour.x);
+					ImGui::SliderFloat("density", &fog.density, 0.f, 30.f, "%.1f");
+					ImGui::SliderFloat("coverage", &fog.coverage, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("height falloff", &fog.heightFalloff, 0.f, 8.f, "%.2f");
+					ImGui::SliderFloat("noise scale", &fog.noiseScale, 0.2f, 6.f, "%.2f");
+					ImGui::SliderFloat("turbulence", &fog.turbulence, 0.f, 2.f, "%.2f");
+					ImGui::SliderFloat2("wind", &fog.wind.x, -1.f, 1.f, "%.2f");
+					ImGui::SliderFloat("shadow", &fog.shadow, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("light glow", &fog.lightScatter, 0.f, 30.f, "%.1f");
+					ImGui::SeparatorText("Graphic novel");
+					ImGui::SliderInt("tone bands", &fog.toneBands, 0, 8);
+					ImGui::SliderFloat("halftone", &fog.halftone, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("dot spacing", &fog.halftoneSize, 2.f, 20.f, "%.1f px");
+					ImGui::TreePop();
+				}
+				ImGui::PopID();
+			});
+			registry.each<nrd::SnowVolume, nrd::Name>([&](Entity entity, nrd::SnowVolume& snow, nrd::Name& name) {
+				ImGui::PushID(static_cast<int>(entity));
+				ImGui::Checkbox(name.value.c_str(), &snow.enabled);
+				if (ImGui::TreeNode("Snow settings")) {
+					if (ImGui::Button("Cinematic")) snow = nrd::SnowVolume::cinematic();
+					ImGui::SameLine();
+					if (ImGui::Button("Graphic novel")) snow = nrd::SnowVolume::graphicNovel();
+					ImGui::SliderInt("layers", &snow.layers, 1, 32);
+					ImGui::SliderFloat("depth", &snow.depth, 0.f, 4.f, "%.2f");
+					ImGui::SliderFloat("flake size", &snow.flakeSize, 0.002f, 0.05f, "%.3f");
+					ImGui::SliderFloat("spacing", &snow.spacing, 0.03f, 0.5f, "%.2f");
+					ImGui::SliderFloat("density", &snow.density, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("fall speed", &snow.fallSpeed, 0.f, 3.f, "%.2f");
+					ImGui::SliderFloat("wind", &snow.wind, -2.f, 2.f, "%.2f");
+					ImGui::SliderFloat2("sway (amp, Hz)", &snow.sway.x, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("motion blur", &snow.motionBlur, 0.f, 2.f, "%.2f");
+					ImGui::ColorEdit4("colour", &snow.colour.x);
+					ImGui::SliderFloat("depth of field", &snow.depthOfField, 0.f, 0.1f, "%.3f");
+					ImGui::SliderFloat("focus", &snow.focus, -4.f, 4.f, "%.2f");
+					ImGui::SliderFloat("mist", &snow.mist, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("light glow", &snow.lightScatter, 0.f, 30.f, "%.1f");
+					ImGui::SeparatorText("Graphic novel");
+					ImGui::SliderFloat("ink outline", &snow.outline, 0.f, 1.f, "%.2f");
+					ImGui::SliderInt("tone bands", &snow.toneBands, 0, 8);
+					ImGui::SliderFloat("halftone", &snow.halftone, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("dot spacing", &snow.halftoneSize, 2.f, 20.f, "%.1f px");
+					ImGui::TreePop();
+				}
 				ImGui::PopID();
 			});
 

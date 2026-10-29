@@ -5,10 +5,12 @@
 #include "game/level_editor.hpp"
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
+#include "engine/fog/fog_volume.hpp"
 #include "engine/physics/collision.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/physics/physics.hpp"
 #include "engine/render/render_components.hpp"
+#include "engine/snow/snow_volume.hpp"
 #include "engine/sprite/sprite.hpp"
 
 //libs
@@ -194,9 +196,23 @@ namespace game {
 			};
 			//rain and snow fill the air from above the camera's view down to the floor (y = 1.5)
 			add("Rain", ParticleSettings::rain(), { 1.f, 0.2f, 3.f }, true);
-			add("Snow", ParticleSettings::snow(), { 1.f, 0.2f, 3.f }, false);
-			//fog hugs the ground
-			add("Fog", ParticleSettings::fog(), { 1.f, 1.38f, 3.f }, true);
+			add("Particle snow", ParticleSettings::snow(), { 1.f, 0.2f, 3.f }, false);
+			//the original particle fog hugs the ground too; kept, but the volumetric fog below replaces it by default
+			add("Particle fog", ParticleSettings::fog(), { 1.f, 1.38f, 3.f }, false);
+
+			//volumetric fog rising from the floor, inked like a comic panel
+			const Entity fog = registry.create();
+			registry.add<Transform>(fog, Transform{ { 1.f, 1.5f, 3.f } });
+			registry.add<FogVolume>(fog, FogVolume::graphicNovel());
+			registry.add<CameraFollow>(fog, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
+			registry.add<Name>(fog, Name{ "Volumetric fog" });
+
+			//volumetric snowfall around the fighters, off while it rains (switch it on in the level editor)
+			const Entity snow = registry.create();
+			registry.add<Transform>(snow, Transform{ { 1.f, 1.5f, 3.f } });
+			registry.add<SnowVolume>(snow, SnowVolume::graphicNovel()).enabled = false;
+			registry.add<CameraFollow>(snow, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
+			registry.add<Name>(snow, Name{ "Volumetric snow" });
 		}
 	}
 

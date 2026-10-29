@@ -1,9 +1,11 @@
 #include "engine/render/renderer.hpp"
 #include "engine/core/components.hpp"
 #include "engine/render/debug_render_system.hpp"
+#include "engine/render/fog_render_system.hpp"
 #include "engine/render/mesh_render_system.hpp"
 #include "engine/render/particle_render_system.hpp"
 #include "engine/render/point_light_system.hpp"
+#include "engine/render/snow_render_system.hpp"
 #include "engine/render/vulkan/lve_buffer.hpp"
 #include "engine/render/vulkan/lve_camera.hpp"
 #include "engine/render/vulkan/lve_descriptors.hpp"
@@ -73,6 +75,8 @@ namespace nrd {
 		std::unique_ptr<MeshRenderSystem> meshSystem;
 		std::unique_ptr<PointLightSystem> lightSystem;
 		std::unique_ptr<ParticleRenderSystem> particleSystem;
+		std::unique_ptr<FogRenderSystem> fogSystem;
+		std::unique_ptr<SnowRenderSystem> snowSystem;
 		std::unique_ptr<DebugRenderSystem> debugSystem;
 		lve::LveCamera camera;
 		bool debugOverlay = true;
@@ -156,6 +160,8 @@ namespace nrd {
 		r.meshSystem = std::make_unique<MeshRenderSystem>(r.device, renderPass, setLayout);
 		r.lightSystem = std::make_unique<PointLightSystem>(r.device, renderPass, setLayout);
 		r.particleSystem = std::make_unique<ParticleRenderSystem>(r.device, renderPass, setLayout);
+		r.fogSystem = std::make_unique<FogRenderSystem>(r.device, renderPass, setLayout);
+		r.snowSystem = std::make_unique<SnowRenderSystem>(r.device, renderPass, setLayout);
 		r.debugSystem = std::make_unique<DebugRenderSystem>(r.device);
 
 		//texture 0: plain white, for meshes that don't name a texture
@@ -274,7 +280,9 @@ namespace nrd {
 		r.swapchain.beginSwapChainRenderPass(commandBuffer);
 		r.swapchain.bindPipelineEssentials(commandBuffer); //viewport and scissor, shared by every pipeline below
 		r.meshSystem->render(frameInfo, false);
-		r.particleSystem->render(frameInfo); //transparent: after everything solid
+		r.fogSystem->render(frameInfo); //transparent: after everything solid, and under the rain falling through it
+		r.snowSystem->render(frameInfo);
+		r.particleSystem->render(frameInfo);
 		r.lightSystem->render(frameInfo);
 		if (r.debugOverlay) {
 			r.meshSystem->render(frameInfo, true);
