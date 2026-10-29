@@ -4,6 +4,8 @@
 #include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/platform/lve_window.hpp"
+#include "engine/rain/nuradhi_rain.hpp"
+#include "engine/rain/rain_volume.hpp"
 #include "engine/snow/snow_volume.hpp"
 #include "engine/sprite/sprite.hpp"
 
@@ -56,8 +58,10 @@ namespace nrd {
 				for (System& system : lateUpdateSystems) system(*this, dt);
 				updateSpriteAnimations(world, dt);
 				updateParticles(world, dt);
+				updateNuradhiRain(world, dt); //after the particles, to catch the drops that just landed
 				updateFogVolumes(world, dt);
 				updateSnowVolumes(world, dt);
+				updateRainVolumes(world, dt);
 			}
 			updateCameraFollow(world);
 

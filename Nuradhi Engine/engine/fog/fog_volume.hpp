@@ -5,11 +5,18 @@
 //libs
 #include <glm/glm.hpp>
 
+//std
+#include <memory>
+
 namespace nrd {
+
+	class FogSimulation;
 
 	//Volumetric ground fog: a slab of animated noise that rises from the entity's Transform position (the ground,
 	//+y is down) and is drawn as a stack of horizontal slices, so anything standing in it is fogged from the feet up.
 	//Point lights glow inside it. The style settings turn it from smooth film fog into inked, halftoned comic fog.
+	//With interactive on, a fluid simulation runs underneath: every Sprite pushes the fog with the opaque pixels of
+	//its current frame, so it parts around legs, swirls in their wake, and slowly drifts back in.
 	//The older particle fog (ParticleSettings::fog) is separate and still works alongside or instead of this.
 	struct FogVolume {
 		bool enabled = true;
@@ -35,14 +42,26 @@ namespace nrd {
 		float halftone = 0.f; //0..1 blends the fog into a printed halftone dot screen
 		float halftoneSize = 7.f; //dot spacing in pixels
 
+		//interaction: characters push the fog around (works with any of the looks above)
+		bool interactive = false;
+		float bodyPush = 1.f; //how much of a character's movement the fog picks up
+		float limbPush = 1.f; //how hard a pose change (a kick, a punch) shoves the fog away from the body
+		float landingPuff = 1.f; //how hard landing from a jump blows the fog outwards
+		float refillTime = 2.5f; //seconds for a cleared patch to drift back in, and for pushed billows to settle
+		float swirl = 0.5f; //how strongly eddies are kept alive in the wake (vorticity confinement)
+		float bodyThickness = 0.3f; //depth a flat sprite takes up in the fog
+
 		float time = 0.f; //advanced by updateFogVolumes; stops while the game is paused
+		std::shared_ptr<FogSimulation> simulation; //created by updateFogVolumes while interactive is on
 
 		//smooth, cinematic fog
 		static FogVolume cinematic();
 		//inked bands and halftone dots: a panel from a noir comic
 		static FogVolume graphicNovel();
+		//cinematic fog that characters push, part and stir as they move and fight
+		static FogVolume realistic();
 	};
 
-	//Advances the fog's animation
+	//Advances the fog's animation and, for interactive fog, its simulation
 	void updateFogVolumes(ecs::Registry& registry, float dt);
 }

@@ -151,8 +151,18 @@
     <ClCompile Include="engine\core\components.cpp" />
     <ClCompile Include="engine\core\engine.cpp" />
     <ClCompile Include="engine\input\input.cpp" />
+    <ClCompile Include="engine\fog\fog_simulation.cpp">
+      <!-- the fog's fluid solver is far too slow unoptimised; optimise it even in Debug -->
+      <Optimization Condition="'$(Configuration)'=='Debug'">MaxSpeed</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)'=='Debug'">AnySuitable</InlineFunctionExpansion>
+      <BasicRuntimeChecks Condition="'$(Configuration)'=='Debug'">Default</BasicRuntimeChecks>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
+    </ClCompile>
     <ClCompile Include="engine\fog\fog_volume.cpp" />
     <ClCompile Include="engine\particles\particles.cpp" />
+    <ClCompile Include="engine\rain\nuradhi_rain.cpp" />
+    <ClCompile Include="engine\rain\rain_volume.cpp" />
     <ClCompile Include="engine\snow\snow_volume.cpp" />
     <ClCompile Include="engine\physics\collision.cpp" />
     <ClCompile Include="engine\physics\physics.cpp" />
@@ -162,6 +172,8 @@
     <ClCompile Include="engine\render\fog_render_system.cpp" />
     <ClCompile Include="engine\render\particle_render_system.cpp" />
     <ClCompile Include="engine\render\point_light_system.cpp" />
+    <ClCompile Include="engine\render\nuradhi_rain_render_system.cpp" />
+    <ClCompile Include="engine\render\rain_render_system.cpp" />
     <ClCompile Include="engine\render\snow_render_system.cpp" />
     <ClCompile Include="engine\render\renderer.cpp" />
     <ClCompile Include="engine\render\vulkan\lve_buffer.cpp" />
@@ -196,8 +208,11 @@
     <ClInclude Include="engine\core\engine.hpp" />
     <ClInclude Include="engine\ecs\registry.hpp" />
     <ClInclude Include="engine\input\input.hpp" />
+    <ClInclude Include="engine\fog\fog_simulation.hpp" />
     <ClInclude Include="engine\fog\fog_volume.hpp" />
     <ClInclude Include="engine\particles\particles.hpp" />
+    <ClInclude Include="engine\rain\nuradhi_rain.hpp" />
+    <ClInclude Include="engine\rain\rain_volume.hpp" />
     <ClInclude Include="engine\snow\snow_volume.hpp" />
     <ClInclude Include="engine\physics\collision.hpp" />
     <ClInclude Include="engine\physics\physics.hpp" />
@@ -207,6 +222,8 @@
     <ClInclude Include="engine\render\fog_render_system.hpp" />
     <ClInclude Include="engine\render\particle_render_system.hpp" />
     <ClInclude Include="engine\render\point_light_system.hpp" />
+    <ClInclude Include="engine\render\nuradhi_rain_render_system.hpp" />
+    <ClInclude Include="engine\render\rain_render_system.hpp" />
     <ClInclude Include="engine\render\snow_render_system.hpp" />
     <ClInclude Include="engine\render\render_components.hpp" />
     <ClInclude Include="engine\render\renderer.hpp" />
@@ -239,6 +256,10 @@
     <None Include="shaders\fog.vert" />
     <None Include="shaders\particle.frag" />
     <None Include="shaders\particle.vert" />
+    <None Include="shaders\nuradhi_rain.frag" />
+    <None Include="shaders\nuradhi_rain.vert" />
+    <None Include="shaders\rain.frag" />
+    <None Include="shaders\rain.vert" />
     <None Include="shaders\snow.frag" />
     <None Include="shaders\snow.vert" />
     <None Include="shaders\stylise.glsl" />

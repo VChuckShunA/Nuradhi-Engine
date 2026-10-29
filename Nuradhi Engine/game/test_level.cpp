@@ -9,6 +9,8 @@
 #include "engine/physics/collision.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/physics/physics.hpp"
+#include "engine/rain/nuradhi_rain.hpp"
+#include "engine/rain/rain_volume.hpp"
 #include "engine/render/render_components.hpp"
 #include "engine/snow/snow_volume.hpp"
 #include "engine/sprite/sprite.hpp"
@@ -195,15 +197,15 @@ namespace game {
 				registry.add<Name>(weather, Name{ name });
 			};
 			//rain and snow fill the air from above the camera's view down to the floor (y = 1.5)
-			add("Rain", ParticleSettings::rain(), { 1.f, 0.2f, 3.f }, true);
+			add("Particle rain", ParticleSettings::rain(), { 1.f, 0.2f, 3.f }, false);
 			add("Particle snow", ParticleSettings::snow(), { 1.f, 0.2f, 3.f }, false);
 			//the original particle fog hugs the ground too; kept, but the volumetric fog below replaces it by default
 			add("Particle fog", ParticleSettings::fog(), { 1.f, 1.38f, 3.f }, false);
 
-			//volumetric fog rising from the floor, inked like a comic panel
+			//volumetric fog rising from the floor, which the fighters push, part and stir as they move and fight
 			const Entity fog = registry.create();
 			registry.add<Transform>(fog, Transform{ { 1.f, 1.5f, 3.f } });
-			registry.add<FogVolume>(fog, FogVolume::graphicNovel());
+			registry.add<FogVolume>(fog, FogVolume::realistic());
 			registry.add<CameraFollow>(fog, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
 			registry.add<Name>(fog, Name{ "Volumetric fog" });
 
@@ -213,6 +215,21 @@ namespace game {
 			registry.add<SnowVolume>(snow, SnowVolume::graphicNovel()).enabled = false;
 			registry.add<CameraFollow>(snow, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
 			registry.add<Name>(snow, Name{ "Volumetric snow" });
+
+			//volumetric rain that splashes and ripples on the floor; kept, but Nuradhi Rain below is the default
+			const Entity rain = registry.create();
+			registry.add<Transform>(rain, Transform{ { 1.f, 1.5f, 3.f } });
+			registry.add<RainVolume>(rain, RainVolume::realisticRain()).enabled = false;
+			registry.add<CameraFollow>(rain, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
+			registry.add<Name>(rain, Name{ "Volumetric rain" });
+
+			//Nuradhi Rain: the particle rain, splashing and rippling exactly where each drop lands
+			const Entity nuradhiRain = registry.create();
+			registry.add<Transform>(nuradhiRain, Transform{ { 1.f, 0.2f, 3.f } }); //the volume's bottom is the floor (y = 1.5)
+			registry.add<ParticleEmitter>(nuradhiRain, ParticleEmitter{ ParticleSettings::rain() }).randomState ^= static_cast<std::uint32_t>(nuradhiRain) * 2654435761u;
+			registry.add<NuradhiRain>(nuradhiRain);
+			registry.add<CameraFollow>(nuradhiRain, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
+			registry.add<Name>(nuradhiRain, Name{ "Nuradhi rain" });
 		}
 	}
 

@@ -27,7 +27,13 @@ layout(push_constant) uniform Push {
 	vec4 shape; //x coverage, y height falloff, z noise scale, w turbulence
 	vec4 motion; //xy wind along x and z, z shadow, w light scatter
 	vec4 style; //x tone bands, y halftone, z halftone size in pixels
+	vec4 gridOrigin; //xyz the simulation grid's corner at the ground, w 1 when interactive
+	vec4 gridSize; //xyz its size: x, height, z
 } push;
+
+//interactive fog's simulation: r density (1 undisturbed), gba how far the flow has dragged the fog's pattern
+//(world units). Fog that isn't interactive gets a single undisturbed texel.
+layout(set = 1, binding = 0) uniform sampler3D simulation;
 
 #include "stylise.glsl"
 
@@ -35,8 +41,19 @@ void main() {
 	float time = push.centre.w;
 	vec3 p = fragWorldPosition;
 
+	//characters push the fog around: the pattern is looked up where the flow dragged it from, and thinned where
+	//they cleared it
+	float disturbed = 1.0;
+	vec3 flowed = p;
+	if (push.gridOrigin.w > 0.5) {
+		vec3 grid = vec3(p.x - push.gridOrigin.x, push.gridOrigin.y - p.y, p.z - push.gridOrigin.z) / push.gridSize.xyz;
+		vec4 state = texture(simulation, grid);
+		disturbed = clamp(state.r, 0.0, 1.5);
+		flowed -= state.gba;
+	}
+
 	//the noise field lives in world space and drifts with the wind, so it stays put as the volume follows the camera
-	vec3 q = vec3(p.x - push.motion.x * time, p.y * 2.5, p.z - push.motion.y * time) * push.shape.z;
+	vec3 q = vec3(flowed.x - push.motion.x * time, flowed.y * 2.5, flowed.z - push.motion.y * time) * push.shape.z;
 	q.y += time * 0.05; //slow churn, so the billows change shape as well as move
 	//domain warp: offsetting the lookup by more noise curls the billows into wisps
 	vec3 warp = vec3(fbm(q + vec3(0.0, 0.0, time * 0.07), 3), fbm(q + vec3(5.2, 1.3, -time * 0.05), 3), 0.0);
@@ -48,7 +65,7 @@ void main() {
 	float profile = exp(-fragHeight * push.shape.y) * smoothstep(1.0, 0.7, fragHeight);
 	vec2 edge = abs(p.xz - push.centre.xz) / push.extents.xy;
 	profile *= smoothstep(1.0, 0.75, edge.x) * smoothstep(1.0, 0.6, edge.y);
-	float tone = billow * profile;
+	float tone = billow * profile * disturbed;
 
 	//graphic novel: posterise into hard-edged tones (anti-aliased across one pixel)
 	tone = posterise(tone, push.style.x);

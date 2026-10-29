@@ -107,6 +107,7 @@ namespace nrd {
 			const glm::vec3 centre = transform.position;
 			const glm::vec3 half = settings.volumeHalfExtents;
 			const std::size_t capacity = static_cast<std::size_t>(std::max(0.f, settings.maxParticles * emitter.density));
+			emitter.impacts.clear();
 
 			if (emitter.enabled && settings.prewarm && !emitter.prewarmed) {
 				while (emitter.particles.size() < capacity) emitter.particles.push_back(spawn(emitter, centre, true));
@@ -140,6 +141,10 @@ namespace nrd {
 						for (int axis = 0; axis < 3; axis++) {
 							const float offset = particle.position[axis] - centre[axis];
 							if (std::abs(offset) <= half[axis]) continue;
+							//out through the bottom: it hit the ground where it crossed it this frame
+							if (axis == 1 && offset > 0.f && emitter.recordImpacts && velocity.y > 0.f) {
+								emitter.impacts.push_back(particle.position - velocity * ((offset - half.y) / velocity.y));
+							}
 							//a switched-off emitter lets its weather leave instead of recycling it
 							if (!emitter.enabled) {
 								dead = true;

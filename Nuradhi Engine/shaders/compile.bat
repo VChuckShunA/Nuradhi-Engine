@@ -10,4 +10,8 @@
 "%VULKAN_SDK%\Bin\glslc.exe" fog.frag -o fog.frag.spv
 "%VULKAN_SDK%\Bin\glslc.exe" snow.vert -o snow.vert.spv
 "%VULKAN_SDK%\Bin\glslc.exe" snow.frag -o snow.frag.spv
+"%VULKAN_SDK%\Bin\glslc.exe" rain.vert -o rain.vert.spv
+"%VULKAN_SDK%\Bin\glslc.exe" rain.frag -o rain.frag.spv
+"%VULKAN_SDK%\Bin\glslc.exe" nuradhi_rain.vert -o nuradhi_rain.vert.spv
+"%VULKAN_SDK%\Bin\glslc.exe" nuradhi_rain.frag -o nuradhi_rain.frag.spv
 pause

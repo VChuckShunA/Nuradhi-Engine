@@ -53,6 +53,11 @@ namespace nrd {
 		const std::vector<SpriteFrame>& frames() const { return detectedFrames; }
 		const std::vector<std::vector<int>>& rows() const { return detectedRows; } //frame indices in each row
 		glm::ivec2 imageSize() const { return size; }
+		//whether a sheet pixel is part of a sprite rather than blank background; false outside the image
+		bool isOpaque(int x, int y) const
+		{
+			return x >= 0 && y >= 0 && x < size.x && y < size.y && opaqueMask[static_cast<size_t>(y) * size.x + x] != 0;
+		}
 
 		//frame index of the `column`th sprite in `row`; throws if there isn't one
 		int frameAt(int row, int column) const;
@@ -68,6 +73,7 @@ namespace nrd {
 
 	private:
 		glm::ivec2 size{ 0 };
+		std::vector<uint8_t> opaqueMask; //one byte per pixel, kept from the analysis so effects like fog can see a frame's shape
 		std::vector<SpriteFrame> detectedFrames;
 		std::vector<std::vector<int>> detectedRows;
 		std::unordered_map<std::string, SpriteAnimation> animations;

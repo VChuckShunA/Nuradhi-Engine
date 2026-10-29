@@ -55,6 +55,11 @@ namespace nrd {
 		float spawnBudget = 0.f;
 		std::uint32_t randomState = 0x9E3779B9u;
 		bool prewarmed = false;
+
+		//with recordImpacts on, impacts lists where particles fell out through the bottom of the volume (the ground,
+		//+y is down) during the latest update, so effects like rain splashes can start exactly where drops land
+		bool recordImpacts = false;
+		std::vector<glm::vec3> impacts;
 	};
 
 	//spawns, moves and retires particles; the engine runs it every frame (not while paused)

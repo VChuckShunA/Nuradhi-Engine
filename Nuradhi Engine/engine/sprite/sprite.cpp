@@ -123,6 +123,7 @@ namespace nrd {
 			frame.pivot = { pivotX, static_cast<float>(frame.size.y) };
 			found.push_back(frame);
 		}
+		sheet.opaqueMask = opaque;
 
 		//4. Reading order. Frames whose vertical extents overlap by at least half the shorter one share a row.
 		std::sort(found.begin(), found.end(), [](const SpriteFrame& a, const SpriteFrame& b) { return a.position.y < b.position.y; });

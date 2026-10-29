@@ -3,6 +3,8 @@
 #include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/physics/collision.hpp"
+#include "engine/rain/nuradhi_rain.hpp"
+#include "engine/rain/rain_volume.hpp"
 #include "engine/snow/snow_volume.hpp"
 #include "engine/sprite/sprite.hpp"
 
@@ -242,6 +244,8 @@ namespace game {
 					if (ImGui::Button("Cinematic")) fog = nrd::FogVolume::cinematic();
 					ImGui::SameLine();
 					if (ImGui::Button("Graphic novel")) fog = nrd::FogVolume::graphicNovel();
+					ImGui::SameLine();
+					if (ImGui::Button("Realistic")) fog = nrd::FogVolume::realistic();
 					ImGui::SliderFloat("height", &fog.height, 0.05f, 1.5f, "%.2f");
 					ImGui::SliderInt("slices", &fog.slices, 4, 96);
 					ImGui::ColorEdit3("colour", &fog.colour.x);
@@ -257,6 +261,86 @@ namespace game {
 					ImGui::SliderInt("tone bands", &fog.toneBands, 0, 8);
 					ImGui::SliderFloat("halftone", &fog.halftone, 0.f, 1.f, "%.2f");
 					ImGui::SliderFloat("dot spacing", &fog.halftoneSize, 2.f, 20.f, "%.1f px");
+					ImGui::SeparatorText("Interaction");
+					ImGui::Checkbox("characters push the fog", &fog.interactive);
+					ImGui::BeginDisabled(!fog.interactive);
+					ImGui::SliderFloat("body push", &fog.bodyPush, 0.f, 3.f, "%.2f");
+					ImGui::SliderFloat("limb push", &fog.limbPush, 0.f, 3.f, "%.2f");
+					ImGui::SliderFloat("landing puff", &fog.landingPuff, 0.f, 3.f, "%.2f");
+					ImGui::SliderFloat("refill time", &fog.refillTime, 0.2f, 10.f, "%.1f s");
+					ImGui::SliderFloat("swirl", &fog.swirl, 0.f, 2.f, "%.2f");
+					ImGui::SliderFloat("body thickness", &fog.bodyThickness, 0.05f, 1.f, "%.2f");
+					ImGui::EndDisabled();
+					ImGui::TreePop();
+				}
+				ImGui::PopID();
+			});
+			registry.each<nrd::NuradhiRain, nrd::Name>([&](Entity entity, nrd::NuradhiRain& rain, nrd::Name& name) {
+				ImGui::PushID(static_cast<int>(entity));
+				if (ImGui::TreeNode("rain", "%s settings", name.value.c_str())) {
+					if (ImGui::Button("Reset")) rain = nrd::NuradhiRain{};
+					ImGui::SeparatorText("Droplets");
+					ImGui::SliderFloat("speed", &rain.fallSpeed, 0.5f, 25.f, "%.1f");
+					ImGui::SliderFloat("size", &rain.dropSize, 0.001f, 0.03f, "%.4f");
+					ImGui::SliderFloat("length", &rain.dropLength, 0.005f, 0.8f, "%.3f");
+					ImGui::SliderFloat("wind speed", &rain.windSpeed, 0.f, 8.f, "%.2f");
+					ImGui::SliderAngle("wind direction", &rain.windDirection, -180.f, 180.f);
+					ImGui::SeparatorText("Ripples");
+					ImGui::Checkbox("ripples", &rain.ripples);
+					ImGui::SliderFloat("ripple chance", &rain.rippleChance, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("ripple size", &rain.rippleSize, 0.01f, 0.4f, "%.3f");
+					ImGui::SliderFloat("ripple life", &rain.rippleLife, 0.1f, 3.f, "%.2f s");
+					ImGui::SliderFloat("ripple strength", &rain.rippleStrength, 0.f, 1.f, "%.2f");
+					ImGui::SeparatorText("Splashes");
+					ImGui::Checkbox("splashes", &rain.splashes);
+					ImGui::SliderFloat("splash chance", &rain.splashChance, 0.f, 1.f, "%.2f");
+					ImGui::SliderInt("droplets", &rain.splashDroplets, 1, 12);
+					ImGui::SliderFloat("splash speed", &rain.splashSpeed, 0.1f, 3.f, "%.2f");
+					ImGui::SliderFloat("droplet size", &rain.splashSize, 0.001f, 0.02f, "%.4f");
+					ImGui::SliderFloat("splash strength", &rain.splashStrength, 0.f, 1.f, "%.2f");
+					ImGui::SeparatorText("Look");
+					ImGui::ColorEdit3("water colour", &rain.colour.x);
+					ImGui::SliderFloat("light glint", &rain.lightGlint, 0.f, 30.f, "%.1f");
+					ImGui::TreePop();
+				}
+				ImGui::PopID();
+			});
+			registry.each<nrd::RainVolume, nrd::Name>([&](Entity entity, nrd::RainVolume& rain, nrd::Name& name) {
+				ImGui::PushID(static_cast<int>(entity));
+				ImGui::Checkbox(name.value.c_str(), &rain.enabled);
+				if (ImGui::TreeNode("Rain settings")) {
+					if (ImGui::Button("Cinematic")) rain = nrd::RainVolume::cinematic();
+					ImGui::SameLine();
+					if (ImGui::Button("Realistic")) rain = nrd::RainVolume::realisticRain();
+					ImGui::SeparatorText("Droplets");
+					ImGui::SliderFloat("speed", &rain.fallSpeed, 0.5f, 25.f, "%.1f");
+					ImGui::SliderFloat("size", &rain.dropSize, 0.0003f, 0.01f, "%.4f");
+					ImGui::SliderFloat("length", &rain.dropLength, 0.005f, 0.6f, "%.3f");
+					ImGui::SliderFloat("spacing", &rain.spacing, 0.01f, 0.3f, "%.3f");
+					ImGui::SliderFloat("density", &rain.density, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("depth scaling", &rain.depthScaling, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("tail fade", &rain.tailFade, 0.f, 1.f, "%.2f");
+					ImGui::SeparatorText("Wind");
+					ImGui::SliderFloat("wind speed", &rain.windSpeed, 0.f, 8.f, "%.2f");
+					ImGui::SliderAngle("wind direction", &rain.windDirection, -180.f, 180.f);
+					ImGui::SliderFloat("gusts", &rain.gusts, 0.f, 1.f, "%.2f");
+					ImGui::SeparatorText("Look");
+					ImGui::SliderInt("layers", &rain.layers, 1, 32);
+					ImGui::SliderFloat("depth", &rain.depth, 0.f, 4.f, "%.2f");
+					ImGui::ColorEdit4("colour", &rain.colour.x);
+					ImGui::SliderFloat("depth of field", &rain.depthOfField, 0.f, 0.03f, "%.4f");
+					ImGui::SliderFloat("focus", &rain.focus, -4.f, 4.f, "%.2f");
+					ImGui::SliderFloat("mist", &rain.mist, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("light glint", &rain.lightScatter, 0.f, 30.f, "%.1f");
+					ImGui::SeparatorText("Realistic");
+					ImGui::Checkbox("splashes and ripples", &rain.realistic);
+					ImGui::BeginDisabled(!rain.realistic);
+					ImGui::SliderFloat("splashes", &rain.splashes, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("ripple rate", &rain.rippleRate, 0.f, 6.f, "%.2f");
+					ImGui::SliderFloat("ripple size", &rain.rippleSize, 0.01f, 0.4f, "%.3f");
+					ImGui::SliderFloat("ripple life", &rain.rippleLife, 0.1f, 3.f, "%.2f s");
+					ImGui::SliderFloat("ripple strength", &rain.rippleStrength, 0.f, 1.f, "%.2f");
+					ImGui::EndDisabled();
 					ImGui::TreePop();
 				}
 				ImGui::PopID();

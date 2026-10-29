@@ -10,6 +10,9 @@
     <Filter Include="Engine\Fog">
       <UniqueIdentifier>{6b3e2f91-0c4d-4e7a-9a15-2d8c7f3b5e64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Rain">
+      <UniqueIdentifier>{c2e85f4a-1b7d-4f39-a6c0-8d4b3e9f2a17}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Snow">
       <UniqueIdentifier>{a4c71e2d-93f8-4b06-8d5a-1f2e6c9b7a30}</UniqueIdentifier>
     </Filter>
@@ -296,6 +299,18 @@
     <None Include="shaders\snow.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\rain.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\nuradhi_rain.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\nuradhi_rain.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\rain.frag">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="shaders\snow.frag">
       <Filter>Shaders</Filter>
     </None>
@@ -307,6 +322,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\fog\fog_simulation.cpp">
+      <Filter>Engine\Fog</Filter>
+    </ClCompile>
     <ClCompile Include="engine\fog\fog_volume.cpp">
       <Filter>Engine\Fog</Filter>
     </ClCompile>
@@ -319,12 +337,27 @@
     <ClCompile Include="engine\snow\snow_volume.cpp">
       <Filter>Engine\Snow</Filter>
     </ClCompile>
+    <ClCompile Include="engine\rain\nuradhi_rain.cpp">
+      <Filter>Engine\Rain</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\nuradhi_rain_render_system.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\rain\rain_volume.cpp">
+      <Filter>Engine\Rain</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\rain_render_system.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
     <ClCompile Include="engine\render\snow_render_system.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
     <ClCompile Include="engine\render\particle_render_system.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
+    <ClInclude Include="engine\fog\fog_simulation.hpp">
+      <Filter>Engine\Fog</Filter>
+    </ClInclude>
     <ClInclude Include="engine\fog\fog_volume.hpp">
       <Filter>Engine\Fog</Filter>
     </ClInclude>
@@ -336,6 +369,18 @@
     </ClInclude>
     <ClInclude Include="engine\snow\snow_volume.hpp">
       <Filter>Engine\Snow</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\rain\nuradhi_rain.hpp">
+      <Filter>Engine\Rain</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\nuradhi_rain_render_system.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\rain\rain_volume.hpp">
+      <Filter>Engine\Rain</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\rain_render_system.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="engine\render\snow_render_system.hpp">
       <Filter>Engine\Render</Filter>
