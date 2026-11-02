@@ -26,6 +26,7 @@ namespace nrd {
 		glm::vec4 uvRect{ 0.f }; //xy = top-left, zw = size, in 0..1 texture coordinates
 		int pixelCount = 0; //opaque pixels in the island
 		int row = 0; //which detected row of the sheet the frame is in
+		int island = -1; //the piece of the image this frame was cut from; only meaningful straight after analysis
 	};
 
 	struct SpriteAnimation {
@@ -41,6 +42,18 @@ namespace nrd {
 		int mergeDistance = 2; //opaque pixels this close (any direction) belong to the same sprite, so loose hair and weapons stay attached
 		int minPixels = 12; //islands smaller than this are dust and get dropped
 		float footBand = 0.1f; //bottom fraction of a frame searched for feet when placing the pivot
+		//When > 0 the sheet has exactly this many frames: the smallest pieces (muzzle flashes, sparkles, a sword floating
+		//beside its owner, loose hair) are merged into the nearest piece until that many are left, and nothing is dropped as dust.
+		int expectedFrames = 0;
+		//Strongly blue pixels (glowing blades, energy effects) don't count as feet, so a sword tip below the shoes doesn't
+		//become the ground.
+		bool ignoreBlueForFeet = false;
+		//Every frame stands on one ground line, the median of the frames' lowest feet. For sheets of grounded poses where
+		//an effect (a sweeping slash) reaches below the shoes in some frames.
+		bool sharedGround = false;
+		//keep which frame every pixel belongs to (SpriteSheet::frameIdAt), so a frame can be cut out without the
+		//neighbouring frame's pixels inside its bounding box
+		bool keepFrameMap = false;
 	};
 
 	//Finds every sprite on a sheet by separating opaque pixels from blank ones, then orders them in rows,
@@ -49,10 +62,14 @@ namespace nrd {
 	public:
 		static SpriteSheet loadFromFile(const std::string& imagePath, const SpriteSheetSettings& settings = {});
 		static SpriteSheet fromPixels(const uint8_t* rgba, int width, int height, const SpriteSheetSettings& settings = {});
+		//a sheet made from frames you already placed on an image (an atlas); each frame's row groups it for frameAt
+		static SpriteSheet fromFrames(glm::ivec2 imageSize, std::vector<SpriteFrame> frames, std::vector<uint8_t> opaqueMask);
 
 		const std::vector<SpriteFrame>& frames() const { return detectedFrames; }
 		const std::vector<std::vector<int>>& rows() const { return detectedRows; } //frame indices in each row
 		glm::ivec2 imageSize() const { return size; }
+		//index of the frame a pixel belongs to, or -1; needs SpriteSheetSettings::keepFrameMap
+		int frameIdAt(int x, int y) const { return x < 0 || y < 0 || x >= size.x || y >= size.y || frameMap.empty() ? -1 : frameMap[static_cast<size_t>(y) * size.x + x]; }
 		//whether a sheet pixel is part of a sprite rather than blank background; false outside the image
 		bool isOpaque(int x, int y) const
 		{
@@ -68,15 +85,22 @@ namespace nrd {
 		void addRowAnimation(const std::string& name, int row, int firstColumn, int count, float framesPerSecond, bool loop = true);
 		const SpriteAnimation* findAnimation(const std::string& name) const;
 
+		//Named points on a frame (a gun's muzzle, a hand), in pixels from the frame's top-left corner. Game code adds them
+		//after building the sheet; Sprite::worldPoint turns one into a world position.
+		void setAnchors(int frame, const std::string& name, std::vector<glm::vec2> points);
+		const std::vector<glm::vec2>* anchors(int frame, const std::string& name) const; //null if the frame has none
+
 		//prints every row and frame with its index, position, size and pivot, for authoring animations
 		void describe(std::ostream& out) const;
 
 	private:
 		glm::ivec2 size{ 0 };
+		std::vector<int> frameMap; //frame index per pixel, or -1; only with keepFrameMap
 		std::vector<uint8_t> opaqueMask; //one byte per pixel, kept from the analysis so effects like fog can see a frame's shape
 		std::vector<SpriteFrame> detectedFrames;
 		std::vector<std::vector<int>> detectedRows;
 		std::unordered_map<std::string, SpriteAnimation> animations;
+		std::unordered_map<std::string, std::unordered_map<int, std::vector<glm::vec2>>> anchorPoints; //name -> frame -> points
 	};
 
 	//Plays one SpriteAnimation at a time from a sheet
@@ -89,6 +113,7 @@ namespace nrd {
 		void update(float dt);
 
 		const SpriteFrame& currentFrame() const;
+		int currentFrameIndex() const; //the current frame's index on the sheet
 		const std::string& currentAnimation() const;
 		bool finished() const; //a non-looping animation has reached its last frame
 		const SpriteSheet& sheet() const { return *spriteSheet; }
@@ -119,6 +144,9 @@ namespace nrd {
 		//until the back edge is inside the body box
 		Transform frameTransform(const glm::vec3& position, const Aabb* body = nullptr) const;
 		glm::vec4 frameUvRect() const;
+		//The world position of a point on the current frame (pixels from the frame's top-left, see SpriteSheet::setAnchors),
+		//mirrored when the sprite is flipped. `position` and `body` are as for frameTransform; z is `position`'s.
+		glm::vec3 worldPoint(const glm::vec3& position, const Aabb* body, const glm::vec2& framePoint) const;
 	};
 
 	//advances every Sprite's animation; the engine runs it each frame

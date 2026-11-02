@@ -20,6 +20,9 @@ namespace lve {
 
 		VkRenderPass getSwapChainRenderPass()const { return lveSwapChain->getRenderPass(); }
 		float getAspectRatio() const { return lveSwapChain->extentAspectRatio(); }
+		VkExtent2D getExtent() const { return lveSwapChain->getSwapChainExtent(); }
+		VkFormat getColorFormat() const { return lveSwapChain->getSwapChainImageFormat(); }
+		VkFormat getDepthFormat() const { return lveSwapChain->findDepthFormat(); }
 		uint32_t getSwapChainImageCount() const { return static_cast<uint32_t>(lveSwapChain->imageCount()); }
 		bool isFrameInProgress()const { return isFrameStarted; }
 

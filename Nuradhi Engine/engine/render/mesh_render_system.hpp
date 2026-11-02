@@ -22,6 +22,8 @@ namespace nrd {
 		MeshRenderSystem& operator=(const MeshRenderSystem&) = delete;
 
 		void render(lve::FrameInfo& frameInfo, bool wireframe);
+		//binds the wireframe pipeline and this frame's descriptor set without drawing any mesh, for boxes drawn on their own
+		void bindWireframe(lve::FrameInfo& frameInfo);
 
 		//layout shared by both pipelines; the debug overlay draws with it too
 		VkPipelineLayout pipelineLayout() const { return layout; }

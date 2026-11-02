@@ -1,11 +1,13 @@
 #include "engine/render/renderer.hpp"
 #include "engine/core/components.hpp"
+#include "engine/render/blood_render_system.hpp"
 #include "engine/render/debug_render_system.hpp"
 #include "engine/render/fog_render_system.hpp"
 #include "engine/render/mesh_render_system.hpp"
 #include "engine/render/nuradhi_rain_render_system.hpp"
 #include "engine/render/particle_render_system.hpp"
 #include "engine/render/point_light_system.hpp"
+#include "engine/render/post_process_system.hpp"
 #include "engine/render/rain_render_system.hpp"
 #include "engine/render/snow_render_system.hpp"
 #include "engine/render/vulkan/lve_buffer.hpp"
@@ -81,10 +83,15 @@ namespace nrd {
 		std::unique_ptr<SnowRenderSystem> snowSystem;
 		std::unique_ptr<RainRenderSystem> rainSystem;
 		std::unique_ptr<NuradhiRainRenderSystem> nuradhiRainSystem;
+		std::unique_ptr<BloodRenderSystem> bloodSystem;
 		std::unique_ptr<DebugRenderSystem> debugSystem;
+		std::unique_ptr<PostProcessSystem> postSystem;
+		PostProcessSettings postSettings;
+		float time = 0.f; //seconds since start, for the filters' grain and flicker
 		lve::LveCamera camera;
-		bool debugOverlay = true;
+		bool debugOverlay = false;
 		std::vector<Aabb> debugBoxes; //queued by drawDebugBox, cleared every frame
+		std::vector<Aabb> selectionBoxes; //queued by drawSelectionBox, drawn even with the debug lines off
 
 		TextureHandle addTexture(std::unique_ptr<lve::Texture> texture)
 		{
@@ -168,7 +175,9 @@ namespace nrd {
 		r.snowSystem = std::make_unique<SnowRenderSystem>(r.device, renderPass, setLayout);
 		r.rainSystem = std::make_unique<RainRenderSystem>(r.device, renderPass, setLayout);
 		r.nuradhiRainSystem = std::make_unique<NuradhiRainRenderSystem>(r.device, renderPass, setLayout);
+		r.bloodSystem = std::make_unique<BloodRenderSystem>(r.device, renderPass, setLayout);
 		r.debugSystem = std::make_unique<DebugRenderSystem>(r.device);
+		r.postSystem = std::make_unique<PostProcessSystem>(r.device, renderPass, r.swapchain.getColorFormat(), r.swapchain.getDepthFormat());
 
 		//texture 0: plain white, for meshes that don't name a texture
 		const std::array<unsigned char, 4> white{ 255, 255, 255, 255 };
@@ -229,6 +238,28 @@ namespace nrd {
 		return impl->addTexture(std::make_unique<lve::Texture>(impl->device, path, filter));
 	}
 
+	TextureHandle Renderer::loadTextureFromPixels(const std::uint8_t* rgba, int width, int height, TextureFilter filter)
+	{
+		return impl->addTexture(std::make_unique<lve::Texture>(impl->device, rgba, width, height, filter));
+	}
+
+	void Renderer::replaceTextureFromPixels(TextureHandle handle, const std::uint8_t* rgba, int width, int height, TextureFilter filter)
+	{
+		Impl& r = *impl;
+		if (handle.id >= r.textures.size()) throw std::out_of_range("replaceTextureFromPixels: no such texture");
+		waitIdle(); //frames in flight may still be drawing with the old image
+		auto replacement = std::make_unique<lve::Texture>(r.device, rgba, width, height, filter);
+		VkDescriptorImageInfo imageInfo{ replacement->getSampler(), replacement->getImageView(), replacement->getImageLayout() };
+		for (int frame = 0; frame < FRAMES; frame++) {
+			auto bufferInfo = r.uboBuffers[frame]->descriptorInfo();
+			lve::LveDescriptorWriter(*r.globalSetLayout, *r.descriptorPool)
+				.writeBuffer(0, &bufferInfo)
+				.writeImage(1, &imageInfo)
+				.overwrite(r.descriptorSets[frame][handle.id]); //the same sets, now pointing at the new image
+		}
+		r.textures[handle.id] = std::move(replacement); //the old image goes now that nothing points at it
+	}
+
 	MeshHandle Renderer::loadMesh(const std::string& path)
 	{
 		const auto found = impl->meshesByPath.find(path);
@@ -243,6 +274,9 @@ namespace nrd {
 	void Renderer::setDebugOverlay(bool enabled) { impl->debugOverlay = enabled; }
 	bool Renderer::debugOverlay() const { return impl->debugOverlay; }
 	void Renderer::drawDebugBox(const Aabb& box) { impl->debugBoxes.push_back(box); }
+	void Renderer::drawSelectionBox(const Aabb& box) { impl->selectionBoxes.push_back(box); }
+
+	PostProcessSettings& Renderer::postProcess() { return impl->postSettings; }
 
 	float Renderer::aspectRatio() const { return impl->swapchain.getAspectRatio(); }
 
@@ -258,6 +292,8 @@ namespace nrd {
 		Impl& r = *impl;
 		const std::vector<Aabb> debugBoxes = std::move(r.debugBoxes);
 		r.debugBoxes.clear();
+		const std::vector<Aabb> selectionBoxes = std::move(r.selectionBoxes);
+		r.selectionBoxes.clear();
 		ImGui::Render(); //every UI frame has to end, even if this frame is skipped below
 		VkCommandBuffer commandBuffer = r.swapchain.beginFrame();
 		if (!commandBuffer) return; //the swapchain was just recreated; draw next frame
@@ -284,10 +320,21 @@ namespace nrd {
 		r.uboBuffers[frameIndex]->flush();
 
 		r.fogSystem->prepare(frameInfo); //uploads interactive fog's simulation; copies have to happen outside the render pass
-		r.swapchain.beginSwapChainRenderPass(commandBuffer);
+
+		//with a filter on, the scene goes to an offscreen image first; the filter pass then draws it to the screen
+		r.time += frameTime;
+		const bool filtering = PostProcessSystem::anyEnabled(r.postSettings);
+		if (filtering) {
+			r.postSystem->ensureTargets(r.swapchain.getExtent());
+			r.postSystem->beginScenePass(commandBuffer, frameIndex);
+		}
+		else {
+			r.swapchain.beginSwapChainRenderPass(commandBuffer);
+		}
 		r.swapchain.bindPipelineEssentials(commandBuffer); //viewport and scissor, shared by every pipeline below
 		r.meshSystem->render(frameInfo, false);
 		r.fogSystem->render(frameInfo); //transparent: after everything solid, and under the rain falling through it
+		r.bloodSystem->render(frameInfo); //over the fog, or it hides the splats on the floor
 		r.snowSystem->render(frameInfo);
 		r.rainSystem->render(frameInfo);
 		r.nuradhiRainSystem->render(frameInfo); //ripples and splashes, under the falling drops
@@ -297,7 +344,19 @@ namespace nrd {
 			r.meshSystem->render(frameInfo, true);
 			r.debugSystem->renderColliders(frameInfo, r.meshSystem->pipelineLayout());
 			r.debugSystem->renderBoxes(frameInfo, r.meshSystem->pipelineLayout(), debugBoxes);
+			r.debugSystem->renderBoxes(frameInfo, r.meshSystem->pipelineLayout(), selectionBoxes);
 		}
+		else if (!selectionBoxes.empty()) {
+			r.meshSystem->bindWireframe(frameInfo);
+			r.debugSystem->renderBoxes(frameInfo, r.meshSystem->pipelineLayout(), selectionBoxes);
+		}
+		if (filtering) {
+			r.postSystem->endScenePass(commandBuffer, frameIndex);
+			r.swapchain.beginSwapChainRenderPass(commandBuffer);
+			r.swapchain.bindPipelineEssentials(commandBuffer);
+			r.postSystem->draw(commandBuffer, frameIndex, r.postSettings, r.time);
+		}
+		//the UI goes on last and unfiltered
 		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
 		r.swapchain.endSwapChainRenderPass(commandBuffer);
 		r.swapchain.endFrame();

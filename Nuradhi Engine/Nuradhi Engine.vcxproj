@@ -159,6 +159,7 @@
       <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
     </ClCompile>
+    <ClCompile Include="engine\effects\blood.cpp" />
     <ClCompile Include="engine\fog\fog_volume.cpp" />
     <ClCompile Include="engine\particles\particles.cpp" />
     <ClCompile Include="engine\rain\nuradhi_rain.cpp" />
@@ -171,7 +172,9 @@
     <ClCompile Include="engine\render\mesh_render_system.cpp" />
     <ClCompile Include="engine\render\fog_render_system.cpp" />
     <ClCompile Include="engine\render\particle_render_system.cpp" />
+    <ClCompile Include="engine\render\blood_render_system.cpp" />
     <ClCompile Include="engine\render\point_light_system.cpp" />
+    <ClCompile Include="engine\render\post_process_system.cpp" />
     <ClCompile Include="engine\render\nuradhi_rain_render_system.cpp" />
     <ClCompile Include="engine\render\rain_render_system.cpp" />
     <ClCompile Include="engine\render\snow_render_system.cpp" />
@@ -184,11 +187,44 @@
     <ClCompile Include="engine\render\vulkan\lve_pipeline.cpp" />
     <ClCompile Include="engine\render\vulkan\lve_renderer.cpp" />
     <ClCompile Include="engine\render\vulkan\lve_swap_chain.cpp" />
-    <ClCompile Include="engine\render\vulkan\lve_texture.cpp" />
+    <ClCompile Include="engine\render\vulkan\lve_texture.cpp">
+      <!-- loads and processes whole images at startup: far too slow unoptimised, so it is optimised even in Debug -->
+      <Optimization Condition="'$(Configuration)'=='Debug'">MaxSpeed</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)'=='Debug'">AnySuitable</InlineFunctionExpansion>
+      <BasicRuntimeChecks Condition="'$(Configuration)'=='Debug'">Default</BasicRuntimeChecks>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
+    </ClCompile>
     <ClCompile Include="engine\render\vulkan\nrd_debugLine.cpp" />
     <ClCompile Include="engine\render\vulkan\nrd_debugLinePipeline.cpp" />
-    <ClCompile Include="engine\sprite\sprite.cpp" />
+    <ClCompile Include="engine\sprite\sprite.cpp">
+      <!-- loads and processes whole images at startup: far too slow unoptimised, so it is optimised even in Debug -->
+      <Optimization Condition="'$(Configuration)'=='Debug'">MaxSpeed</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)'=='Debug'">AnySuitable</InlineFunctionExpansion>
+      <BasicRuntimeChecks Condition="'$(Configuration)'=='Debug'">Default</BasicRuntimeChecks>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
+    </ClCompile>
+    <ClCompile Include="engine\sprite\sprite_atlas.cpp">
+      <!-- loads and processes whole images at startup: far too slow unoptimised, so it is optimised even in Debug -->
+      <Optimization Condition="'$(Configuration)'=='Debug'">MaxSpeed</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)'=='Debug'">AnySuitable</InlineFunctionExpansion>
+      <BasicRuntimeChecks Condition="'$(Configuration)'=='Debug'">Default</BasicRuntimeChecks>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
+    </ClCompile>
+    <ClCompile Include="engine\sprite\background_removal.cpp">
+      <!-- loads and processes whole images at startup: far too slow unoptimised, so it is optimised even in Debug -->
+      <Optimization Condition="'$(Configuration)'=='Debug'">MaxSpeed</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)'=='Debug'">AnySuitable</InlineFunctionExpansion>
+      <BasicRuntimeChecks Condition="'$(Configuration)'=='Debug'">Default</BasicRuntimeChecks>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
+    </ClCompile>
     <ClCompile Include="game\enemy_ai.cpp" />
+    <ClCompile Include="game\characters\summers.cpp" />
+    <ClCompile Include="game\characters\summers_sheets.cpp" />
+    <ClCompile Include="game\archive\blaze.cpp" />
     <ClCompile Include="game\game_systems.cpp" />
     <ClCompile Include="game\level_editor.cpp" />
     <ClCompile Include="imgui-master\imgui-master\imgui.cpp" />
@@ -209,6 +245,7 @@
     <ClInclude Include="engine\ecs\registry.hpp" />
     <ClInclude Include="engine\input\input.hpp" />
     <ClInclude Include="engine\fog\fog_simulation.hpp" />
+    <ClInclude Include="engine\effects\blood.hpp" />
     <ClInclude Include="engine\fog\fog_volume.hpp" />
     <ClInclude Include="engine\particles\particles.hpp" />
     <ClInclude Include="engine\rain\nuradhi_rain.hpp" />
@@ -221,7 +258,10 @@
     <ClInclude Include="engine\render\mesh_render_system.hpp" />
     <ClInclude Include="engine\render\fog_render_system.hpp" />
     <ClInclude Include="engine\render\particle_render_system.hpp" />
+    <ClInclude Include="engine\render\blood_render_system.hpp" />
     <ClInclude Include="engine\render\point_light_system.hpp" />
+    <ClInclude Include="engine\render\post_process_settings.hpp" />
+    <ClInclude Include="engine\render\post_process_system.hpp" />
     <ClInclude Include="engine\render\nuradhi_rain_render_system.hpp" />
     <ClInclude Include="engine\render\rain_render_system.hpp" />
     <ClInclude Include="engine\render\snow_render_system.hpp" />
@@ -241,8 +281,13 @@
     <ClInclude Include="engine\render\vulkan\nrd_debugLine.hpp" />
     <ClInclude Include="engine\render\vulkan\nrd_debugLinePipeline.hpp" />
     <ClInclude Include="engine\sprite\sprite.hpp" />
+    <ClInclude Include="engine\sprite\sprite_atlas.hpp" />
+    <ClInclude Include="engine\sprite\background_removal.hpp" />
     <ClInclude Include="game\enemy_ai.hpp" />
     <ClInclude Include="game\game_components.hpp" />
+    <ClInclude Include="game\characters\summers.hpp" />
+    <ClInclude Include="game\characters\summers_sheets.hpp" />
+    <ClInclude Include="game\archive\blaze.hpp" />
     <ClInclude Include="game\game_systems.hpp" />
     <ClInclude Include="game\level_editor.hpp" />
     <ClInclude Include="ImGuizmo\ImGuizmo.h" />
@@ -255,7 +300,11 @@
     <None Include="shaders\fog.frag" />
     <None Include="shaders\fog.vert" />
     <None Include="shaders\particle.frag" />
+    <None Include="shaders\blood.frag" />
+    <None Include="shaders\blood.vert" />
     <None Include="shaders\particle.vert" />
+    <None Include="shaders\post.frag" />
+    <None Include="shaders\post.vert" />
     <None Include="shaders\nuradhi_rain.frag" />
     <None Include="shaders\nuradhi_rain.vert" />
     <None Include="shaders\rain.frag" />

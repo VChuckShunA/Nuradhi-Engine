@@ -96,6 +96,12 @@ namespace nrd {
 			&push);
 	}
 
+	void MeshRenderSystem::bindWireframe(lve::FrameInfo& frameInfo)
+	{
+		wireframePipeline->bind(frameInfo.commandBuffer);
+		vkCmdBindDescriptorSets(frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
+	}
+
 	void MeshRenderSystem::render(lve::FrameInfo& frameInfo, bool wireframe)
 	{
 		if (wireframe) wireframePipeline->bind(frameInfo.commandBuffer);

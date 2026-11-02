@@ -7,6 +7,9 @@
     <Filter Include="Engine\Ai">
       <UniqueIdentifier>{3c6f1a52-8d4e-4b7a-9e21-5f0d7c8a4b19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Effects">
+      <UniqueIdentifier>{e7a3c1f8-52b4-4d06-9f1e-3b8a6d2c4e91}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Fog">
       <UniqueIdentifier>{6b3e2f91-0c4d-4e7a-9a15-2d8c7f3b5e64}</UniqueIdentifier>
     </Filter>
@@ -48,6 +51,12 @@
     </Filter>
     <Filter Include="Engine\Sprite">
       <UniqueIdentifier>{ab6c4b52-fde9-4caa-ac84-2972c3c17f64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Characters">
+      <UniqueIdentifier>{3c9e5b21-84d7-4a60-b1f3-6e2d7a9c0f48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Archive">
+      <UniqueIdentifier>{9a47d3e6-1b25-4c8f-a0e9-5d3f8b6c2a71}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game">
       <UniqueIdentifier>{bfa5e95e-318f-4ac2-ada5-14022519f6ac}</UniqueIdentifier>
@@ -122,6 +131,21 @@
     </ClCompile>
     <ClCompile Include="engine\sprite\sprite.cpp">
       <Filter>Engine\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\sprite\sprite_atlas.cpp">
+      <Filter>Engine\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\sprite\background_removal.cpp">
+      <Filter>Engine\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="game\characters\summers.cpp">
+      <Filter>Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="game\characters\summers_sheets.cpp">
+      <Filter>Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="game\archive\blaze.cpp">
+      <Filter>Game\Archive</Filter>
     </ClCompile>
     <ClCompile Include="game\game_systems.cpp">
       <Filter>Game</Filter>
@@ -243,6 +267,12 @@
     <ClInclude Include="engine\sprite\sprite.hpp">
       <Filter>Engine\Sprite</Filter>
     </ClInclude>
+    <ClInclude Include="engine\sprite\sprite_atlas.hpp">
+      <Filter>Engine\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\sprite\background_removal.hpp">
+      <Filter>Engine\Sprite</Filter>
+    </ClInclude>
     <ClInclude Include="game\game_components.hpp">
       <Filter>Game</Filter>
     </ClInclude>
@@ -257,6 +287,15 @@
     </ClInclude>
     <ClInclude Include="engine\ai\behavior_tree.hpp">
       <Filter>Engine\Ai</Filter>
+    </ClInclude>
+    <ClInclude Include="game\characters\summers.hpp">
+      <Filter>Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="game\characters\summers_sheets.hpp">
+      <Filter>Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="game\archive\blaze.hpp">
+      <Filter>Game\Archive</Filter>
     </ClInclude>
     <ClInclude Include="game\game_systems.hpp">
       <Filter>Game</Filter>
@@ -308,6 +347,18 @@
     <None Include="shaders\nuradhi_rain.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\post.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blood.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blood.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\post.frag">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="shaders\rain.frag">
       <Filter>Shaders</Filter>
     </None>
@@ -324,6 +375,12 @@
   <ItemGroup>
     <ClCompile Include="engine\fog\fog_simulation.cpp">
       <Filter>Engine\Fog</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\effects\blood.cpp">
+      <Filter>Engine\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\blood_render_system.cpp">
+      <Filter>Engine\Render</Filter>
     </ClCompile>
     <ClCompile Include="engine\fog\fog_volume.cpp">
       <Filter>Engine\Fog</Filter>
@@ -343,6 +400,9 @@
     <ClCompile Include="engine\render\nuradhi_rain_render_system.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
+    <ClCompile Include="engine\render\post_process_system.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
     <ClCompile Include="engine\rain\rain_volume.cpp">
       <Filter>Engine\Rain</Filter>
     </ClCompile>
@@ -357,6 +417,12 @@
     </ClCompile>
     <ClInclude Include="engine\fog\fog_simulation.hpp">
       <Filter>Engine\Fog</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\effects\blood.hpp">
+      <Filter>Engine\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\blood_render_system.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="engine\fog\fog_volume.hpp">
       <Filter>Engine\Fog</Filter>
@@ -374,6 +440,12 @@
       <Filter>Engine\Rain</Filter>
     </ClInclude>
     <ClInclude Include="engine\render\nuradhi_rain_render_system.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\post_process_settings.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\post_process_system.hpp">
       <Filter>Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="engine\rain\rain_volume.hpp">

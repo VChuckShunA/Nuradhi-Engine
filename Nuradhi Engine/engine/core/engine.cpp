@@ -1,6 +1,7 @@
 #include "engine/core/engine.hpp"
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
+#include "engine/effects/blood.hpp"
 #include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/platform/lve_window.hpp"
@@ -10,6 +11,7 @@
 #include "engine/sprite/sprite.hpp"
 
 //std
+#include <algorithm>
 #include <chrono>
 
 namespace nrd {
@@ -42,7 +44,8 @@ namespace nrd {
 		while (!window->shouldClose()) {
 			glfwPollEvents();
 			const auto now = std::chrono::high_resolution_clock::now();
-			const float dt = std::chrono::duration<float, std::chrono::seconds::period>(now - previousTime).count();
+			//a long frame (loading something, dragging the window) shouldn't make the game jump ahead by that long
+			const float dt = std::min(std::chrono::duration<float, std::chrono::seconds::period>(now - previousTime).count(), 0.1f);
 			previousTime = now;
 
 			//the game doesn't see keys or clicks that the UI is using
@@ -58,6 +61,7 @@ namespace nrd {
 				for (System& system : lateUpdateSystems) system(*this, dt);
 				updateSpriteAnimations(world, dt);
 				updateParticles(world, dt);
+				updateBlood(world, dt);
 				updateNuradhiRain(world, dt); //after the particles, to catch the drops that just landed
 				updateFogVolumes(world, dt);
 				updateSnowVolumes(world, dt);

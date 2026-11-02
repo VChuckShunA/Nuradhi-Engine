@@ -1,10 +1,13 @@
 #include "game/test_level.hpp"
+#include "game/archive/blaze.hpp"
+#include "game/characters/summers.hpp"
 #include "game/game_components.hpp"
 #include "game/game_systems.hpp"
 #include "game/enemy_ai.hpp"
 #include "game/level_editor.hpp"
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
+#include "engine/effects/blood.hpp"
 #include "engine/fog/fog_volume.hpp"
 #include "engine/physics/collision.hpp"
 #include "engine/particles/particles.hpp"
@@ -16,12 +19,16 @@
 #include "engine/sprite/sprite.hpp"
 
 //libs
+#include <imgui.h>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 //std
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <vector>
 
 namespace game {
@@ -30,8 +37,6 @@ namespace game {
 	using ecs::Entity;
 
 	namespace {
-		constexpr float BLAZE_PIXELS_PER_UNIT = 75.f; //sheet pixels per world unit: her ~75 px idle pose stands 1 unit tall, like her collider
-
 		void bindControls(Input& input)
 		{
 			input.bindAxis("moveX", Key::A, Key::D);
@@ -43,122 +48,14 @@ namespace game {
 			input.bindAction("kick", Key::MouseRight);
 			input.bindAction("special", Key::F);
 			input.bindAction("toggleEditor", Key::F2);
-		}
-
-		//Blaze's attacks. Each animation's frames last exactly the move's duration (3 frames at 12 fps = 0.25 s),
-		//and the hitbox is live on the middle frame, where the fist or foot is out.
-		Combat blazeCombat()
-		{
-			Combat combat{};
-			AttackMove punch{};
-			punch.animation = "punch";
-			punch.duration = 3.f / 12.f;
-			punch.activeStart = 1.f / 12.f;
-			punch.activeEnd = 2.f / 12.f;
-			punch.hitboxOffset = { 0.38f, -0.72f, 0.f }; //a fist's length in front, at chest height
-			punch.hitboxHalfExtents = { 0.14f, 0.1f, 0.25f };
-			punch.damage = 1;
-			punch.knockback = 0.5f;
-			combat.moves["punch"] = punch;
-
-			AttackMove kick{};
-			kick.animation = "kick";
-			kick.duration = 3.f / 10.f;
-			kick.activeStart = 1.f / 10.f;
-			kick.activeEnd = 2.f / 10.f;
-			kick.hitboxOffset = { 0.55f, -0.55f, 0.f }; //longer reach, waist height
-			kick.hitboxHalfExtents = { 0.25f, 0.12f, 0.25f };
-			kick.damage = 2;
-			kick.knockback = 1.f;
-			combat.moves["kick"] = kick;
-
-			//jump attacks hold their pose and stay live until she lands (a jump lasts about 0.7 s)
-			AttackMove jumpPunch{}; //flying knee
-			jumpPunch.animation = "jumpPunch";
-			jumpPunch.duration = 0.6f;
-			jumpPunch.activeStart = 0.05f;
-			jumpPunch.activeEnd = 0.6f;
-			jumpPunch.hitboxOffset = { 0.3f, -0.55f, 0.f }; //the knee, in front at mid height
-			jumpPunch.hitboxHalfExtents = { 0.18f, 0.2f, 0.25f }; //tall enough to catch a standing head even at the top of the jump
-			jumpPunch.damage = 1;
-			jumpPunch.knockback = 0.8f;
-			jumpPunch.airborne = true;
-			combat.moves["jumpPunch"] = jumpPunch;
-
-			AttackMove jumpKick{}; //diagonal flying kick
-			jumpKick.animation = "jumpKick";
-			jumpKick.duration = 0.6f;
-			jumpKick.activeStart = 0.1f; //after the turn into the kick
-			jumpKick.activeEnd = 0.6f;
-			jumpKick.hitboxOffset = { 0.5f, -0.2f, 0.f }; //the foot, low and in front
-			jumpKick.hitboxHalfExtents = { 0.25f, 0.15f, 0.25f };
-			jumpKick.damage = 2;
-			jumpKick.knockback = 1.2f;
-			jumpKick.airborne = true;
-			combat.moves["jumpKick"] = jumpKick;
-
-			//special: an energy palm blast. Slow to come out, but the beam reaches well past a kick and hits
-			//everything in it, so it can only be used every 1.5 s.
-			AttackMove special{};
-			special.animation = "special";
-			special.duration = 6.f / 12.f;
-			special.activeStart = 2.f / 12.f; //after the two charge frames
-			special.activeEnd = 6.f / 12.f;
-			special.hitboxOffset = { 0.8f, -0.72f, 0.f }; //the beam, from her palm forward at chest height
-			special.hitboxHalfExtents = { 0.55f, 0.15f, 0.3f };
-			special.damage = 3;
-			special.knockback = 2.f;
-			special.cooldown = 1.5f;
-			special.cooldownGroup = "special";
-			combat.moves["special"] = special;
-
-			//jump special: a flaming dive. The fire wraps her body and trails out in front, so the hitbox is big;
-			//it's her one air attack for the jump and shares the ground special's cooldown.
-			AttackMove jumpSpecial{};
-			jumpSpecial.animation = "jumpSpecial";
-			jumpSpecial.duration = 0.7f;
-			jumpSpecial.activeStart = 0.08f; //after the tuck
-			jumpSpecial.activeEnd = 0.7f;
-			jumpSpecial.hitboxOffset = { 0.45f, -0.45f, 0.f };
-			jumpSpecial.hitboxHalfExtents = { 0.55f, 0.35f, 0.3f };
-			jumpSpecial.damage = 3;
-			jumpSpecial.knockback = 2.f;
-			jumpSpecial.airborne = true;
-			jumpSpecial.cooldown = 1.5f;
-			jumpSpecial.cooldownGroup = "special";
-			combat.moves["jumpSpecial"] = jumpSpecial;
-			return combat;
-		}
-
-		//Blaze's sprite sheet: the frames are found from the image itself, the animations pick which frames to play
-		std::shared_ptr<SpriteSheet> loadBlazeSheet(bool describe)
-		{
-			auto sheet = std::make_shared<SpriteSheet>(SpriteSheet::loadFromFile("Images/Sprites/Blaze.png"));
-			const int row0 = 0; //stance, walk, punch, jump and kicks
-			sheet->addAnimation({ "idle", //fighting stance, breathing back and forth
-				{ sheet->frameAt(row0, 0), sheet->frameAt(row0, 1), sheet->frameAt(row0, 2), sheet->frameAt(row0, 1) },
-				6.f, true });
-			sheet->addRowAnimation("walk", row0, 3, 6, 10.f);
-			sheet->addRowAnimation("run", 8, 1, 6, 14.f); //row 8: six-frame sprint
-			sheet->addRowAnimation("jump", row0, 10, 3, 8.f, false); //crouch, rise, then hold the falling pose
-			const int row3 = 3, row4 = 4;
-			sheet->addAnimation({ "punch", //wind up, straight jab, pull back
-				{ sheet->frameAt(row3, 11), sheet->frameAt(row3, 10), sheet->frameAt(row3, 11) }, 12.f, false });
-			sheet->addAnimation({ "kick", //chamber, front kick, recover
-				{ sheet->frameAt(row4, 2), sheet->frameAt(row4, 0), sheet->frameAt(row4, 2) }, 10.f, false });
-			const int row2 = 2; //energy blast
-			sheet->addAnimation({ "special", //charge twice, thrust the palm, then hold the long beam
-				{ sheet->frameAt(row2, 5), sheet->frameAt(row2, 6), sheet->frameAt(row2, 1), sheet->frameAt(row2, 2), sheet->frameAt(row2, 9), sheet->frameAt(row2, 9) },
-				12.f, false });
-			sheet->addAnimation({ "jumpSpecial", //tuck, then dive in a trail of fire until landing
-				{ sheet->frameAt(7, 10), sheet->frameAt(7, 11) }, 12.f, false });
-			sheet->addAnimation({ "hurt", { sheet->frameAt(3, 3) }, 8.f, false }); //doubled over from a hit
-			const int row1 = 1; //airborne poses
-			sheet->addAnimation({ "jumpPunch", { sheet->frameAt(row1, 1) }, 10.f, false }); //flying knee, held
-			sheet->addAnimation({ "jumpKick", //turn into a diagonal kick, held until landing
-				{ sheet->frameAt(row1, 0), sheet->frameAt(row1, 2) }, 10.f, false });
-			if (describe) sheet->describe(std::cout); //every detected frame with its row and column
-			return sheet;
+			input.bindAction("toggleNoir", Key::F3);
+			input.bindAction("toggleCrt", Key::F4);
+			input.bindAction("weapon1", Key::Num1); //Summers: melee, uzis, katanas
+			input.bindAction("weapon2", Key::Num2);
+			input.bindAction("weapon3", Key::Num3);
+			input.bindAction("pickup", Key::E);
+			input.bindAction("pause", Key::P); //pauses and resumes
+			input.bindAction("restart", Key::R); //after a game over
 		}
 
 		void spawnLights(ecs::Registry& registry)
@@ -233,6 +130,173 @@ namespace game {
 		}
 	}
 
+	namespace {
+		constexpr int ENEMY_WAVE_SIZE = 5; //enemies kept in the fight at once
+		constexpr float ENEMY_RESPAWN_DELAY = 3.f; //seconds before a beaten enemy is replaced
+		constexpr float FLOOR_EDGES_X[2] = { -4.5f, 4.5f }; //where the floors end along x, so nobody spawns off them
+
+		//Makes enemies: a Blaze with a behaviour tree and her own temperament, so a crowd isn't a row of clones
+		struct EnemyFactory {
+			TextureHandle texture;
+			std::shared_ptr<SpriteSheet> sheet;
+			Entity target; //who they fight
+			std::mt19937 random{ 777u };
+			int made = 0;
+
+			float roll() { return std::uniform_real_distribution<float>{ 0.f, 1.f }(random); }
+
+			Entity spawn(ecs::Registry& registry, const glm::vec3& position)
+			{
+				const Entity enemy = archive::spawnBlaze(registry, texture, sheet, position, false);
+				registry.get<CharacterAnimations>(enemy).faceMovement = false; //the tree turns her to face her target
+				registry.add<Health>(enemy, Health{ 8, 8 });
+
+				EnemyFighter fighter{ target };
+				fighter.moveSpeed = 0.36f + 0.14f * roll();
+				fighter.windup = 0.2f + 0.15f * roll();
+				fighter.recoverTime = 0.55f + 0.35f * roll();
+				fighter.kickChance = 0.25f + 0.2f * roll();
+				planNextAttack(fighter);
+				if (registry.findFirst<EnemySquad>() != ecs::NullEntity) {
+					//with a squad she waits where she is until it sends her in; the first few turns are staggered
+					fighter.role = EnemyFighter::Role::Waiter;
+					fighter.slot = { position.x, position.z };
+					fighter.cooldown = 0.3f + 1.2f * roll();
+				}
+				registry.add<EnemyFighter>(enemy, fighter);
+				registry.add<BehaviorTree>(enemy, BehaviorTree{ makeFighterTree() });
+				registry.add<Name>(enemy, Name{ "Enemy " + std::to_string(++made) });
+				return enemy;
+			}
+		};
+	}
+	namespace {
+		//A colour for ImGui text and draw lists. ImGui takes sRGB values, but the swapchain encodes on write, so they're
+		//made linear first or they come out washed out (the style colours get the same treatment in the renderer).
+		ImVec4 linearColour(float r, float g, float b, float a = 1.f)
+		{
+			return { std::pow(r, 2.2f), std::pow(g, 2.2f), std::pow(b, 2.2f), a };
+		}
+
+		void spawnWave(ecs::Registry& registry, EnemyFactory& enemies, float centreX)
+		{
+			for (int i = 0; i < ENEMY_WAVE_SIZE; i++) {
+				const float side = i % 2 == 0 ? -1.f : 1.f; //alternate sides, further out for each pair
+				enemies.spawn(registry, { centreX + side * (2.4f + 0.8f * (i / 2)), 1.5f, 2.3f + 1.4f * enemies.roll() });
+			}
+		}
+
+		//What the pause and game over screens need to know
+		struct FightState {
+			Entity player;
+			glm::vec3 playerStart;
+			std::shared_ptr<EnemyFactory> enemies;
+			bool gameOver = false;
+			float gameOverTime = 0.f; //seconds since she went down
+		};
+
+		//Starts the fight over: Summers back at the start with full health, bare handed; every enemy, bullet and drop of
+		//blood gone; a fresh wave
+		void restartFight(Engine& engine, FightState& state)
+		{
+			ecs::Registry& registry = engine.registry();
+			std::vector<Entity> doomed; //removed after the loops: entities can't be removed while they're being iterated
+			registry.each<EnemyFighter>([&](Entity entity, EnemyFighter&) { doomed.push_back(entity); });
+			registry.each<Projectile>([&](Entity entity, Projectile&) { doomed.push_back(entity); });
+			for (const Entity entity : doomed) registry.destroy(entity);
+			registry.each<BloodEffect>([](Entity, BloodEffect& blood) {
+				blood.droplets.clear();
+				blood.splatsOnGround.clear();
+			});
+			registry.each<EnemySquad>([](Entity, EnemySquad& squad) { squad.gapTimer = 0.f; });
+
+			registry.get<Transform>(state.player).position = state.playerStart;
+			registry.get<RigidBody>(state.player).velocity = glm::vec3{ 0.f };
+			Health& health = registry.get<Health>(state.player);
+			health.hp = health.maxHp;
+			health.hitStun = 0.f;
+			Combat& combat = registry.get<Combat>(state.player);
+			combat.currentMove.clear();
+			combat.cooldowns.clear();
+			combat.hitThisAttack.clear();
+			combat.airAttackUsed = false;
+			combat.timer = 0.f;
+			registry.get<PlayerController>(state.player).sprintDirection = 0.f;
+			setWeaponMode(registry.get<CharacterAnimations>(state.player), registry.get<AttackBindings>(state.player), registry.get<Weapons>(state.player), WeaponMode::Melee);
+
+			spawnWave(registry, *state.enemies, state.playerStart.x);
+			state.gameOver = false;
+			engine.paused = false;
+			if (engine.debugLog) std::cout << "fight restarted" << std::endl;
+		}
+
+		constexpr ImGuiWindowFlags OVERLAY_WINDOW = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
+			ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+		//P pauses and resumes. When Summers goes down the game over screen takes over until she's restarted. This runs in the
+		//Ui phase, which carries on while the game is paused.
+		void gameFlow(Engine& engine, FightState& state, float dt)
+		{
+			ecs::Registry& registry = engine.registry();
+			const Input& input = engine.input();
+			const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+			const Health* health = registry.tryGet<Health>(state.player);
+			if (!state.gameOver && health && health->defeated()) {
+				state.gameOver = true;
+				state.gameOverTime = 0.f;
+				if (engine.debugLog) std::cout << "game over" << std::endl;
+				engine.paused = false; //the world carries on around her: the rain, the fog, the enemies standing over her
+			}
+
+			if (state.gameOver) {
+				state.gameOverTime += dt;
+				bool restart = state.gameOverTime > 1.f && input.actionPressed("restart"); //not before she's hit the ground
+				const float fade = std::min(state.gameOverTime / 1.5f, 1.f);
+				//dim the whole screen: a window the size of the screen that lets clicks and keys through
+				ImGui::SetNextWindowPos(viewport->Pos);
+				ImGui::SetNextWindowSize(viewport->Size);
+				ImGui::SetNextWindowBgAlpha(0.72f * fade);
+				if (ImGui::Begin("##dim", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {}
+				ImGui::End();
+				if (state.gameOverTime > 0.8f) {
+					ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Always, { 0.5f, 0.5f });
+					ImGui::SetNextWindowBgAlpha(0.f);
+					if (ImGui::Begin("##gameover", nullptr, OVERLAY_WINDOW)) {
+						ImGui::PushFont(nullptr, 110.f);
+						ImGui::TextColored(linearColour(0.85f, 0.08f, 0.08f), "GAME OVER");
+						ImGui::PopFont();
+						ImGui::PushFont(nullptr, 26.f);
+						ImGui::TextColored(linearColour(0.8f, 0.8f, 0.84f), "Summers is down.");
+						ImGui::Spacing();
+						if (ImGui::Button("Try again  (R)", { 260.f, 52.f })) restart = true;
+						ImGui::PopFont();
+					}
+					ImGui::End();
+				}
+				if (restart) restartFight(engine, state);
+				return;
+			}
+
+			if (input.actionPressed("pause")) {
+				engine.paused = !engine.paused;
+				if (engine.debugLog) std::cout << (engine.paused ? "paused" : "resumed") << std::endl;
+			}
+			if (engine.paused) {
+				ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Always, { 0.5f, 0.5f });
+				ImGui::SetNextWindowBgAlpha(0.6f);
+				if (ImGui::Begin("##paused", nullptr, OVERLAY_WINDOW)) {
+					ImGui::PushFont(nullptr, 64.f);
+					ImGui::TextColored(linearColour(0.92f, 0.92f, 0.95f), "PAUSED");
+					ImGui::PopFont();
+					ImGui::PushFont(nullptr, 22.f);
+					ImGui::TextColored(linearColour(0.7f, 0.7f, 0.75f), "P to resume");
+					ImGui::PopFont();
+				}
+				ImGui::End();
+			}
+		}
+	}
 	void loadTestLevel(Engine& engine)
 	{
 		ecs::Registry& registry = engine.registry();
@@ -240,40 +304,28 @@ namespace game {
 		bindControls(engine.input());
 
 		const TextureHandle logoTexture = renderer.loadTexture("Images/Sprites/Nuradhi Logo copy.png");
-		const TextureHandle blazeTexture = renderer.loadTexture("Images/Sprites/Blaze.png", TextureFilter::Pixelated);
 		const MeshHandle vaseMesh = renderer.loadMesh("models/flat_vase.obj");
 		const MeshHandle quadMesh = renderer.loadMesh("models/quad.obj");
 
 		spawnLights(registry);
 
-		//Blaze. Her position is her feet, like the sprite's pivot, so her body box sits on top of it (-y is up):
-		//1 unit tall like the sprite, half a unit wide and deep.
-		const Entity player = registry.create();
-		const std::shared_ptr<SpriteSheet> blazeSheet = loadBlazeSheet(engine.debugLog);
-		registry.add<Transform>(player, Transform{ { 1.f, 1.5f, 3.f } });
-		registry.add<Sprite>(player, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT).keepBackInsideCollider = true;
-		registry.add<RigidBody>(player);
-		registry.add<Collider>(player, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }, false));
-		registry.add<PlayerController>(player);
-		registry.add<CharacterAnimations>(player, CharacterAnimations{ "idle", "walk", "run", "jump", "hurt" });
-		registry.add<Combat>(player, blazeCombat());
-		registry.add<Health>(player, Health{ 20, 20, 0.f, false }); //no game over yet: she stays at 0 hp
-		registry.add<Name>(player, Name{ "Blaze (player)" });
+		//Summers, the player: she starts bare handed and swaps to uzis or katanas with 1, 2 and 3
+		//(shared with the editor's rebake button, which swaps a new atlas into it)
+		const auto summersAssets = std::make_shared<SummersAssets>(loadSummers(renderer, engine.debugLog));
+		const Entity player = spawnSummers(registry, *summersAssets, { 1.f, 1.5f, 3.f });
 
-		//sparring partner: a second Blaze run by a behaviour tree. She walks up, lines up in depth and trades
-		//punches and kicks, pausing after each attack. Fighters pass through each other, as in most beat 'em ups.
-		const Entity dummy = registry.create();
-		registry.add<Transform>(dummy, Transform{ { -1.6f, 1.5f, 3.f } });
-		registry.add<Sprite>(dummy, blazeSheet, blazeTexture, BLAZE_PIXELS_PER_UNIT).keepBackInsideCollider = true;
-		registry.add<RigidBody>(dummy);
-		registry.add<Collider>(dummy, Collider::box({ 0.25f, 0.5f, 0.25f }, { 0.f, -0.5f, 0.f }, false));
-		registry.add<CharacterAnimations>(dummy, CharacterAnimations{ "idle", "walk", "run", "jump", "hurt" });
-		registry.add<Combat>(dummy, blazeCombat());
-		registry.add<Health>(dummy, Health{ 8, 8 });
-		registry.add<EnemyFighter>(dummy, EnemyFighter{ player });
-		registry.add<BehaviorTree>(dummy, BehaviorTree{ makeFighterTree() });
-		registry.add<Name>(dummy, Name{ "Sparring partner" });
+		//The enemies: Blaze, retired from the player's seat (see game/archive), run by behaviour trees. A squad decides
+		//which of them attack and which hang back around Summers (see EnemySquad), so a crowd takes turns and flanks her
+		//instead of queuing up. Fighters pass through each other, as in most beat 'em ups. The wave is topped up as
+		//enemies are beaten, so there's always a fight.
+		const Entity squad = registry.create();
+		registry.add<EnemySquad>(squad);
+		registry.add<Name>(squad, Name{ "Enemy squad" });
 
+		const TextureHandle blazeTexture = renderer.loadTexture("Images/Sprites/Blaze.png", TextureFilter::Pixelated);
+		auto enemies = std::make_shared<EnemyFactory>(EnemyFactory{ blazeTexture, archive::loadBlazeSheet(engine.debugLog), player });
+		spawnWave(registry, *enemies, 1.f);
+		auto fight = std::make_shared<FightState>(FightState{ player, { 1.f, 1.5f, 3.f }, enemies });
 		//Colliders are in world units around each entity's position, and +y is down: a box with offset y = -0.25
 		//and half height 0.25 sits on top of its position, one with offset y = +0.05 hangs just below it.
 
@@ -298,22 +350,76 @@ namespace game {
 
 		spawnWeather(registry, player);
 
-		//orthographic side view, following Blaze along x, tilted down a little
+		//the uzis' bullets are streaks drawn by this emitter, whose particles projectileSystem remakes every frame
+		const Entity tracers = registry.create();
+		registry.add<Transform>(tracers, Transform{ { 0.f, 0.f, 0.f } });
+		{
+			ParticleSettings settings{};
+			settings.maxParticles = 256;
+			settings.size = { 0.02f, 0.02f };
+			settings.colour = { 1.f, 0.85f, 0.45f, 0.95f }; //a hot yellow
+			settings.stretch = 0.012f; //streaks about 0.14 units long at a bullet's speed
+			settings.softness = 0.6f;
+			settings.prewarm = false;
+			ParticleEmitter& emitter = registry.add<ParticleEmitter>(tracers, ParticleEmitter{ settings });
+			emitter.enabled = false; //nothing spawns by itself
+		}
+		registry.add<BulletTracers>(tracers);
+		registry.add<Name>(tracers, Name{ "Bullet tracers" });
+
+		//hits spray blood (see attackSystem); it stays red under the film noir filter only with keep red turned up
+		const Entity blood = registry.create();
+		registry.add<BloodEffect>(blood);
+		registry.add<Name>(blood, Name{ "Blood" });
+
+		//orthographic side view, following Summers along x, tilted down a little
 		const Entity camera = registry.create();
 		registry.add<Transform>(camera, Transform{ { 1.f - 0.4f, -0.75f, -3.5f }, { -0.3f, 0.f, 0.f } });
 		registry.add<Camera>(camera);
 		registry.add<CameraFollow>(camera, CameraFollow{ player, { true, false, false }, { -0.4f, 0.f, 0.f } });
 		registry.add<CameraYawControl>(camera);
 
+		//beaten enemies are replaced, one at a time, from whichever side has fewer, just off screen
+		engine.addSystem(Phase::Update, [enemies, player, timer = 0.f](Engine& engine, float dt) mutable {
+			ecs::Registry& registry = engine.registry();
+			const Transform* playerTransform = registry.tryGet<Transform>(player);
+			if (!playerTransform) return;
+			int alive = 0, left = 0, right = 0;
+			registry.each<EnemyFighter, Transform>([&](Entity, EnemyFighter&, Transform& transform) {
+				alive++;
+				(transform.position.x < playerTransform->position.x ? left : right)++;
+			});
+			if (alive >= ENEMY_WAVE_SIZE) {
+				timer = 0.f;
+				return;
+			}
+			timer += dt;
+			if (timer < ENEMY_RESPAWN_DELAY) return;
+			timer = 0.f;
+			float side = left <= right ? -1.f : 1.f;
+			float x = playerTransform->position.x + side * (3.2f + 0.6f * enemies->roll());
+			if (x < FLOOR_EDGES_X[0] || x > FLOOR_EDGES_X[1]) { //no room on that side: the other one
+				side = -side;
+				x = playerTransform->position.x + side * 3.4f;
+			}
+			enemies->spawn(registry, { std::clamp(x, FLOOR_EDGES_X[0], FLOOR_EDGES_X[1]), 1.5f, 2.3f + 1.4f * enemies->roll() });
+		});
+		engine.addSystem(Phase::Update, enemySquadSystem); //after the spawner, before the trees run
+		engine.addSystem(Phase::Ui, [fight](Engine& engine, float dt) { gameFlow(engine, *fight, dt); });
 		engine.addSystem(Phase::Update, hitStunSystem);
+		engine.addSystem(Phase::Update, weaponSystem);
 		engine.addSystem(Phase::Update, playerAttackInputSystem);
 		engine.addSystem(Phase::Update, playerControlSystem);
 		engine.addSystem(Phase::Update, cameraYawSystem);
 		engine.addSystem(Phase::Update, orbitSystem);
 		engine.addSystem(Phase::Update, debugOverlayToggleSystem);
+		engine.addSystem(Phase::Update, filterToggleSystem);
 		engine.addSystem(Phase::LateUpdate, attackSystem);
+		engine.addSystem(Phase::LateUpdate, projectileSystem);
 		engine.addSystem(Phase::LateUpdate, characterAnimationSystem);
 
-		addLevelEditor(engine, logoTexture);
+		EditorActions actions;
+		actions.rebakeSprites = [&engine, summersAssets]() { return rebakeSummers(engine.renderer(), engine.registry(), *summersAssets); };
+		addLevelEditor(engine, logoTexture, std::move(actions));
 	}
 }

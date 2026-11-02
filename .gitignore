@@ -363,3 +363,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Summers' art: her 29 sprite sheets and the atlas baked from them (built on first run) stay out of the repository
+Nuradhi Engine/Images/Sprites/Summers/

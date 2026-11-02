@@ -14,4 +14,8 @@
 "%VULKAN_SDK%\Bin\glslc.exe" rain.frag -o rain.frag.spv
 "%VULKAN_SDK%\Bin\glslc.exe" nuradhi_rain.vert -o nuradhi_rain.vert.spv
 "%VULKAN_SDK%\Bin\glslc.exe" nuradhi_rain.frag -o nuradhi_rain.frag.spv
+"%VULKAN_SDK%\Bin\glslc.exe" post.vert -o post.vert.spv
+"%VULKAN_SDK%\Bin\glslc.exe" post.frag -o post.frag.spv
+"%VULKAN_SDK%\Bin\glslc.exe" blood.vert -o blood.vert.spv
+"%VULKAN_SDK%\Bin\glslc.exe" blood.frag -o blood.frag.spv
 pause

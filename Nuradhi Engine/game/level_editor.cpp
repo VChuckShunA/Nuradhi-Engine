@@ -1,5 +1,7 @@
 #include "game/level_editor.hpp"
+#include "game/game_components.hpp"
 #include "engine/core/components.hpp"
+#include "engine/effects/blood.hpp"
 #include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/physics/collision.hpp"
@@ -47,6 +49,8 @@ namespace game {
 			ImGuizmo::MODE gizmoSpace = ImGuizmo::WORLD;
 			nrd::TextureHandle propTexture{};
 			std::vector<Prefab> prefabs;
+			EditorActions actions;
+			std::string actionMessage; //what the last button press did
 		};
 
 		nrd::Collider colliderFromBounds(const EditorBounds& bounds, const glm::vec3& scale)
@@ -226,10 +230,102 @@ namespace game {
 			}
 
 			ImGui::Checkbox("Pause game", &engine.paused);
+			bool debugLines = engine.renderer().debugOverlay();
+			if (ImGui::Checkbox("Debug lines (F1)", &debugLines)) engine.renderer().setDebugOverlay(debugLines);
+			ImGui::SetItemTooltip("Wireframes, collider boxes and attack hitboxes");
 			ImGui::TextDisabled("F2 closes the editor");
+
+			ImGui::SeparatorText("Filters");
+			{
+				nrd::PostProcessSettings& filters = engine.renderer().postProcess();
+				ImGui::Checkbox("Film noir (F3)", &filters.noir.enabled);
+				if (ImGui::TreeNode("Film noir settings")) {
+					if (ImGui::Button("Reset##noir")) filters.noir = nrd::FilmNoirFilter{ filters.noir.enabled };
+					ImGui::SliderFloat("contrast", &filters.noir.contrast, 0.5f, 3.f, "%.2f");
+					ImGui::SliderFloat("brightness", &filters.noir.brightness, -0.5f, 0.5f, "%.2f");
+					ImGui::SliderFloat("grain", &filters.noir.grain, 0.f, 0.3f, "%.3f");
+					ImGui::SliderFloat("vignette", &filters.noir.vignette, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("keep red", &filters.noir.keepRed, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("keep blue", &filters.noir.keepBlue, 0.f, 1.f, "%.2f");
+					ImGui::TreePop();
+				}
+				ImGui::Checkbox("CRT (F4)", &filters.crt.enabled);
+				if (ImGui::TreeNode("CRT settings")) {
+					if (ImGui::Button("Reset##crt")) filters.crt = nrd::CrtFilter{ filters.crt.enabled };
+					ImGui::SliderFloat("curvature", &filters.crt.curvature, 0.f, 0.3f, "%.3f");
+					ImGui::SliderFloat("scanlines", &filters.crt.scanlines, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("scanline size", &filters.crt.scanlineSize, 1.f, 10.f, "%.1f px");
+					ImGui::SliderFloat("phosphor mask", &filters.crt.mask, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("colour fringing", &filters.crt.aberration, 0.f, 6.f, "%.1f px");
+					ImGui::SliderFloat("flicker", &filters.crt.flicker, 0.f, 0.2f, "%.3f");
+					ImGui::SliderFloat("edge darkening", &filters.crt.vignette, 0.f, 1.f, "%.2f");
+					ImGui::TreePop();
+				}
+			}
+
+			if (state.actions.rebakeSprites) {
+				ImGui::SeparatorText("Assets");
+				if (ImGui::Button("Rebake sprites")) {
+					try {
+						state.actionMessage = state.actions.rebakeSprites();
+					}
+					catch (const std::exception& error) {
+						state.actionMessage = std::string("Rebake failed, the old sprites are still in use: ") + error.what();
+					}
+				}
+				ImGui::SetItemTooltip("Builds Summers' atlas again from her PNGs and loads it into the game now.\nThe game stands still for a few seconds while it works.");
+				if (!state.actionMessage.empty()) ImGui::TextWrapped("%s", state.actionMessage.c_str());
+			}
+
+			ImGui::SeparatorText("Enemies");
+			registry.each<EnemySquad>([&](Entity, EnemySquad& squad) {
+				ImGui::SliderInt("attack at once", &squad.maxAttackers, 1, 5);
+				ImGui::SliderFloat("gap between attackers", &squad.attackGap, 0.f, 3.f, "%.2f s");
+				ImGui::SliderFloat("standoff", &squad.standoff, 0.6f, 3.f, "%.2f");
+				ImGui::SliderFloat("waiter spacing", &squad.slotSpacing, 0.2f, 1.2f, "%.2f");
+				ImGui::SliderFloat("min rest", &squad.minCooldown, 0.f, 4.f, "%.2f s");
+				ImGui::SliderFloat("max rest", &squad.maxCooldown, 0.f, 6.f, "%.2f s");
+				squad.maxCooldown = std::max(squad.maxCooldown, squad.minCooldown);
+			});
+
+			ImGui::SeparatorText("Blood");
+			registry.each<nrd::BloodEffect>([&](Entity entity, nrd::BloodEffect& blood) {
+				ImGui::PushID(static_cast<int>(entity));
+				if (ImGui::Button("Spray")) {
+					//a test spray from the first character's chest, on to the floor under them
+					const Entity target = registry.findFirst<nrd::Sprite, nrd::Transform>();
+					if (target != nrd::ecs::NullEntity) {
+						const glm::vec3 feet = registry.get<nrd::Transform>(target).position;
+						nrd::spawnBlood(registry, feet - glm::vec3{ 0.f, 0.6f, 0.f }, { 1.f, -0.6f, 0.f }, 1.f, feet.y);
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Clean up")) {
+					blood.droplets.clear();
+					blood.splatsOnGround.clear();
+				}
+				if (ImGui::TreeNode("Blood settings")) {
+					if (ImGui::Button("Reset")) blood = nrd::BloodEffect{};
+					ImGui::ColorEdit3("colour", &blood.colour.x);
+					ImGui::SliderInt("droplets per hit", &blood.dropletsPerHit, 1, 120);
+					ImGui::SliderFloat("spray speed", &blood.spraySpeed, 0.2f, 8.f, "%.2f");
+					ImGui::SliderFloat("spread", &blood.spread, 0.f, 1.5f, "%.2f");
+					ImGui::SliderFloat("droplet size", &blood.dropletSize, 0.002f, 0.05f, "%.3f");
+					ImGui::SliderFloat("gravity", &blood.gravity, 0.f, 30.f, "%.1f");
+					ImGui::Checkbox("splats", &blood.splats);
+					ImGui::SliderFloat("splat chance", &blood.splatChance, 0.f, 1.f, "%.2f");
+					ImGui::SliderFloat("splat size", &blood.splatSize, 0.005f, 0.2f, "%.3f");
+					ImGui::SliderFloat("splat life", &blood.splatLife, 0.f, 300.f, "%.0f s");
+					ImGui::SliderFloat("rain wash", &blood.rainWash, 0.f, 0.5f, "%.2f per s");
+					ImGui::SliderFloat("splat fade", &blood.splatFade, 0.f, 10.f, "%.1f s");
+					ImGui::TreePop();
+				}
+				ImGui::PopID();
+			});
 
 			ImGui::SeparatorText("Weather");
 			registry.each<nrd::ParticleEmitter, nrd::Name>([&](Entity entity, nrd::ParticleEmitter& emitter, nrd::Name& name) {
+				if (registry.tryGet<BulletTracers>(entity)) return; //draws the uzi bullets; not weather
 				ImGui::PushID(static_cast<int>(entity));
 				ImGui::Checkbox(name.value.c_str(), &emitter.enabled);
 				ImGui::SameLine(120.f);
@@ -405,26 +501,27 @@ namespace game {
 			ImGui::End();
 			gizmo(engine, state);
 
-			//outline the selection in the debug overlay
+			//outline the selection, whether or not the debug lines are on
 			if (state.selected != nrd::ecs::NullEntity) {
 				const nrd::Transform& transform = registry.get<nrd::Transform>(state.selected);
 				if (const nrd::Collider* collider = registry.tryGet<nrd::Collider>(state.selected)) {
 					nrd::Aabb box = collider->worldBounds(transform.position);
 					box.min -= glm::vec3{ 0.02f };
 					box.max += glm::vec3{ 0.02f };
-					engine.renderer().drawDebugBox(box);
+					engine.renderer().drawSelectionBox(box);
 				}
 				else {
-					engine.renderer().drawDebugBox(nrd::Aabb::fromCenterHalfExtents(transform.position, glm::vec3{ 0.08f }));
+					engine.renderer().drawSelectionBox(nrd::Aabb::fromCenterHalfExtents(transform.position, glm::vec3{ 0.08f }));
 				}
 			}
 		}
 	}
 
-	void addLevelEditor(nrd::Engine& engine, nrd::TextureHandle propTexture)
+	void addLevelEditor(nrd::Engine& engine, nrd::TextureHandle propTexture, EditorActions actions)
 	{
 		auto state = std::make_shared<EditorState>();
 		state->propTexture = propTexture;
+		state->actions = std::move(actions);
 		const EditorBounds vaseBounds{ { -0.1f, -0.4f, -0.1f }, { 0.1f, 0.f, 0.1f } }; //origin at the base
 		const EditorBounds cubeBounds{ glm::vec3{ -1.f }, glm::vec3{ 1.f } };
 		const EditorBounds slabBounds{ { -1.f, 0.f, -1.f }, { 1.f, 0.1f, 1.f } }; //top surface at the origin, 0.1 thick
