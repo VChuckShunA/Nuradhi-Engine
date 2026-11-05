@@ -40,11 +40,14 @@ namespace nrd {
 		float branches = 0.6f; //0..1 how many forks it throws off
 
 		//state (the engine runs it)
-		struct Segment {
-			glm::vec3 from;
-			glm::vec3 to;
-			float width = 0.01f; //thickness, tapering along the forks
-			float brightness = 1.f; //forks are fainter than the main stroke
+		struct Point {
+			glm::vec3 position{ 0.f };
+			float width = 0.01f; //thickness here: forks and the foot of the bolt thin out
+			float brightness = 1.f; //forks are fainter than the main stroke and die away along their length
+		};
+		struct Stroke { //one unbroken run of the bolt, drawn as a single strip so there are no seams at the joints
+			std::vector<Point> points;
+			bool fork = false; //a fork starts inside its parent, so it needs no rounded start
 		};
 		struct Pulse {
 			float start = 0.f; //seconds after the strike begins
@@ -54,11 +57,11 @@ namespace nrd {
 		float timer = 4.f; //seconds until the next strike (the first comes early)
 		float age = -1.f; //seconds since the strike began; negative when none is under way
 		std::vector<Pulse> pulses;
-		std::vector<Segment> bolt;
+		std::vector<Stroke> bolt;
 		float flash = 0.f; //current brightness, 0..1.5 with the strength applied
 		std::uint32_t randomState = 0x51A9E3D7u;
 
-		static constexpr std::size_t MAX_SEGMENTS = 400;
+		static constexpr std::size_t MAX_POINTS = 400; //across the whole bolt
 	};
 
 	//What the renderer needs from every Lightning at once

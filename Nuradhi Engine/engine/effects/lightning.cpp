@@ -4,7 +4,7 @@
 
 //std
 #include <algorithm>
-#include <cmath>
+#include <cmath>#include <vector>
 
 namespace nrd {
 
@@ -24,33 +24,69 @@ namespace nrd {
 
 		//One stroke from `from` to `to`, broken in halves again and again, each midpoint pushed sideways: that's what
 		//makes it jagged. Some midpoints throw off a fork (thinner, fainter, shorter), which breaks up the same way.
-		void addStroke(Lightning& lightning, const glm::vec3& from, const glm::vec3& to, float width, float brightness, int levels, float jitter)
+		std::size_t pointsSoFar(const Lightning& lightning)
 		{
-			if (lightning.bolt.size() >= Lightning::MAX_SEGMENTS) return;
+			std::size_t total = 0;
+			for (const Lightning::Stroke& stroke : lightning.bolt) total += stroke.points.size();
+			return total;
+		}
+
+		//Turns a run of positions into a stroke and files it. The channel thins out and, for a fork, fades towards its end.
+		void finishStroke(Lightning& lightning, const std::vector<glm::vec3>& positions, float width, float brightness, bool fork)
+		{
+			if (positions.size() < 2) return;
+			float total = 0.f;
+			for (std::size_t i = 1; i < positions.size(); i++) total += glm::length(positions[i] - positions[i - 1]);
+			const float endWidth = fork ? 0.25f : 0.7f;
+			const float endBrightness = fork ? 0.25f : 1.f;
+
+			Lightning::Stroke stroke;
+			stroke.fork = fork;
+			float travelled = 0.f;
+			for (std::size_t i = 0; i < positions.size(); i++) {
+				if (i > 0) travelled += glm::length(positions[i] - positions[i - 1]);
+				const float t = total > 0.f ? travelled / total : 0.f;
+				stroke.points.push_back({ positions[i], width * (1.f + (endWidth - 1.f) * t), brightness * (1.f + (endBrightness - 1.f) * t) });
+			}
+			lightning.bolt.push_back(std::move(stroke));
+		}
+
+		//Breaks the way from `out`'s last point to `to` in halves again and again, each midpoint pushed sideways: that's
+		//what makes it jagged. Some midpoints throw off a fork (thinner, fainter, shorter), which breaks up the same way.
+		void breakUp(Lightning& lightning, std::vector<glm::vec3>& out, const glm::vec3& to, float width, float brightness, int levels, float jitter)
+		{
+			const glm::vec3 from = out.back();
 			if (levels == 0) {
-				lightning.bolt.push_back({ from, to, width, brightness });
+				out.push_back(to);
 				return;
 			}
 			std::uint32_t& random = lightning.randomState;
 			const glm::vec3 along = to - from;
 			const float length = glm::length(along);
-			if (length < 1e-5f) return;
+			if (length < 1e-5f) {
+				out.push_back(to);
+				return;
+			}
 			const glm::vec3 side = glm::vec3{ -along.y, along.x, 0.f } / length; //across the stroke, on screen
 			const glm::vec3 middle = (from + to) * 0.5f + side * randomRange(random, -1.f, 1.f) * length * jitter;
 
-			addStroke(lightning, from, middle, width, brightness, levels - 1, jitter);
-			addStroke(lightning, middle, to, width, brightness, levels - 1, jitter);
+			breakUp(lightning, out, middle, width, brightness, levels - 1, jitter);
 
 			//a fork leaves some of the middle joints, leaning away from the stroke and carrying on downwards
-			if (levels >= 2 && width > lightning.boltWidth * 0.3f && random01(random) < lightning.branches * 0.45f) {
+			if (levels >= 2 && width > lightning.boltWidth * 0.3f && pointsSoFar(lightning) + out.size() + 70 < Lightning::MAX_POINTS
+				&& random01(random) < lightning.branches * 0.45f) {
 				const float lean = randomRange(random, 0.35f, 0.9f) * (random01(random) < 0.5f ? -1.f : 1.f);
 				const float cosine = std::cos(lean);
 				const float sine = std::sin(lean);
 				glm::vec3 direction{ along.x * cosine - along.y * sine, along.x * sine + along.y * cosine, 0.f };
 				if (direction.y < 0.f) direction = -direction; //forks go down
 				const glm::vec3 end = middle + direction * randomRange(random, 0.6f, 1.1f);
-				addStroke(lightning, middle, end, width * 0.55f, brightness * 0.6f, levels - 2, jitter * 1.2f);
+				std::vector<glm::vec3> fork{ middle };
+				breakUp(lightning, fork, end, width * 0.55f, brightness * 0.6f, levels - 2, jitter * 1.2f);
+				finishStroke(lightning, fork, width * 0.55f, brightness * 0.6f, true);
 			}
+
+			breakUp(lightning, out, to, width, brightness, levels - 1, jitter);
 		}
 
 		void buildBolt(Lightning& lightning, const Transform& transform)
@@ -61,7 +97,9 @@ namespace nrd {
 			const float z = transform.position.z + lightning.depth;
 			const glm::vec3 top{ x, transform.position.y - lightning.height, z };
 			const glm::vec3 ground{ x + randomRange(random, -0.5f, 0.5f), transform.position.y + 0.3f, z }; //it lands in the haze at the far end of the street
-			addStroke(lightning, top, ground, lightning.boltWidth, 1.f, 6, 0.16f);
+			std::vector<glm::vec3> main{ top };
+			breakUp(lightning, main, ground, lightning.boltWidth, 1.f, 6, 0.16f);
+			finishStroke(lightning, main, lightning.boltWidth, 1.f, false);
 		}
 
 		//Two to four stutters, a quick run of weak ones building to the big one, then a slow afterglow
