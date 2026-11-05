@@ -160,6 +160,7 @@
       <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
     </ClCompile>
     <ClCompile Include="engine\effects\blood.cpp" />
+    <ClCompile Include="engine\effects\lightning.cpp" />
     <ClCompile Include="engine\fog\fog_volume.cpp" />
     <ClCompile Include="engine\particles\particles.cpp" />
     <ClCompile Include="engine\rain\nuradhi_rain.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="engine\render\fog_render_system.cpp" />
     <ClCompile Include="engine\render\particle_render_system.cpp" />
     <ClCompile Include="engine\render\blood_render_system.cpp" />
+    <ClCompile Include="engine\render\lightning_render_system.cpp" />
     <ClCompile Include="engine\render\point_light_system.cpp" />
     <ClCompile Include="engine\render\post_process_system.cpp" />
     <ClCompile Include="engine\render\nuradhi_rain_render_system.cpp" />
@@ -246,6 +248,7 @@
     <ClInclude Include="engine\input\input.hpp" />
     <ClInclude Include="engine\fog\fog_simulation.hpp" />
     <ClInclude Include="engine\effects\blood.hpp" />
+    <ClInclude Include="engine\effects\lightning.hpp" />
     <ClInclude Include="engine\fog\fog_volume.hpp" />
     <ClInclude Include="engine\particles\particles.hpp" />
     <ClInclude Include="engine\rain\nuradhi_rain.hpp" />
@@ -259,6 +262,7 @@
     <ClInclude Include="engine\render\fog_render_system.hpp" />
     <ClInclude Include="engine\render\particle_render_system.hpp" />
     <ClInclude Include="engine\render\blood_render_system.hpp" />
+    <ClInclude Include="engine\render\lightning_render_system.hpp" />
     <ClInclude Include="engine\render\point_light_system.hpp" />
     <ClInclude Include="engine\render\post_process_settings.hpp" />
     <ClInclude Include="engine\render\post_process_system.hpp" />
@@ -302,6 +306,8 @@
     <None Include="shaders\particle.frag" />
     <None Include="shaders\blood.frag" />
     <None Include="shaders\blood.vert" />
+    <None Include="shaders\lightning.frag" />
+    <None Include="shaders\lightning.vert" />
     <None Include="shaders\particle.vert" />
     <None Include="shaders\post.frag" />
     <None Include="shaders\post.vert" />

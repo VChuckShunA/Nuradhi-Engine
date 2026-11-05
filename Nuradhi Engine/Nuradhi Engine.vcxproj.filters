@@ -356,6 +356,12 @@
     <None Include="shaders\blood.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\lightning.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\lightning.frag">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="shaders\post.frag">
       <Filter>Shaders</Filter>
     </None>
@@ -379,7 +385,13 @@
     <ClCompile Include="engine\effects\blood.cpp">
       <Filter>Engine\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="engine\effects\lightning.cpp">
+      <Filter>Engine\Effects</Filter>
+    </ClCompile>
     <ClCompile Include="engine\render\blood_render_system.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\lightning_render_system.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
     <ClCompile Include="engine\fog\fog_volume.cpp">
@@ -421,7 +433,13 @@
     <ClInclude Include="engine\effects\blood.hpp">
       <Filter>Engine\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="engine\effects\lightning.hpp">
+      <Filter>Engine\Effects</Filter>
+    </ClInclude>
     <ClInclude Include="engine\render\blood_render_system.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\lightning_render_system.hpp">
       <Filter>Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="engine\fog\fog_volume.hpp">

@@ -3,6 +3,8 @@
 #include "engine/render/blood_render_system.hpp"
 #include "engine/render/debug_render_system.hpp"
 #include "engine/render/fog_render_system.hpp"
+#include "engine/effects/lightning.hpp"
+#include "engine/render/lightning_render_system.hpp"
 #include "engine/render/mesh_render_system.hpp"
 #include "engine/render/nuradhi_rain_render_system.hpp"
 #include "engine/render/particle_render_system.hpp"
@@ -84,6 +86,7 @@ namespace nrd {
 		std::unique_ptr<RainRenderSystem> rainSystem;
 		std::unique_ptr<NuradhiRainRenderSystem> nuradhiRainSystem;
 		std::unique_ptr<BloodRenderSystem> bloodSystem;
+		std::unique_ptr<LightningRenderSystem> lightningSystem;
 		std::unique_ptr<DebugRenderSystem> debugSystem;
 		std::unique_ptr<PostProcessSystem> postSystem;
 		PostProcessSettings postSettings;
@@ -176,6 +179,7 @@ namespace nrd {
 		r.rainSystem = std::make_unique<RainRenderSystem>(r.device, renderPass, setLayout);
 		r.nuradhiRainSystem = std::make_unique<NuradhiRainRenderSystem>(r.device, renderPass, setLayout);
 		r.bloodSystem = std::make_unique<BloodRenderSystem>(r.device, renderPass, setLayout);
+		r.lightningSystem = std::make_unique<LightningRenderSystem>(r.device, renderPass, setLayout);
 		r.debugSystem = std::make_unique<DebugRenderSystem>(r.device);
 		r.postSystem = std::make_unique<PostProcessSystem>(r.device, renderPass, r.swapchain.getColorFormat(), r.swapchain.getDepthFormat());
 
@@ -316,6 +320,12 @@ namespace nrd {
 		ubo.view = r.camera.getView();
 		ubo.inverseView = r.camera.getInverseView();
 		r.lightSystem->update(frameInfo, ubo);
+		//lightning floods everything lit with cold light for an instant
+		const LightningFlash lightning = currentLightning(registry);
+		if (lightning.brightness > 0.f) {
+			const glm::vec3 light = glm::vec3{ ubo.ambientLightColour } * ubo.ambientLightColour.w + lightning.colour * (lightning.brightness * lightning.sceneLight);
+			ubo.ambientLightColour = glm::vec4{ light, 1.f };
+		}
 		r.uboBuffers[frameIndex]->writeToBuffer(&ubo);
 		r.uboBuffers[frameIndex]->flush();
 
@@ -323,7 +333,7 @@ namespace nrd {
 
 		//with a filter on, the scene goes to an offscreen image first; the filter pass then draws it to the screen
 		r.time += frameTime;
-		const bool filtering = PostProcessSystem::anyEnabled(r.postSettings);
+		const bool filtering = PostProcessSystem::anyEnabled(r.postSettings) || lightning.brightness > 0.f; //a flash lifts the sky, which only the filter pass can do
 		if (filtering) {
 			r.postSystem->ensureTargets(r.swapchain.getExtent());
 			r.postSystem->beginScenePass(commandBuffer, frameIndex);
@@ -337,6 +347,7 @@ namespace nrd {
 		r.bloodSystem->render(frameInfo); //over the fog, or it hides the splats on the floor
 		r.snowSystem->render(frameInfo);
 		r.rainSystem->render(frameInfo);
+		r.lightningSystem->render(frameInfo); //far behind the stage, with the rain falling in front of it
 		r.nuradhiRainSystem->render(frameInfo); //ripples and splashes, under the falling drops
 		r.particleSystem->render(frameInfo);
 		r.lightSystem->render(frameInfo);
@@ -354,7 +365,8 @@ namespace nrd {
 			r.postSystem->endScenePass(commandBuffer, frameIndex);
 			r.swapchain.beginSwapChainRenderPass(commandBuffer);
 			r.swapchain.bindPipelineEssentials(commandBuffer);
-			r.postSystem->draw(commandBuffer, frameIndex, r.postSettings, r.time);
+			const glm::vec4 flash{ lightning.colour * (lightning.brightness * lightning.skyGlow), lightning.brightness };
+			r.postSystem->draw(commandBuffer, frameIndex, r.postSettings, r.time, flash);
 		}
 		//the UI goes on last and unfiltered
 		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);

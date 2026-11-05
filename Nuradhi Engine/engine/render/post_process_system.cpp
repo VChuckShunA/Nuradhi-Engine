@@ -16,6 +16,7 @@ namespace nrd {
 			glm::vec4 crt; //x enabled, y curvature, z scanlines, w mask
 			glm::vec4 crtLook; //x aberration (pixels), y flicker, z vignette, w scanline size (pixels)
 			glm::vec4 screen; //xy size in pixels
+			glm::vec4 flash; //rgb added to the picture (gamma space), w the lightning's brightness
 		};
 		static_assert(sizeof(PostPushConstants) <= 128, "push constants are only guaranteed 128 bytes");
 	}
@@ -259,7 +260,7 @@ namespace nrd {
 		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 	}
 
-	void PostProcessSystem::draw(VkCommandBuffer commandBuffer, int frameIndex, const PostProcessSettings& settings, float time)
+	void PostProcessSystem::draw(VkCommandBuffer commandBuffer, int frameIndex, const PostProcessSettings& settings, float time, const glm::vec4& flash)
 	{
 		const FilmNoirFilter& noir = settings.noir;
 		const CrtFilter& crt = settings.crt;
@@ -269,6 +270,7 @@ namespace nrd {
 		push.crt = { crt.enabled ? 1.f : 0.f, crt.curvature, crt.scanlines, crt.mask };
 		push.crtLook = { crt.aberration, crt.flicker, crt.vignette, crt.scanlineSize > 1.f ? crt.scanlineSize : 1.f };
 		push.screen = { static_cast<float>(extent.width), static_cast<float>(extent.height), 0.f, 0.f };
+		push.flash = flash;
 
 		pipeline->bind(commandBuffer);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &targets[frameIndex].descriptorSet, 0, nullptr);

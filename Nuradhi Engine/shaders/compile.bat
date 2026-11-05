@@ -18,4 +18,6 @@
 "%VULKAN_SDK%\Bin\glslc.exe" post.frag -o post.frag.spv
 "%VULKAN_SDK%\Bin\glslc.exe" blood.vert -o blood.vert.spv
 "%VULKAN_SDK%\Bin\glslc.exe" blood.frag -o blood.frag.spv
+"%VULKAN_SDK%\Bin\glslc.exe" lightning.vert -o lightning.vert.spv
+"%VULKAN_SDK%\Bin\glslc.exe" lightning.frag -o lightning.frag.spv
 pause

@@ -2,6 +2,7 @@
 #include "game/game_components.hpp"
 #include "engine/core/components.hpp"
 #include "engine/effects/blood.hpp"
+#include "engine/effects/lightning.hpp"
 #include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/physics/collision.hpp"
@@ -324,6 +325,32 @@ namespace game {
 			});
 
 			ImGui::SeparatorText("Weather");
+			registry.each<nrd::Lightning, nrd::Name>([&](Entity entity, nrd::Lightning& lightning, nrd::Name& name) {
+				ImGui::PushID(static_cast<int>(entity));
+				ImGui::Checkbox(name.value.c_str(), &lightning.enabled);
+				ImGui::SameLine();
+				if (ImGui::Button("Strike now")) nrd::strikeLightning(registry, entity);
+				if (ImGui::TreeNode("Lightning settings")) {
+					if (ImGui::Button("Reset")) lightning = nrd::Lightning{ lightning.enabled };
+					ImGui::SliderFloat("average wait", &lightning.meanInterval, 1.f, 60.f, "%.0f s");
+					ImGui::Checkbox("only while it rains", &lightning.onlyInRain);
+					ImGui::SeparatorText("Flash");
+					ImGui::SliderFloat("strength", &lightning.flashStrength, 0.f, 2.f, "%.2f");
+					ImGui::SliderFloat("scene light", &lightning.sceneLight, 0.f, 10.f, "%.1f");
+					ImGui::SliderFloat("sky glow", &lightning.skyGlow, 0.f, 1.f, "%.2f");
+					ImGui::ColorEdit3("colour", &lightning.colour.x);
+					ImGui::SeparatorText("Bolt");
+					ImGui::Checkbox("show the bolt", &lightning.showBolt);
+					ImGui::SliderFloat("spread", &lightning.halfWidth, 0.5f, 6.f, "%.2f");
+					ImGui::SliderFloat("height", &lightning.height, 1.f, 8.f, "%.2f");
+					ImGui::SliderFloat("depth", &lightning.depth, 0.f, 6.f, "%.2f");
+					ImGui::SliderFloat("thickness", &lightning.boltWidth, 0.003f, 0.06f, "%.3f");
+					ImGui::SliderFloat("glow", &lightning.glow, 1.f, 12.f, "%.1f");
+					ImGui::SliderFloat("forks", &lightning.branches, 0.f, 1.f, "%.2f");
+					ImGui::TreePop();
+				}
+				ImGui::PopID();
+			});
 			registry.each<nrd::ParticleEmitter, nrd::Name>([&](Entity entity, nrd::ParticleEmitter& emitter, nrd::Name& name) {
 				if (registry.tryGet<BulletTracers>(entity)) return; //draws the uzi bullets; not weather
 				ImGui::PushID(static_cast<int>(entity));

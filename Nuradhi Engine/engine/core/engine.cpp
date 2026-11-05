@@ -2,6 +2,7 @@
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
 #include "engine/effects/blood.hpp"
+#include "engine/effects/lightning.hpp"
 #include "engine/fog/fog_volume.hpp"
 #include "engine/particles/particles.hpp"
 #include "engine/platform/lve_window.hpp"
@@ -62,6 +63,7 @@ namespace nrd {
 				updateSpriteAnimations(world, dt);
 				updateParticles(world, dt);
 				updateBlood(world, dt);
+				updateLightning(world, dt);
 				updateNuradhiRain(world, dt); //after the particles, to catch the drops that just landed
 				updateFogVolumes(world, dt);
 				updateSnowVolumes(world, dt);

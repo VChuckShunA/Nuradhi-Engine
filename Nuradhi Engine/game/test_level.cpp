@@ -8,6 +8,7 @@
 #include "engine/ai/behavior_tree.hpp"
 #include "engine/core/components.hpp"
 #include "engine/effects/blood.hpp"
+#include "engine/effects/lightning.hpp"
 #include "engine/fog/fog_volume.hpp"
 #include "engine/physics/collision.hpp"
 #include "engine/particles/particles.hpp"
@@ -127,6 +128,13 @@ namespace game {
 			registry.add<NuradhiRain>(nuradhiRain);
 			registry.add<CameraFollow>(nuradhiRain, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
 			registry.add<Name>(nuradhiRain, Name{ "Nuradhi rain" });
+
+			//lightning: while it rains, bolts tear down the sky behind the stage and flash the scene
+			const Entity storm = registry.create();
+			registry.add<Transform>(storm, Transform{ { 1.f, 1.5f, 3.f } });
+			registry.add<Lightning>(storm);
+			registry.add<CameraFollow>(storm, CameraFollow{ player, { true, false, false }, glm::vec3{ 0.f } });
+			registry.add<Name>(storm, Name{ "Lightning" });
 		}
 	}
 

@@ -16,6 +16,7 @@ layout(push_constant) uniform Push {
 	vec4 crt; //x enabled, y curvature, z scanlines, w mask
 	vec4 crtLook; //x aberration (pixels), y flicker, z vignette, w scanline size (pixels)
 	vec4 screen; //xy size in pixels
+	vec4 flash; //rgb lightning light added to the picture (gamma space), w its brightness
 } push;
 
 float hash(vec2 p) {
@@ -48,6 +49,10 @@ void main() {
 	}
 
 	vec3 graded = pow(max(colour, vec3(0.0)), vec3(1.0 / 2.2));
+
+	//lightning: the whole picture is lit for an instant. The dark sky and shadows lift towards the flash colour, and
+	//the exposure jumps, so the film grade below blows highlights out the way a real flash does
+	graded = graded * (1.0 + push.flash.w * 0.25) + push.flash.rgb;
 
 	//film noir: panchromatic black and white, a hard S-curve, grain and a vignette
 	if (noirOn) {

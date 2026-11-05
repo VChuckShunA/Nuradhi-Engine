@@ -6,6 +6,9 @@
 #include "engine/render/vulkan/lve_pipeline.hpp"
 #include "engine/render/vulkan/lve_swap_chain.hpp"
 
+//libs
+#include <glm/glm.hpp>
+
 //std
 #include <array>
 #include <memory>
@@ -31,7 +34,8 @@ namespace nrd {
 		void beginScenePass(VkCommandBuffer commandBuffer, int frameIndex);
 		void endScenePass(VkCommandBuffer commandBuffer, int frameIndex);
 		//draws the filtered scene; call inside the swapchain's render pass
-		void draw(VkCommandBuffer commandBuffer, int frameIndex, const PostProcessSettings& settings, float time);
+		//`flash` is the lightning's colour already multiplied by how much the sky lifts, and its brightness in w
+		void draw(VkCommandBuffer commandBuffer, int frameIndex, const PostProcessSettings& settings, float time, const glm::vec4& flash);
 
 	private:
 		static constexpr int FRAMES = lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT;
