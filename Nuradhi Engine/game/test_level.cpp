@@ -1,5 +1,6 @@
 #include "game/test_level.hpp"
 #include "game/archive/blaze.hpp"
+#include "game/characters/punisher.hpp"
 #include "game/characters/summers.hpp"
 #include "game/game_components.hpp"
 #include "game/game_systems.hpp"
@@ -27,6 +28,7 @@
 //std
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -199,6 +201,7 @@ namespace game {
 			Entity player;
 			glm::vec3 playerStart;
 			std::shared_ptr<EnemyFactory> enemies;
+			std::string playerName = "Summers"; //for the game over screen
 			bool gameOver = false;
 			float gameOverTime = 0.f; //seconds since she went down
 		};
@@ -230,7 +233,9 @@ namespace game {
 			combat.airAttackUsed = false;
 			combat.timer = 0.f;
 			registry.get<PlayerController>(state.player).sprintDirection = 0.f;
-			setWeaponMode(registry.get<CharacterAnimations>(state.player), registry.get<AttackBindings>(state.player), registry.get<Weapons>(state.player), WeaponMode::Melee);
+			if (Weapons* weapons = registry.tryGet<Weapons>(state.player)) { //only Summers swaps weapons
+				setWeaponMode(registry.get<CharacterAnimations>(state.player), registry.get<AttackBindings>(state.player), *weapons, WeaponMode::Melee);
+			}
 
 			spawnWave(registry, *state.enemies, state.playerStart.x);
 			state.gameOver = false;
@@ -275,7 +280,7 @@ namespace game {
 						ImGui::TextColored(linearColour(0.85f, 0.08f, 0.08f), "GAME OVER");
 						ImGui::PopFont();
 						ImGui::PushFont(nullptr, 26.f);
-						ImGui::TextColored(linearColour(0.8f, 0.8f, 0.84f), "Summers is down.");
+						ImGui::TextColored(linearColour(0.8f, 0.8f, 0.84f), "%s is down.", state.playerName.c_str());
 						ImGui::Spacing();
 						if (ImGui::Button("Try again  (R)", { 260.f, 52.f })) restart = true;
 						ImGui::PopFont();
@@ -305,7 +310,7 @@ namespace game {
 			}
 		}
 	}
-	void loadTestLevel(Engine& engine)
+	void loadTestLevel(Engine& engine, PlayerCharacter character)
 	{
 		ecs::Registry& registry = engine.registry();
 		Renderer& renderer = engine.renderer();
@@ -319,8 +324,20 @@ namespace game {
 
 		//Summers, the player: she starts bare handed and swaps to uzis or katanas with 1, 2 and 3
 		//(shared with the editor's rebake button, which swaps a new atlas into it)
-		const auto summersAssets = std::make_shared<SummersAssets>(loadSummers(renderer, engine.debugLog));
-		const Entity player = spawnSummers(registry, *summersAssets, { 1.f, 1.5f, 3.f });
+		//The Punisher is the player (Summers, with --summers, is still here to play). Whoever it is, their sprite assets are
+		//shared with the editor's rebake button, which swaps a new atlas into them.
+		Entity player;
+		std::function<std::string()> rebake;
+		if (character == PlayerCharacter::Summers) {
+			const auto summersAssets = std::make_shared<SummersAssets>(loadSummers(renderer, engine.debugLog));
+			player = spawnSummers(registry, *summersAssets, { 1.f, 1.5f, 3.f });
+			rebake = [&engine, summersAssets]() { return rebakeSummers(engine.renderer(), engine.registry(), *summersAssets); };
+		}
+		else {
+			const auto punisherAssets = std::make_shared<PunisherAssets>(loadPunisher(renderer, engine.debugLog));
+			player = spawnPunisher(registry, *punisherAssets, { 1.f, 1.5f, 3.f });
+			rebake = [&engine, punisherAssets]() { return rebakePunisher(engine.renderer(), engine.registry(), *punisherAssets); };
+		}
 
 		//The enemies: Blaze, retired from the player's seat (see game/archive), run by behaviour trees. A squad decides
 		//which of them attack and which hang back around Summers (see EnemySquad), so a crowd takes turns and flanks her
@@ -334,6 +351,7 @@ namespace game {
 		auto enemies = std::make_shared<EnemyFactory>(EnemyFactory{ blazeTexture, archive::loadBlazeSheet(engine.debugLog), player });
 		spawnWave(registry, *enemies, 1.f);
 		auto fight = std::make_shared<FightState>(FightState{ player, { 1.f, 1.5f, 3.f }, enemies });
+		fight->playerName = character == PlayerCharacter::Summers ? "Summers" : "The Punisher";
 		//Colliders are in world units around each entity's position, and +y is down: a box with offset y = -0.25
 		//and half height 0.25 sits on top of its position, one with offset y = +0.05 hangs just below it.
 
@@ -427,7 +445,7 @@ namespace game {
 		engine.addSystem(Phase::LateUpdate, characterAnimationSystem);
 
 		EditorActions actions;
-		actions.rebakeSprites = [&engine, summersAssets]() { return rebakeSummers(engine.renderer(), engine.registry(), *summersAssets); };
+		actions.rebakeSprites = std::move(rebake);
 		addLevelEditor(engine, logoTexture, std::move(actions));
 	}
 }

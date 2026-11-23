@@ -8,14 +8,18 @@
 #include <string>
 
 //  --debug-log   print collision contacts every frame and the sprite sheets' detected frames
+//  --summers     play Summers instead of the Punisher
 int main(int argc, char** argv) {
 	try {
 		nrd::Engine engine{ { 1920, 1080, "Nuradhi - A Film Noir Game Engine" } };
+		game::PlayerCharacter character = game::PlayerCharacter::Punisher;
 		for (int i = 1; i < argc; i++) {
-			if (std::string{ argv[i] } == "--debug-log") engine.debugLog = true;
+			const std::string argument{ argv[i] };
+			if (argument == "--debug-log") engine.debugLog = true;
+			else if (argument == "--summers") character = game::PlayerCharacter::Summers;
 		}
 
-		game::loadTestLevel(engine);
+		game::loadTestLevel(engine, character);
 		engine.run();
 	}
 	catch (const std::exception& e) {

@@ -19,7 +19,7 @@ namespace nrd {
 	//vertex buffer.
 	class LightningRenderSystem {
 	public:
-		static constexpr std::uint32_t MAX_QUADS = 1200;
+		static constexpr std::uint32_t MAX_QUADS = 3000;
 
 		LightningRenderSystem(lve::LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
 		~LightningRenderSystem();

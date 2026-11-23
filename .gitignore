@@ -366,3 +366,6 @@ FodyWeavers.xsd
 
 # Summers' art: her 29 sprite sheets and the atlas baked from them (built on first run) stay out of the repository
 Nuradhi Engine/Images/Sprites/Summers/
+
+# The Punisher's atlas, baked from the sprite sheet on first run
+Nuradhi Engine/Images/Sprites/Punisher/

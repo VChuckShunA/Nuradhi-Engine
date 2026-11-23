@@ -35,8 +35,8 @@ namespace nrd {
 		float halfWidth = 3.2f; //strikes land this far either side of the entity, across the screen
 		float height = 3.6f; //how far up the bolt starts, above the entity
 		float depth = 2.8f; //how far behind the entity the bolt is drawn (+z is away from the camera)
-		float boltWidth = 0.014f; //thickness of the main stroke
-		float glow = 5.f; //the halo around the bolt, as a multiple of its thickness
+		float boltWidth = 0.011f; //thickness of the main stroke
+		float glow = 20.f; //the halo around the bolt, as a multiple of its thickness
 		float branches = 0.6f; //0..1 how many forks it throws off
 
 		//state (the engine runs it)
@@ -61,7 +61,7 @@ namespace nrd {
 		float flash = 0.f; //current brightness, 0..1.5 with the strength applied
 		std::uint32_t randomState = 0x51A9E3D7u;
 
-		static constexpr std::size_t MAX_POINTS = 400; //across the whole bolt
+		static constexpr std::size_t MAX_POINTS = 1500; //across the whole bolt
 	};
 
 	//What the renderer needs from every Lightning at once

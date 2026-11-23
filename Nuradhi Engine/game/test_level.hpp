@@ -11,5 +11,8 @@ namespace game {
 	//  F special (energy blast; in the air a flaming dive; shared 1.5 s cooldown),
 	//  Left/Right turn the camera, F1 toggles the debug lines (off by default; there's a checkbox in the editor too), F2 opens the level editor, F3 the film noir filter, F4 the CRT filter,
 	//  P pauses and resumes, and R starts over from the game over screen
-	void loadTestLevel(nrd::Engine& engine);
+	enum class PlayerCharacter { Punisher, Summers };
+
+	//`character` is who the player is: the Punisher (fists and a pistol: F fires it while held), or Summers (--summers on the command line)
+	void loadTestLevel(nrd::Engine& engine, PlayerCharacter character = PlayerCharacter::Punisher);
 }

@@ -138,6 +138,9 @@
     <ClCompile Include="engine\sprite\background_removal.cpp">
       <Filter>Engine\Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="game\characters\punisher.cpp">
+      <Filter>Game\Characters</Filter>
+    </ClCompile>
     <ClCompile Include="game\characters\summers.cpp">
       <Filter>Game\Characters</Filter>
     </ClCompile>
@@ -287,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="engine\ai\behavior_tree.hpp">
       <Filter>Engine\Ai</Filter>
+    </ClInclude>
+    <ClInclude Include="game\characters\punisher.hpp">
+      <Filter>Game\Characters</Filter>
     </ClInclude>
     <ClInclude Include="game\characters\summers.hpp">
       <Filter>Game\Characters</Filter>

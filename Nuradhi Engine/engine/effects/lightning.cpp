@@ -4,7 +4,7 @@
 
 //std
 #include <algorithm>
-#include <cmath>#include <vector>
+#include <cmath>
 
 namespace nrd {
 
@@ -46,7 +46,7 @@ namespace nrd {
 			for (std::size_t i = 0; i < positions.size(); i++) {
 				if (i > 0) travelled += glm::length(positions[i] - positions[i - 1]);
 				const float t = total > 0.f ? travelled / total : 0.f;
-				stroke.points.push_back({ positions[i], width * (1.f + (endWidth - 1.f) * t), brightness * (1.f + (endBrightness - 1.f) * t) });
+				stroke.points.push_back({ positions[i], std::max(width * (1.f + (endWidth - 1.f) * t), lightning.boltWidth * 0.18f), brightness * (1.f + (endBrightness - 1.f) * t) });
 			}
 			lightning.bolt.push_back(std::move(stroke));
 		}
@@ -73,17 +73,19 @@ namespace nrd {
 			breakUp(lightning, out, middle, width, brightness, levels - 1, jitter);
 
 			//a fork leaves some of the middle joints, leaning away from the stroke and carrying on downwards
-			if (levels >= 2 && width > lightning.boltWidth * 0.3f && pointsSoFar(lightning) + out.size() + 70 < Lightning::MAX_POINTS
-				&& random01(random) < lightning.branches * 0.45f) {
-				const float lean = randomRange(random, 0.35f, 0.9f) * (random01(random) < 0.5f ? -1.f : 1.f);
+			//Big forks leave the big joints and a scatter of fine twigs the small ones, like the branching of a real strike
+			const float forkChance = lightning.branches * (0.05f + 0.09f * static_cast<float>(levels));
+			if (levels >= 2 && width > lightning.boltWidth * 0.12f && pointsSoFar(lightning) + out.size() + 40 < Lightning::MAX_POINTS
+				&& random01(random) < forkChance) {
+				const float lean = randomRange(random, 0.25f, 0.7f) * (random01(random) < 0.5f ? -1.f : 1.f);
 				const float cosine = std::cos(lean);
 				const float sine = std::sin(lean);
 				glm::vec3 direction{ along.x * cosine - along.y * sine, along.x * sine + along.y * cosine, 0.f };
 				if (direction.y < 0.f) direction = -direction; //forks go down
-				const glm::vec3 end = middle + direction * randomRange(random, 0.6f, 1.1f);
+				const glm::vec3 end = middle + direction * std::min(length * randomRange(random, 1.4f, 3.f), 1.8f);
 				std::vector<glm::vec3> fork{ middle };
-				breakUp(lightning, fork, end, width * 0.55f, brightness * 0.6f, levels - 2, jitter * 1.2f);
-				finishStroke(lightning, fork, width * 0.55f, brightness * 0.6f, true);
+				breakUp(lightning, fork, end, width * 0.6f, brightness * 0.75f, levels - 2, jitter * 1.1f);
+				finishStroke(lightning, fork, width * 0.6f, brightness * 0.75f, true);
 			}
 
 			breakUp(lightning, out, to, width, brightness, levels - 1, jitter);
@@ -96,9 +98,9 @@ namespace nrd {
 			const float x = transform.position.x + randomRange(random, -lightning.halfWidth, lightning.halfWidth);
 			const float z = transform.position.z + lightning.depth;
 			const glm::vec3 top{ x, transform.position.y - lightning.height, z };
-			const glm::vec3 ground{ x + randomRange(random, -0.5f, 0.5f), transform.position.y + 0.3f, z }; //it lands in the haze at the far end of the street
+			const glm::vec3 ground{ x + randomRange(random, -1.1f, 1.1f), transform.position.y + 0.3f, z }; //it lands in the haze at the far end of the street
 			std::vector<glm::vec3> main{ top };
-			breakUp(lightning, main, ground, lightning.boltWidth, 1.f, 6, 0.16f);
+			breakUp(lightning, main, ground, lightning.boltWidth, 1.f, 7, 0.16f);
 			finishStroke(lightning, main, lightning.boltWidth, 1.f, false);
 		}
 

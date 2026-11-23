@@ -224,6 +224,7 @@
       <SupportJustMyCode Condition="'$(Configuration)'=='Debug'">false</SupportJustMyCode>
     </ClCompile>
     <ClCompile Include="game\enemy_ai.cpp" />
+    <ClCompile Include="game\characters\punisher.cpp" />
     <ClCompile Include="game\characters\summers.cpp" />
     <ClCompile Include="game\characters\summers_sheets.cpp" />
     <ClCompile Include="game\archive\blaze.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="engine\sprite\background_removal.hpp" />
     <ClInclude Include="game\enemy_ai.hpp" />
     <ClInclude Include="game\game_components.hpp" />
+    <ClInclude Include="game\characters\punisher.hpp" />
     <ClInclude Include="game\characters\summers.hpp" />
     <ClInclude Include="game\characters\summers_sheets.hpp" />
     <ClInclude Include="game\archive\blaze.hpp" />

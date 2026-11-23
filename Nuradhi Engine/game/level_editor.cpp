@@ -274,7 +274,7 @@ namespace game {
 						state.actionMessage = std::string("Rebake failed, the old sprites are still in use: ") + error.what();
 					}
 				}
-				ImGui::SetItemTooltip("Builds Summers' atlas again from her PNGs and loads it into the game now.\nThe game stands still for a few seconds while it works.");
+				ImGui::SetItemTooltip("Builds the player's sprite atlas again from its source images and loads it into the game now.\nThe game stands still for a few seconds while it works.");
 				if (!state.actionMessage.empty()) ImGui::TextWrapped("%s", state.actionMessage.c_str());
 			}
 
@@ -345,7 +345,7 @@ namespace game {
 					ImGui::SliderFloat("height", &lightning.height, 1.f, 8.f, "%.2f");
 					ImGui::SliderFloat("depth", &lightning.depth, 0.f, 6.f, "%.2f");
 					ImGui::SliderFloat("thickness", &lightning.boltWidth, 0.003f, 0.06f, "%.3f");
-					ImGui::SliderFloat("glow", &lightning.glow, 1.f, 12.f, "%.1f");
+					ImGui::SliderFloat("glow", &lightning.glow, 1.f, 30.f, "%.1f");
 					ImGui::SliderFloat("forks", &lightning.branches, 0.f, 1.f, "%.2f");
 					ImGui::TreePop();
 				}

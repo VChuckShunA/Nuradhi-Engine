@@ -10,6 +10,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -125,9 +126,33 @@ namespace nrd {
 					int width = 0, height = 0, channels = 0;
 					std::unique_ptr<stbi_uc, void (*)(void*)> loaded{ stbi_load(source.path.c_str(), &width, &height, &channels, STBI_rgb_alpha), stbi_image_free };
 					if (!loaded) throw std::runtime_error("Failed to load sprite sheet " + source.path + ": " + stbi_failure_reason());
-					std::vector<std::uint8_t> image(loaded.get(), loaded.get() + static_cast<size_t>(width) * height * 4);
+					std::vector<std::uint8_t> image;
+					if (source.cropWidth > 0 && source.cropHeight > 0) {
+						//only a rectangle of the image: a row of frames out of a big sheet
+						const int x0 = std::clamp(source.cropX, 0, width), y0 = std::clamp(source.cropY, 0, height);
+						const int cropW = std::min(source.cropWidth, width - x0), cropH = std::min(source.cropHeight, height - y0);
+						if (cropW <= 0 || cropH <= 0) throw std::runtime_error(source.name + ": the crop rectangle is outside " + source.path);
+						image.resize(static_cast<size_t>(cropW) * cropH * 4);
+						for (int y = 0; y < cropH; y++) {
+							std::copy_n(loaded.get() + (static_cast<size_t>(y0 + y) * width + x0) * 4, static_cast<size_t>(cropW) * 4, image.data() + static_cast<size_t>(y) * cropW * 4);
+						}
+						width = cropW;
+						height = cropH;
+					}
+					else {
+						image.assign(loaded.get(), loaded.get() + static_cast<size_t>(width) * height * 4);
+					}
 					loaded.reset();
 					loadMicros += micros(mark); mark = Clock::now();
+					if (source.useKey) {
+						//a flat colour behind the sprites: it becomes transparent
+						for (size_t i = 0; i < static_cast<size_t>(width) * height; i++) {
+							std::uint8_t* p = image.data() + i * 4;
+							if (std::abs(p[0] - source.key[0]) <= source.keyTolerance && std::abs(p[1] - source.key[1]) <= source.keyTolerance && std::abs(p[2] - source.key[2]) <= source.keyTolerance) {
+								p[0] = p[1] = p[2] = p[3] = 0;
+							}
+						}
+					}
 					if (source.removeBackground) removeFlatBackground(image.data(), width, height);
 					cleanMicros += micros(mark); mark = Clock::now();
 
@@ -148,7 +173,7 @@ namespace nrd {
 
 					//scale: the reference frame's height from the top of its sprite to its feet becomes referenceHeight standing heights
 					const float referencePixels = std::max(1.f, sheet.frames()[source.referenceFrame].pivot.y);
-					const float scale = settings.standingHeight * source.referenceHeight / referencePixels * source.scale;
+					const float scale = source.pixelScale > 0.f ? source.pixelScale * source.scale : settings.standingHeight * source.referenceHeight / referencePixels * source.scale;
 					std::ostringstream report;
 					report << std::fixed << std::setprecision(3) << source.name << ": " << frameCount << " frames in " << sheet.rows().size()
 						<< " rows, reference frame " << source.referenceFrame << " is " << referencePixels << " px tall, scale " << scale;
@@ -252,7 +277,10 @@ namespace nrd {
 			text << std::setprecision(9) << "v" << ATLAS_BAKE_VERSION << "|" << unitsPerStandingHeight << "|" << settings.standingHeight << "|" << settings.padding << "|" << settings.maxWidth;
 			for (const SpriteSource& source : sources) {
 				text << "|" << source.name << "," << source.path << "," << source.frames << "," << source.referenceFrame << "," << source.referenceHeight << "," << source.scale
-					<< "," << source.removeBackground << "," << source.ignoreBlueForFeet << "," << source.sharedGround << "," << source.mergeDistance;
+					<< "," << source.removeBackground << "," << source.ignoreBlueForFeet << "," << source.sharedGround << "," << source.mergeDistance
+						<< "," << source.cropX << "," << source.cropY << "," << source.cropWidth << "," << source.cropHeight
+						<< "," << source.useKey << "," << static_cast<int>(source.key[0]) << "," << static_cast<int>(source.key[1]) << "," << static_cast<int>(source.key[2]) << "," << source.keyTolerance
+						<< "," << source.pixelScale;
 				std::error_code error;
 				const auto size = std::filesystem::file_size(source.path, error);
 				const auto time = std::filesystem::last_write_time(source.path, error);

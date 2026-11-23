@@ -34,6 +34,7 @@ namespace nrd {
 		std::vector<int> frames; //indices into SpriteSheet::frames()
 		float framesPerSecond = 10.f;
 		bool loop = true; //false holds the last frame
+		int loopStart = 0; //when looping, the position in `frames` it goes back to: an animation can lead in once, then repeat the rest
 	};
 
 	struct SpriteSheetSettings {

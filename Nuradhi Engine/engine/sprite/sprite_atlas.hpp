@@ -28,6 +28,16 @@ namespace nrd {
 		bool ignoreBlueForFeet = false; //glowing blades and effects don't count as the ground (see SpriteSheetSettings)
 		bool sharedGround = false; //grounded poses all stand on one line (see SpriteSheetSettings)
 		int mergeDistance = 3; //pixels apart that still count as one piece
+
+		//For a sheet that is one row of a bigger image: only this rectangle of the image is used (cropWidth 0 means all of it)
+		int cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
+		//Ripped sprites often sit on a flat colour: pixels within keyTolerance of `key` (per channel) become transparent
+		bool useKey = false;
+		std::uint8_t key[3] = { 0, 0, 0 };
+		int keyTolerance = 6;
+		//When above 0, atlas pixels per sheet pixel, used as it is instead of scaling from the reference frame. All the
+		//sheets cut from one image then share one scale, which is what pixel art needs (1 keeps every pixel as drawn).
+		float pixelScale = 0.f;
 	};
 
 	struct SpriteAtlasSettings {

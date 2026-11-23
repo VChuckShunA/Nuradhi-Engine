@@ -16,12 +16,14 @@ void main() {
 	float coreEdge = max(fragData.x, 0.01);
 	float r = d / coreEdge; //1 at the edge of the white-hot core
 
-	float core = 1.0 - smoothstep(0.45, 1.0, r);
-	float halo = 1.0 / (1.0 + r * r * 0.9); //falls off like light does, a long soft tail
-	halo *= 1.0 - smoothstep(0.35, 1.0, d); //and is gone by the edge of the ribbon, so it never shows a box
+	//a thin, crisp, white-hot channel...
+	float core = 1.0 - smoothstep(0.6, 1.0, r);
+	//...in a wide soft glow that is brightest against the channel and falls away like scattered light, gone by the ribbon's edge
+	float halo = 1.0 / (1.0 + r * r * 0.12);
+	halo *= 1.0 - smoothstep(0.25, 1.0, d);
 
-	float alpha = clamp(core + halo * 0.6, 0.0, 1.0) * fragData.y;
+	float alpha = clamp(core + halo * 0.75, 0.0, 1.0) * fragData.y;
 	if (alpha <= 0.002) discard;
-	vec3 colour = mix(push.colour.rgb * 1.6, vec3(1.0), core);
+	vec3 colour = mix(push.colour.rgb * 1.5, vec3(1.0), clamp(core + halo * 0.5, 0.0, 1.0));
 	outColour = vec4(colour, alpha);
 }

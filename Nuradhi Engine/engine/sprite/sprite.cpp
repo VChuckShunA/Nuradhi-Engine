@@ -428,7 +428,7 @@ namespace nrd {
 				frameInAnimation++;
 			}
 			else if (animation->loop) {
-				frameInAnimation = 0;
+				frameInAnimation = std::clamp(animation->loopStart, 0, static_cast<int>(animation->frames.size()) - 1);
 			}
 			else {
 				frameTimer = 0.f; //hold the last frame
